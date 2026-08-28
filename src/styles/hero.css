@@ -1,0 +1,168 @@
+/* =========================================================================
+   EMBERVEIL — HERO BLOCK
+   Full-bleed key art, a scrim that guarantees legibility over it, and the
+   title stack: crest -> letter-spaced gold serif label -> giant numeral ->
+   violet rarity word -> a rule interrupted by a diamond -> status line.
+
+   Consumes tokens.css and the derived tokens in primitives.css. No raw hex.
+   ========================================================================= */
+
+.hero {
+  position: relative;
+  flex: 0 0 auto;
+  height: var(--hero-h);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: calc(var(--topbar-h) + var(--s-4)) var(--gutter) var(--s-4);
+  overflow: hidden;
+  text-align: center;
+  /* The art is painted down into this colour at its bottom edge, so the
+     hand-off to the panel stack has no seam even while the image decodes. */
+  background: var(--c-ground);
+}
+
+/* ---- key art ------------------------------------------------------------
+   Authored at exactly 2x the rendered box (see src/assets/art/hero/), so on a
+   2x phone every pixel lands on a device pixel with no resampling at all.
+   `cover` is belt-and-braces for the sizes in between.
+   ------------------------------------------------------------------------ */
+.hero__art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: 50% 50%;
+  pointer-events: none;
+  /* Fades in once decoded, so a half-painted image never lands in a capture. */
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.hero.is-art-ready .hero__art { opacity: 1; }
+
+/* ---- scrim --------------------------------------------------------------
+   Three jobs, in order of importance:
+
+     1. A narrow COLUMN of extra darkness down the middle, so the title block
+        has something to sit on without the rest of the painting paying for
+        it. This is the one that does the real work.
+     2. A short top ramp to seat the currency chips.
+     3. A short bottom ramp so the art hands off to the panel stack with no
+        visible seam.
+
+   What it deliberately does NOT do is fade the whole lower half to black.
+   The reference keeps its key art fully legible right down to the first
+   panel; a heavy vertical ramp here, stacked on the one baked into the PNG,
+   is what turns the bottom third of a full-bleed painting into a dead band.
+   Value only — no blur, no backdrop filter, nothing that would read as glass.
+   ------------------------------------------------------------------------ */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    /* 1. the title column. Deliberately WEAKER than it used to be: the
+       painting now bakes its own centre hush, and stacking two scrims is
+       what crushed the art into a dead band last round. */
+    radial-gradient(58% 54% at 48% 64%,
+      color-mix(in srgb, var(--c-ground) 62%, transparent) 0%,
+      color-mix(in srgb, var(--c-ground) 30%, transparent) 56%,
+      transparent 100%),
+    /* 2 + 3. the two short ramps */
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--c-ground) 54%, transparent) 0%,
+      color-mix(in srgb, var(--c-ground) 12%, transparent) 12%,
+      transparent 24%,
+      transparent 66%,
+      color-mix(in srgb, var(--c-ground) 12%, transparent) 80%,
+      color-mix(in srgb, var(--c-ground) 42%, transparent) 93%,
+      var(--c-ground) 100%);
+}
+
+/* ---- embers -------------------------------------------------------------
+   A dozen motes drifting up out of the forge. Deliberately faint: the
+   reference has no particles at all, and the moment this reads as "effects"
+   it has cost more than it earned. Off entirely under reduced motion.
+   ------------------------------------------------------------------------ */
+.hero__motes {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__motes { display: none; }
+}
+
+/* ---- title stack -------------------------------------------------------- */
+
+.hero__content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.hero__crest {
+  width: 78px;
+  height: 48px;
+  margin-bottom: var(--s-2);
+}
+
+.hero__eyebrow {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-body);
+  letter-spacing: var(--ls-display);
+  text-transform: uppercase;
+  color: var(--c-gold-core);
+  line-height: var(--lh-tight);
+  /* Letter-spacing adds a trailing advance after the last glyph, which
+     drags centred text half a track to the left. Half the track back as
+     padding puts the ink on the centreline. */
+  padding-left: var(--ls-display);
+}
+
+/* The reference numeral is ~10% of the screen width in cap height. At 390 the
+   token lands a touch short of that, so it is scaled — from the token, never
+   from a fresh number. */
+/* No filter here. An earlier version carried a drop-shadow() "bloom" behind
+   the numeral, which is the one thing reference/ui-bar.md rules out by name:
+   depth in this UI comes from value shifts, never from a shadow or a glow.
+   The gradient in .t-numeral is what makes the digits read as metal, and the
+   art behind them is already dark enough for them to sit on. */
+.hero__numeral {
+  font-size: calc(var(--fs-numeral) * 1.1);
+  margin-top: 4px;
+}
+
+.hero__rarity { margin-top: 2px; }
+
+/* 140, not 176. The key art puts the Warden's grounded sword at u=0.74, and
+   at 176 the rule's right end ran under her crossguard. Measured at 390. */
+.hero__rule {
+  max-width: 140px;
+  margin-block: var(--s-3) var(--s-3);
+}
+
+.hero__status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-1);
+  padding-left: var(--ls-label);
+}

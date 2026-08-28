@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Emberveil</title>
+<meta name="description" content="An idle RPG. Train 25 skills, fight, and keep progressing while you're away.">
+
+<!-- Home-screen install. On iOS, "Share > Add to Home Screen" then launches this
+     full-screen with no browser chrome; the app already respects the safe-area
+     insets, so the notch and home indicator are handled. -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Emberveil">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#050A10">
+<link rel="apple-touch-icon" href="src/assets/icons/app/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="src/assets/icons/app/icon-192.png">
+<link rel="manifest" href="site.webmanifest">
+<link rel="stylesheet" href="src/styles/tokens.css">
+<link rel="stylesheet" href="src/styles/base.css">
+<link rel="stylesheet" href="src/styles/primitives.css">
+<link rel="stylesheet" href="src/styles/hero.css">
+<link rel="stylesheet" href="src/styles/home.css">
+<link rel="stylesheet" href="src/styles/play.css">
+</head>
+<body>
+<!-- The shared icon sprite is injected here at boot from src/assets/icons.svg,
+     so index.html and index.html cannot drift apart. -->
+<script>
+window.__errs = [];
+addEventListener("error", e => window.__errs.push({m:e.message, f:(e.filename||"").split("/").pop(), l:e.lineno, c:e.colno, stack:(e.error&&e.error.stack||"").split("\n").slice(0,3).join(" | ")}));
+addEventListener("unhandledrejection", e => window.__errs.push({rej:String(e.reason), stack:(e.reason&&e.reason.stack||"").split("\n").slice(0,3).join(" | ")}));
+</script>
+<div id="sprite" hidden></div>
+
+<div id="app">
+
+  <div class="topbar safe-top">
+    <div class="brand" aria-label="Emberveil">
+      <span class="brand__l1 t-metal-gold">Ember</span>
+      <span class="brand__l2 t-metal-silver">Veil</span>
+      <span class="brand__rule" aria-hidden="true"><i class="brand__diamond"></i></span>
+    </div>
+    <div class="chips">
+      <div class="chip">
+        <span class="chip__icon"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><use href="#i-cog"/></svg></span>
+        <span class="chip__value u-tnum" id="c-cogs">0</span>
+      </div>
+      <div class="chip">
+        <span class="chip__icon"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><use href="#i-shard"/></svg></span>
+        <span class="chip__value u-tnum" id="c-shards">0</span>
+      </div>
+      <div class="focus">
+        <div class="chip chip--focus">
+          <span class="chip__icon"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><use href="#i-focus"/></svg></span>
+          <span class="chip__value u-tnum" id="c-hp">0<span class="chip__frac" id="c-hpmax">/0</span></span>
+        </div>
+        <p class="focus__state">
+          <svg viewBox="0 0 24 24" width="10" height="10" aria-hidden="true"><use href="#i-clock"/></svg>
+          <span id="c-hpstate">Rested</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen">
+
+    <header class="hero" id="hero">
+      <img class="hero__art" src="src/assets/art/hero/ember-gate.png"
+           width="780" height="656" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
+      <div class="hero__scrim" aria-hidden="true"></div>
+      <div class="hero__content">
+        <svg class="hero__crest" viewBox="0 0 72 44" aria-hidden="true"><use href="#i-crest"/></svg>
+        <p class="hero__eyebrow" id="heroEyebrow">Adept Level</p>
+        <p class="t-numeral hero__numeral" id="heroNumeral">1</p>
+        <p class="t-rarity hero__rarity" id="heroRarity">Unproven</p>
+        <div class="ornament-rule hero__rule" aria-hidden="true"><span class="ornament-rule__diamond"></span></div>
+        <p class="hero__status" id="heroStatus">Nothing underway <span class="dot-gold" aria-hidden="true"></span></p>
+      </div>
+    </header>
+
+    <main class="screen__body" id="main"></main>
+  </div>
+
+  <nav class="nav safe-bottom" id="nav" aria-label="Primary">
+    <button class="nav__item is-active" type="button" data-tab="skills">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-skills"/></svg>
+      <span class="nav__label">Skills</span>
+    </button>
+    <button class="nav__item" type="button" data-tab="combat">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-adept"/></svg>
+      <span class="nav__label">Combat</span>
+    </button>
+    <button class="nav__item" type="button" data-tab="bank">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-relics"/></svg>
+      <span class="nav__label">Bank</span>
+    </button>
+    <button class="nav__item" type="button" data-tab="shop">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cog"/></svg>
+      <span class="nav__label">Shop</span>
+    </button>
+    <!-- §1's OTHER block: Completion Log, Statistics and Settings share one
+         tab, because the other four slots are already the reference's own top
+         level (skills menu, Combat, Bank, Shop). See screens/settings.js. -->
+    <button class="nav__item" type="button" data-tab="settings">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-wardens"/></svg>
+      <span class="nav__label">Other</span>
+    </button>
+    <!-- Routed to, never tapped. The Combat screen's sub-nav opens Gear and
+         Larceny with ctx.goTab(), which clicks a nav button by data-tab, so
+         each needs one — but the grid in primitives.css is five columns wide
+         and these two live ON the Combat screen in the reference (§3j puts
+         equipment there; §3h's stun skill shares its hit-point bar). Hidden
+         rather than absent: display:none takes them out of the grid entirely,
+         so the five real tabs keep their widths. -->
+    <button class="nav__item" type="button" data-tab="equipment" style="display:none">
+      <span class="nav__label">Gear</span>
+    </button>
+    <button class="nav__item" type="button" data-tab="larceny" style="display:none">
+      <span class="nav__label">Larceny</span>
+    </button>
+  </nav>
+</div>
+
+<div id="toasts" aria-live="polite"></div>
+<script type="module" src="src/js/play.js"></script>
+</body>
+</html>

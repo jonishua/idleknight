@@ -1,0 +1,256 @@
+/* =========================================================================
+   EMBERVEIL — DESIGN TOKENS  (single source of truth)
+
+   Derived from reference/ui-bar.md. Every hex below was sampled from the
+   real 1008x1792 screenshot at reference/shots/ui-bar.png and re-verified
+   programmatically during scaffold.
+
+   HARD RULE FOR ALL DOWNSTREAM CSS:
+     No raw hex. No raw gap px. No raw font-size. Consume these vars.
+     If you need a value that isn't here, add it here first.
+
+   THREE TRAPS THIS FILE ENCODES. Trap 1 is from reference/ui-bar.md. Traps
+   2 and 3 are from the PNG itself and CONTRADICT the prose in that doc —
+   the brief says the PNG always wins, so the doc's wording is wrong and
+   these are the measured numbers. Every figure below was re-sampled from
+   reference/shots/ui-bar.png (1008x1792) with tools/pixel/png.mjs.
+
+     1. Secondary labels are LIGHT (--c-text-2 #C4C8CA), not dimmed to 40%.
+        Hierarchy comes from size + letter-spacing, never from fading.
+
+     2. Dividers are BRIGHTER than their panel — about 2.5x its luma — not
+        darker. ui-bar.md says "dividers are cut lines, not highlights" and
+        gives #0E1318; the pixels disagree flatly. Measured:
+          horizontal groove, x=500 y=948..949  #2E332F / #272B2D  L49.6 / 42.3
+          vertical   groove, y=1000 x=423..424 #2D3135 / #272B2F  L48.4 / 42.4
+          the panel they sit in                                   L~19.5
+        Every seam on that screen is a LIT hairline with a faint dark
+        companion under it: a raised bevel, not a cut. --c-groove is now
+        that lit value and --c-groove-shadow is the companion.
+
+     3. The empty progress track is NOT the panel value. Its fill is, but it
+        carries a bright ring at ~2.6x the panel, lit harder on the top edge
+        than the bottom — a shallow well, read by its rim. Measured on the
+        XP bar at x=800:
+          top rim    y=895..896  #3C3F40 / #383B3C   L62.4 / 58.4
+          fill       y=899..919  #13181C             L23.2
+          bottom rim y=921..922  #333538 / #343639   L52.8 / 53.8
+          right cap  y=907 x=937 #3C4042             L63.3
+
+   AND THE FOURTH, which is what actually makes the reference's bars read as
+   lit metal instead of painted rectangles: every fill ends in a HOT CAP that
+   is brighter than its own body, and bleeds a warm bloom into the track.
+   Measured along the 65.4% XP bar at y=907:
+     body 214..228 -> cap 240.6 (#FDF3B5, and #FFFABD at its vertical middle)
+     then 119, 87, 76, 68, 58, 51, 45, 40, 35, 32, 30, 27, 25, 24 (track)
+   That is ~31 device px of falloff — about 12 CSS px at this width. See
+   --c-gold-cap / --c-gold-bloom and their violet twins.
+
+   MIGRATION NOTE. Two derived mixes in primitives.css still read --c-groove
+   as though it were dark: --c-surface-lo (the panel's top-lit falloff) and
+   --c-groove-cut. Both should be re-pointed at --c-panel-deep, which is the
+   old dark value kept under an honest name. src/styles/skill.css does that
+   locally for the skill screen; primitives.css's owner should fold it in.
+   ========================================================================= */
+
+:root {
+  /* ---------------------------------------------------------------------
+     PALETTE — two accents only (metallic gold + violet) over a cool
+     near-black ground. Gold and violet are the ONLY saturated things on
+     screen, which is exactly why they land. Resist adding a third accent.
+     --------------------------------------------------------------------- */
+
+  /* Ground & surfaces */
+  --c-ground:         #050A10; /* page ground — darker than it looks */
+  --c-ground-deep:    #030A12; /* outside the device frame / deepest edge */
+  --c-surface:        #13171B; /* panel fill — sits only ~14 values above ground */
+  --c-surface-warm:   #191917; /* nav ACTIVE bg — subtly warm, unlike everything else */
+  --c-panel-deep:     #0E1318; /* a value just BELOW the panel — panel falloff, seam shadow.
+                                  This was --c-groove until the PNG was measured; it is a
+                                  real value in the reference, it just is not the divider. */
+
+  /* Seams. Lit hairline first, faint dark companion under it (trap 2).
+     L50.3 on a L22.4 panel = 2.25x, matching the reference's 2.22x. Slightly
+     under the reference in ratio on purpose: theirs is two device pixels at
+     DPR 2.585 (0.77 CSS px) and ours is a full CSS pixel, so equal apparent
+     weight needs a marginally lower value. */
+  --c-groove:         #2E3338; /* divider — BRIGHTER than the panel */
+  --c-groove-shadow:  #0A0F14; /* the 1px shade under a lit seam */
+
+  /* The progress well (trap 3). Fill is the panel value; the rim is not. */
+  --c-track:          #13181C; /* empty track fill — measured L23.2 */
+  --c-track-rim:      #3C4042; /* top / end of the well — measured L63.3 */
+  --c-track-rim-lo:   #33373A; /* its shaded bottom edge — measured L52.8 */
+
+  /* Panel outline. Measured #252829/#2A2D2C at y=1117 — L~42, five times the
+     ground, not the near-invisible 4.5% white the doc's prose implies. */
+  --c-panel-edge:     #2E3237;
+
+  /* Gold ramp — always a gradient in use, never flat (see --grad-gold-*) */
+  --c-gold-light:     #F8DCA2; /* top of gradients, numeral highlight, bevel */
+  --c-gold-core:      #D7A747; /* "the gold" — progress fill, active icon */
+  --c-gold-mid:       #CEA042; /* bar fill body */
+  --c-gold-deep:      #B08539; /* button face bottom, bevel shadow */
+  --c-gold-text-end:  #BD9142; /* bottom stop of the big-numeral text gradient */
+
+  /* The leading edge of a fill. Hotter than the fill's own body — this is
+     the single detail that separates lit metal from a painted rectangle. */
+  --c-gold-cap:       #FFF4B8; /* measured #FDF3B5 / #FFFABD, L240-247 */
+  --c-gold-cap-warm:  #FFE7A0; /* the fill's own longitudinal run-up to it */
+
+  /* Violet ramp — the "upgrade / arcane" axis */
+  --c-violet-light:   #B394D8; /* the rarity word */
+  --c-violet-bright:  #7E34E2; /* glow, rim light */
+  --c-violet-core:    #763CC3; /* violet progress bar */
+  --c-violet-deep:    #44169E; /* gradient bottom, crystal core */
+  /* Violet's cap and run-up, set by the RATIO the gold uses rather than by
+     eye. Gold caps at L242 over a body of L167 = 1.45x, and runs up to L227
+     = 1.36x. Violet's body is L81, so 1.45x is L118 and 1.36x is L110 — and
+     the reference's own violet cap measures #8F72BB L125, which agrees. A
+     lilac-white cap here (the first attempt was L204, 2.5x) makes the violet
+     axis shout over the gold one, which is a palette-discipline failure even
+     though both hues are legal. */
+  --c-violet-cap:     #9C7FC6; /* L138 */
+  --c-violet-cap-warm:#8C63C0; /* L115 */
+
+  /* Silver ramp — neutral metal for the wordmark, NOT a third accent.
+     It is the same greyscale family as the text ramp, given a gradient so
+     it reads as brushed steel beside the gold. Do not use it for state. */
+  --c-silver-light:   #FFFFFF;
+  --c-silver-core:    #C9CFD4;
+  --c-silver-deep:    #8C949B;
+
+  /* Text */
+  --c-text-1:         #FFFFFF; /* values and numbers — genuinely pure white */
+  --c-text-2:         #C4C8CA; /* labels — light WARM-grey, NOT muted blue-grey (trap 1) */
+  --c-text-cream:     #FFFECD; /* nav active label, pairs with the warm active bg */
+
+  /* Bloom — the warm spill a lit cap throws into the track ahead of it.
+     Two stops because the measured falloff is not one curve: a tight bright
+     core out to ~4 CSS px, then a long shallow tail to ~12. */
+  --c-gold-bloom:     rgba(215, 167,  71, 0.55);
+  --c-gold-bloom-far: rgba(215, 167,  71, 0.20);
+  --c-violet-bloom:     rgba(126,  52, 226, 0.55);
+  --c-violet-bloom-far: rgba(126,  52, 226, 0.22);
+
+  /* Hairlines & translucency — depth by value shift, never by drop shadow */
+  --c-hairline:       rgba(255, 255, 255, 0.045); /* near-invisible inner edge */
+  --c-hairline-gold:  rgba(248, 220, 162, 0.22);  /* thin outline on gold chrome */
+  --c-scrim:          rgba(5, 10, 16, 0.88);      /* hero art -> text legibility */
+  --c-chip-fill:      rgba(0, 0, 0, 0.34);        /* translucent dark pill */
+
+  /* ---------------------------------------------------------------------
+     GRADIENTS — gold is beveled metal, never flat colour.
+     Every gold surface gets gradient + highlight + shadow.
+     --------------------------------------------------------------------- */
+  --grad-gold-bar:    linear-gradient(180deg, var(--c-gold-light) 0%, var(--c-gold-core) 46%, var(--c-gold-deep) 100%);
+  --grad-gold-face:   linear-gradient(180deg, var(--c-gold-light) 0%, var(--c-gold-core) 52%, var(--c-gold-deep) 100%);
+  --grad-gold-text:   linear-gradient(180deg, var(--c-gold-light) 0%, #E4C075 38%, var(--c-gold-text-end) 100%);
+  --grad-violet-bar:  linear-gradient(180deg, var(--c-violet-bright) 0%, var(--c-violet-core) 52%, var(--c-violet-deep) 100%);
+  --grad-silver-text: linear-gradient(180deg, var(--c-silver-light) 0%, var(--c-silver-core) 46%, var(--c-silver-deep) 100%);
+  --grad-scrim:       linear-gradient(180deg, transparent 0%, rgba(5,10,16,0.45) 52%, var(--c-ground) 100%);
+
+  /* ---------------------------------------------------------------------
+     SPACING SCALE — 4px base. The reference's rhythm repeats at 12/16/20;
+     nothing is off-grid. Use the tokens, not the numbers.
+     --------------------------------------------------------------------- */
+  --s-1:   4px;
+  --s-2:   8px;
+  --s-3:  12px;  /* card gaps */
+  --s-4:  16px;  /* panel padding, gutters */
+  --s-5:  20px;  /* generous inner padding */
+  --s-6:  24px;
+  --s-7:  32px;
+  --s-8:  40px;
+
+  --gutter: var(--s-4); /* screen side margin */
+
+  /* ---------------------------------------------------------------------
+     TYPE SCALE
+     Reference is 1008px wide; this app is 390px wide (ratio 0.387).
+     Sizes below are the reference measurements scaled to 390 and rounded
+     onto a coherent ladder.
+     --------------------------------------------------------------------- */
+  --ff-display: "Cinzel", "Trajan Pro", "Optima", Georgia, "Times New Roman", serif;
+  --ff-sans:    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --fs-nav:       9px;  /* nav labels */
+  --fs-micro:    10px;  /* fine print, x/y counters */
+  --fs-label:    11px;  /* uppercase section labels */
+  --fs-body:     13px;  /* subtitles, running text */
+  --fs-value:    15px;  /* inline values */
+  --fs-value-lg: 17px;  /* headline values, percentages */
+  --fs-title:    20px;  /* panel titles */
+  --fs-display:  28px;  /* screen titles */
+  --fs-numeral:  52px;  /* the one enormous number that anchors the screen */
+
+  /* Letter-spacing — this carries hierarchy in place of fading text out */
+  --ls-tight:  -0.01em;
+  --ls-normal:      0;
+  --ls-label:   0.10em; /* uppercase label sans */
+  --ls-display: 0.18em; /* letter-spaced gold serif */
+  --ls-wide:    0.22em; /* rarity word */
+
+  --lh-tight: 1.0;
+  --lh-snug:  1.25;
+  --lh-body:  1.45;
+
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-bold:    700;
+  --fw-display: 700;
+
+  /* ---------------------------------------------------------------------
+     RADII & SHAPE
+     --------------------------------------------------------------------- */
+  --r-panel:  16px; /* panels (reference reads ~12-16px at this width) */
+  --r-card:   12px; /* action cards */
+  --r-sm:      8px;
+  --r-pill:  999px; /* chips, progress caps */
+  --chamfer:   9px; /* corner cut for pressed-metal buttons — NOT a radius */
+
+  /* ---------------------------------------------------------------------
+     COMPONENT METRICS
+     --------------------------------------------------------------------- */
+  --bar-h:      10px; /* primary progress bar */
+  --bar-h-sm:    8px; /* mini bar inside action cards */
+  --bar-cap-w:   2px; /* width of a fill's hot leading cap */
+  --bar-runup:  18px; /* how far the fill brightens on its way into that cap */
+  --bar-bloom:  12px; /* how far its warm spill reaches into the track
+                         (31 device px in the reference / 2.585 DPR) */
+  --divider-h:   1px;
+  --topbar-h:   44px;
+  --nav-h:      60px;
+  --hero-h:    336px; /* ~40% of 844 */
+  --tap-min:    44px; /* minimum touch target */
+
+  /* ---------------------------------------------------------------------
+     MOTION — restrained. This UI is heavy metal, not bouncy.
+     --------------------------------------------------------------------- */
+  --dur-fast:  120ms;
+  --dur-base:  200ms;
+  --dur-slow:  360ms;
+  --ease-out:  cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
+  /* ---------------------------------------------------------------------
+     PIXEL ART — content is SNES-era sprites; chrome is this 2026 cabinet.
+     Scale factors MUST be integers. Never fractional.
+     --------------------------------------------------------------------- */
+  --px-scale-2: 2;
+  --px-scale-3: 3;
+  --px-scale-4: 4;
+
+  /* Layering */
+  --z-base:    0;
+  --z-panel:   10;
+  --z-nav:     100;
+  --z-overlay: 1000;
+}
+
+/* This UI is committed dark by design — it is a game cabinet, not a document.
+   We do not offer a light theme; we pin the colour-scheme so the browser
+   paints native chrome (scrollbars, form controls) to match. */
+:root {
+  color-scheme: dark;
+}

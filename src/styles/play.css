@@ -1,0 +1,259 @@
+/* =========================================================================
+   EMBERVEIL — the playable build
+
+   Only what the live game needs on top of primitives.css: skill and action
+   rows, the bank grid, shop rows, toasts and the welcome-back sheet. Every
+   value comes from tokens.css — no literal colours, no ad-hoc spacing.
+   ========================================================================= */
+
+/* ---- section headings ------------------------------------------------- */
+.sect {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+  margin: var(--s-5) var(--s-1) var(--s-2);
+}
+.sect:first-child { margin-top: var(--s-2); }
+
+/* ---- a tappable row (skill, action, foe, shop entry) ------------------ */
+.row-card {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  padding: var(--s-3);
+  margin-bottom: var(--s-2);
+  background: var(--c-surface);
+  border: 1px solid var(--c-panel-edge);
+  border-radius: var(--r-card);
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  min-height: var(--tap-min);
+  transition: background var(--dur-fast) var(--ease-out);
+}
+button.row-card { cursor: pointer; }
+button.row-card:hover { background: var(--c-surface-warm); }
+button.row-card:active { background: var(--c-panel-deep); }
+.row-card:focus-visible { outline: 2px solid var(--c-gold-core); outline-offset: 2px; }
+.row-card.is-locked { opacity: .45; }
+.row-card.is-active { border-color: var(--c-hairline-gold); }
+
+.row-card__body { flex: 1; min-width: 0; }
+.row-card__title {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-1);
+  display: flex; align-items: center; gap: var(--s-2);
+}
+/* `display:block` is not decoration — it is what makes the truncation work.
+   On an inline span, `overflow:hidden` and `text-overflow:ellipsis` are both
+   inert, so a long sub-line silently widened its flex parent past the 390px
+   phone instead of clipping (Alchemy's potion shelf, "-10% interval, +10%
+   skill XP and +10% chance to double, everywhere", ran to 444px). Setting it
+   here rather than at each call site means a new row-card cannot reintroduce
+   the bug by forgetting an inline style. */
+.row-card__sub {
+  display: block;
+  font-size: var(--fs-label);
+  color: var(--c-text-2);
+  margin-top: 2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.row-card__meta {
+  display: block;
+  font-size: var(--fs-micro); color: var(--c-text-2); opacity: .75; margin-top: 1px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.row-card__right { flex: none; text-align: right; }
+.row-card__lvl {
+  font-family: var(--ff-display);
+  font-size: var(--fs-value-lg);
+  font-weight: var(--fw-display);
+  background: var(--grad-gold-text);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: var(--c-gold-core);
+  line-height: 1;
+}
+.row-card__lvl-cap { display: block; font-size: var(--fs-micro); color: var(--c-text-2); letter-spacing: var(--ls-label); }
+
+/* A plain block mark stands in for per-skill art until the sprites land. */
+.mark {
+  width: 40px; height: 40px; flex: none;
+  border-radius: var(--r-sm);
+  display: grid; place-items: center;
+  font-family: var(--ff-display);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-display);
+  color: var(--c-ground);
+  letter-spacing: 0;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .22), inset 0 -1px 0 rgb(0 0 0 / .3);
+}
+.mark--round { border-radius: var(--r-pill); }
+
+/* ---- badges ----------------------------------------------------------- */
+.badge {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  padding: 2px var(--s-2);
+  border-radius: var(--r-pill);
+  background: var(--c-chip-fill);
+  color: var(--c-text-2);
+  flex: none;
+}
+.badge--on { background: var(--grad-gold-face); color: var(--c-ground); font-weight: var(--fw-bold); }
+.badge--warn { color: var(--c-gold-light); }
+
+/* ---- bank grid --------------------------------------------------------- */
+.bank-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: var(--s-2); }
+.bank-cell {
+  background: var(--c-surface);
+  border: 1px solid var(--c-panel-edge);
+  border-radius: var(--r-card);
+  padding: var(--s-3) var(--s-2);
+  text-align: center;
+}
+.bank-cell .mark { margin: 0 auto var(--s-2); }
+.bank-cell__qty {
+  font-family: var(--ff-display); font-size: var(--fs-value); font-weight: var(--fw-display);
+  color: var(--c-text-1); font-variant-numeric: tabular-nums;
+}
+.bank-cell__name {
+  font-size: var(--fs-micro); color: var(--c-text-2);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 1px;
+}
+.bank-cell__each { font-size: var(--fs-micro); color: var(--c-text-2); opacity: .6; }
+.bank-cell .btn-gold--sm { width: 100%; margin-top: var(--s-2); }
+
+/* ---- the duel ---------------------------------------------------------- */
+.duel { display: flex; align-items: center; gap: var(--s-3); }
+.duel__side { flex: 1; text-align: center; }
+.duel__av {
+  width: 60px; height: 60px; margin: 0 auto var(--s-2);
+  border-radius: var(--r-card); display: grid; place-items: center;
+  font-family: var(--ff-display); font-size: var(--fs-value); font-weight: var(--fw-display);
+  color: var(--c-ground);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .22), inset 0 -2px 0 rgb(0 0 0 / .32);
+}
+.duel__hp { font-size: var(--fs-label); color: var(--c-text-2); font-variant-numeric: tabular-nums; }
+.duel__vs { font-family: var(--ff-display); font-size: var(--fs-label); color: var(--c-text-2); letter-spacing: var(--ls-wide); }
+
+/* ---- misc -------------------------------------------------------------- */
+.empty { text-align: center; color: var(--c-text-2); font-size: var(--fs-label); padding: var(--s-7) var(--s-4); }
+.stat-line {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: var(--s-2) 0; border-bottom: 1px solid var(--c-groove-cut); font-size: var(--fs-label);
+}
+.stat-line:last-child { border-bottom: 0; }
+.stat-line b { font-family: var(--ff-display); color: var(--c-gold-core); font-variant-numeric: tabular-nums; }
+.btn-row { display: flex; gap: var(--s-2); }
+
+/* ---- toasts ------------------------------------------------------------ */
+#toasts {
+  position: fixed; left: 0; right: 0; top: calc(var(--topbar-h) + var(--s-2));
+  z-index: var(--z-overlay); display: flex; flex-direction: column; align-items: center;
+  gap: var(--s-2); pointer-events: none; padding-top: env(safe-area-inset-top, 0px);
+}
+.toast {
+  background: var(--c-surface-warm);
+  border: 1px solid var(--c-panel-edge);
+  border-left: 3px solid var(--c-gold-core);
+  border-radius: var(--r-sm);
+  padding: var(--s-2) var(--s-4);
+  font-size: var(--fs-label);
+  color: var(--c-text-1);
+  box-shadow: 0 6px 18px rgb(0 0 0 / .55);
+  animation: toast-in var(--dur-base) var(--ease-out);
+}
+.toast--violet { border-left-color: var(--c-violet-light); }
+.toast--bad { border-left-color: var(--c-gold-light); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+/* ---- welcome-back sheet ------------------------------------------------ */
+.scrim {
+  position: fixed; inset: 0; z-index: var(--z-overlay);
+  background: var(--c-scrim); display: grid; place-items: center; padding: var(--s-5);
+  animation: fade-in var(--dur-base) var(--ease-out);
+}
+@keyframes fade-in { from { opacity: 0 } to { opacity: 1 } }
+.sheet {
+  width: 100%; max-width: 360px; max-height: 80vh; overflow-y: auto;
+  background: var(--c-surface); border: 1px solid var(--c-panel-edge);
+  border-radius: var(--r-panel); padding: var(--s-5);
+}
+.sheet__title {
+  font-family: var(--ff-display); font-size: var(--fs-title); font-weight: var(--fw-display);
+  background: var(--grad-gold-text); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: var(--c-gold-core);
+  text-align: center; margin-bottom: 2px;
+}
+.sheet__sub { text-align: center; color: var(--c-text-2); font-size: var(--fs-label); margin-bottom: var(--s-4); }
+.sheet .btn-gold { width: 100%; margin-top: var(--s-4); }
+
+@media (prefers-reduced-motion: reduce) {
+  .toast, .scrim { animation: none; }
+}
+
+/* ---- the three axis cards ----------------------------------------------
+   The mock's cards carry 5-6 letter words ("Delve", "Sigil", "Ascend").
+   Ours carry real system names, so the head needs a little more room:
+   a smaller mark, a tighter gap, and one step down in title size. */
+.cards .card { padding-inline: var(--s-2); }
+.cards .card__head { gap: 4px; }
+.cards .card__icon { width: 14px; height: 14px; }
+.cards .card__title { font-size: 11px; letter-spacing: 0; }
+.cards .card__sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---- pixel art ---------------------------------------------------------
+   Everything below is authored pixel art. It is only ever drawn at whole
+   multiples of its native size, with smoothing off — a fractional scale
+   turns a 16-bit sprite to mush. */
+.mark--art, .mark--mob {
+  background: var(--c-panel-deep);
+  box-shadow: inset 0 0 0 1px var(--c-panel-edge);
+  overflow: hidden;
+}
+.mark--art img, .mark--mob img, .scene img {
+  image-rendering: pixelated;
+  display: block;
+}
+/* Foes are authored up to 88x64; the row mark shows them contained, and this
+   is the one place a non-integer scale is tolerated because it is a thumbnail. */
+.mark--mob img { width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; }
+.mark--mob { display: grid; place-items: center; padding: 2px; }
+
+/* ---- the battle tableau ------------------------------------------------ */
+.scene {
+  position: relative;
+  height: 152px;
+  border-radius: var(--r-panel) var(--r-panel) 0 0;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: cover;
+  image-rendering: pixelated;
+  overflow: hidden;
+  border-bottom: 1px solid var(--c-panel-edge);
+}
+.scene__hero { position: absolute; left: 14%; bottom: 18px; }
+.scene__mob  { position: absolute; right: 12%; bottom: 16px; }
+.duel__name {
+  font-family: var(--ff-display);
+  font-size: var(--fs-label);
+  color: var(--c-text-1);
+  margin-bottom: 2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.panel--flush .duel { padding: var(--s-3); }
+
+/* The bank cell is ~110px wide; a two-word gold button wraps and clips there. */
+.bank-cell .btn-gold--sm {
+  white-space: nowrap;
+  font-size: 10px;
+  padding-inline: var(--s-2);
+  letter-spacing: 0.04em;
+}

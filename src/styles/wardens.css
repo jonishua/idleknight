@@ -1,0 +1,1193 @@
+/* =========================================================================
+   EMBERVEIL — WARDEN CODEX
+
+   Composition only. Every colour is either a token from tokens.css or a
+   colour-mix() *derived from* one. There is not a single raw hex in this
+   file, and there is no third hue: the rarity ladder is five VALUES of the
+   one violet, which is the whole trick to keeping 24 items on screen from
+   collapsing into either grey mush or a rainbow.
+
+   Three rules from reference/ui-bar.md that this screen is judged on, and
+   how each is honoured here:
+
+     1. Secondary labels stay LIGHT (--c-text-2). Nothing on this screen is
+        dimmed to signal state. A sealed Warden is communicated by a
+        different SPRITE and an unfilled pip, never by fading its name out.
+     2. Dividers are darker grooves, never bright hairlines.
+     3. The empty progress track equals the panel fill; the gold is simply
+        painted onto the surface.
+
+   And one from reference/ffvi-art.md §7, which governs the seam:
+     No chrome effect ever touches the pixel layer. No filter, no opacity,
+     no gradient, no fractional transform over a sprite. Press states are
+     value shifts on the frame; the locked state is a different PNG; the
+     sheet hides its sprite while it is mid-slide and shows it, crisp, on
+     arrival.
+   ========================================================================= */
+
+/* -------------------------------------------------------------------------
+   0. LOCAL TOKEN EXTENSIONS
+   tokens.css is the scaffold's file and is not ours to edit, so the two
+   values this screen needs that it does not carry are declared here, in the
+   same shape, and derived from what is already there.
+   ------------------------------------------------------------------------- */
+
+:root {
+  --px-scale-8: 8;          /* 24x24 sprite -> a 192px portrait in the Rite */
+  --cell-plaque-h: 72px;    /* == 24 * --px-scale-3, so the art sits flush */
+}
+
+.pixel[data-scale="8"] {
+  width:  calc(var(--px-w) * var(--px-scale-8) * 1px);
+  height: calc(var(--px-h) * var(--px-scale-8) * 1px);
+}
+
+/* Keep every sprite on its own compositing layer at a whole-pixel origin. */
+.pixel { transform: translateZ(0); }
+
+/* -------------------------------------------------------------------------
+   1. THE RARITY LADDER
+
+   Five steps of ONE violet. Read them top to bottom and the only thing
+   changing is value and saturation — the hue never moves, so twenty-four
+   plaques side by side read as one material at five depths rather than as
+   five different colours.
+
+   --tier        the frame ring, the pips, the corner ticks
+   --tier-face   the top stop of the plaque's vertical value shift
+   --tier-dim    the same plaque for a SEALED sigil — the tier is still
+                 legible, the spirit is not
+   --tier-word   the rarity word; never darker than --c-text-2
+
+   Both faces climb the SAME five rungs; the sealed ladder simply starts
+   lower and gains less per step. A locked cell has to keep its rarity — half
+   this grid is locked at any time, and a codex where the thing you do not
+   own yet has no visible rank is a codex with nothing to want in it. What
+   the seal withholds is the spirit, not its rank.
+   ------------------------------------------------------------------------- */
+
+[data-tier="1"] {
+  --tier:      color-mix(in oklab, var(--c-violet-core)   30%, var(--c-text-2));
+  --tier-face: color-mix(in oklab, var(--c-violet-deep)   13%, var(--c-ground));
+  --tier-dim:  color-mix(in oklab, var(--c-violet-deep)    8%, var(--c-ground));
+  --tier-word: color-mix(in oklab, var(--c-violet-light)  40%, var(--c-text-2));
+  --rite-aura: 16%;
+  --rite-flash: 0.42;
+}
+[data-tier="2"] {
+  --tier:      color-mix(in oklab, var(--c-violet-core)   55%, var(--c-text-2));
+  --tier-face: color-mix(in oklab, var(--c-violet-deep)   26%, var(--c-ground));
+  --tier-dim:  color-mix(in oklab, var(--c-violet-deep)   18%, var(--c-ground));
+  --tier-word: color-mix(in oklab, var(--c-violet-light)  60%, var(--c-text-2));
+  --rite-aura: 24%;
+  --rite-flash: 0.56;
+}
+[data-tier="3"] {
+  --tier:      color-mix(in oklab, var(--c-violet-core)   82%, var(--c-text-2));
+  --tier-face: color-mix(in oklab, var(--c-violet-core)   32%, var(--c-ground));
+  --tier-dim:  color-mix(in oklab, var(--c-violet-core)   24%, var(--c-ground));
+  --tier-word: color-mix(in oklab, var(--c-violet-light)  82%, var(--c-text-2));
+  --rite-aura: 34%;
+  --rite-flash: 0.70;
+}
+[data-tier="4"] {
+  --tier:      color-mix(in oklab, var(--c-violet-light)  28%, var(--c-violet-bright));
+  --tier-face: color-mix(in oklab, var(--c-violet-core)   50%, var(--c-ground));
+  --tier-dim:  color-mix(in oklab, var(--c-violet-core)   38%, var(--c-ground));
+  --tier-word: var(--c-violet-light);
+  --rite-aura: 46%;
+  --rite-flash: 0.84;
+}
+[data-tier="5"] {
+  --tier:      color-mix(in oklab, var(--c-violet-light)  66%, var(--c-violet-bright));
+  --tier-face: color-mix(in oklab, var(--c-violet-bright) 68%, var(--c-ground));
+  --tier-word: color-mix(in oklab, var(--c-violet-light)  70%, var(--c-text-1));
+  --tier-dim:  color-mix(in oklab, var(--c-violet-bright) 52%, var(--c-ground));
+  --rite-aura: 60%;
+  --rite-flash: 0.94;
+}
+
+/* Source order matters: this has the same specificity as the blocks above
+   and deliberately comes after them, so a sealed sigil takes the dim face
+   while keeping every other tier value intact. */
+.is-sealed { --tier-face: var(--tier-dim); }
+
+/* -------------------------------------------------------------------------
+   2. SHELL
+   ------------------------------------------------------------------------- */
+
+.wc {
+  /* 390 - 2*12 = 366; three columns at 114 with two 12px gaps. Exact. */
+  --gutter: var(--s-3);
+  padding-bottom: var(--s-3);
+}
+
+.topbar {
+  justify-content: space-between;
+  padding-inline: var(--s-3);
+  border-bottom: 1px solid var(--c-groove);
+}
+
+.chips { display: flex; align-items: center; gap: var(--s-2); }
+
+.topbar .chip { padding: 3px var(--s-2) 3px 6px; gap: 5px; min-height: 28px; }
+.topbar .chip__value { font-size: var(--fs-body); }
+.topbar .chip__icon  { width: 17px; height: 17px; }
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 0.92;
+  font-family: var(--ff-display);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.brand__l1 {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  background: var(--grad-gold-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.brand__l2 {
+  font-size: 17px;
+  letter-spacing: 0.06em;
+  background: var(--grad-silver-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* -------------------------------------------------------------------------
+   3. CODEX HEADER
+   One enormous number anchors the screen; the shared pool sits beside it,
+   split off by a cut groove rather than a box.
+   ------------------------------------------------------------------------- */
+
+.codex {
+  display: flex;
+  align-items: stretch;
+  padding: var(--s-3) var(--s-4);
+}
+
+.codex__count { flex: 0 0 auto; }
+
+.codex__count .t-label {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.09em;
+}
+
+.codex__numeral {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  margin-top: var(--s-1);
+}
+.codex__numeral .t-numeral {
+  font-size: 46px;
+  /* A faint warm bloom sells the metal; this is chrome, not pixels. */
+  filter: drop-shadow(0 2px 8px color-mix(in oklab, var(--c-gold-deep) 26%, transparent));
+}
+.codex__of {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-value-lg);
+  color: var(--c-text-2);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.codex .divider--v { margin-inline: var(--s-4); }
+
+.codex__pool { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.codex__pool .t-label { font-size: var(--fs-micro); letter-spacing: 0.09em; }
+
+.codex__bar { margin-top: var(--s-2); }
+.codex__figures { margin-top: 5px; color: var(--c-text-2); }
+
+/* Checkpoint ladder — live thresholds, not unlocks. A filled diamond means
+   the bonus is currently held; an outline means it has been spent away. The
+   diamond ornament earns its keep by carrying real state. */
+.ckpts {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-1);
+  margin-top: var(--s-2);
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--c-groove);
+}
+.ckpt {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-nav);
+  letter-spacing: 0.04em;
+  color: var(--c-text-2);
+  font-variant-numeric: tabular-nums;
+}
+.ckpt__mark {
+  width: 5px;
+  height: 5px;
+  transform: rotate(45deg);
+  flex: 0 0 auto;
+  box-shadow: inset 0 0 0 1px var(--c-gold-core);
+}
+.ckpt.is-live .ckpt__mark { background: var(--c-gold-core); }
+.ckpt.is-live { color: var(--c-text-1); }
+
+/* -------------------------------------------------------------------------
+   4. SEGMENTED FILTER
+   The active segment borrows the nav's WARM raised surface — the one warm
+   dark on the screen — so "selected" is a material, not a colour.
+   ------------------------------------------------------------------------- */
+
+.seg {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-1);
+  padding: 3px;
+  background: var(--c-chip-fill);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-sm);
+}
+
+.seg__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  /* A tab is a control, so it gets a control's target. The previous 30px
+     looked fine and was un-hittable with a thumb; --tap-min is the floor and
+     nothing on this screen is allowed under it. */
+  min-height: var(--tap-min);
+  border-radius: 6px;
+  font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+  transition: background var(--dur-fast) var(--ease-out);
+}
+.seg__n {
+  font-size: var(--fs-nav);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text-2);
+  letter-spacing: 0;
+}
+.seg__item.is-active {
+  background: var(--c-surface-warm);
+  color: var(--c-text-cream);
+  box-shadow: inset 0 0 0 1px var(--c-hairline-gold);
+}
+.seg__item.is-active .seg__n { color: var(--c-gold-core); }
+
+/* -------------------------------------------------------------------------
+   5. THE GRID
+   ------------------------------------------------------------------------- */
+
+.wgrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+
+.wcell {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  /* 114 cell - 2 border - 14 padding = 98 plaque; a 72px sprite centres on
+     a whole 13px inset. Change either number and re-check that arithmetic. */
+  padding: 7px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-card);
+  text-align: left;
+  width: 100%;
+}
+
+/* The plaque is exactly one sprite tall, so the art sits flush inside it and
+   the horizontal inset lands on a whole pixel. Nothing here is fractional. */
+.wcell__plaque {
+  position: relative;
+  height: var(--cell-plaque-h);
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--tier-face) 0%, var(--c-ground) 100%);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--tier) 44%, transparent);
+}
+
+/* Corner ticks — the milestone crest's bracket motif, reused as a rank mark.
+   Only the top two tiers get them, so the eye can find them across a grid. */
+.wcell--crested .wcell__plaque::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  pointer-events: none;
+  --tick: color-mix(in oklab, var(--tier) 62%, transparent);
+  background:
+    linear-gradient(var(--tick), var(--tick)) 0    0    / 7px 1px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) 0    0    / 1px 7px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) 100% 0    / 7px 1px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) 100% 0    / 1px 7px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) 0    100% / 7px 1px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) 0    100% / 1px 7px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) 100% 100% / 7px 1px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) 100% 100% / 1px 7px no-repeat;
+}
+
+.wcell__name {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  color: var(--c-text-1);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* A sealed Warden's name stays fully legible. It is the SPRITE that is
+   withheld, not the information — muting labels is the fastest way to
+   look cheap. */
+.wcell.is-sealed .wcell__name { color: var(--c-text-2); }
+
+/* State reads across the whole grid as a value shift, not a colour change:
+   a bound Warden sits on the panel surface, a sealed one sits back down on
+   the page ground. Same trick the reference uses to imply layering. */
+.wcell.is-sealed { background: var(--c-ground); }
+
+.wcell__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-1);
+  min-height: 9px;
+}
+
+.pips { display: flex; align-items: center; gap: 3px; }
+.pip {
+  width: 4px;
+  height: 4px;
+  transform: rotate(45deg);
+  background: var(--tier);
+  flex: 0 0 auto;
+}
+.pip--hollow {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--tier) 72%, transparent);
+}
+
+/* A bare gold number in a grid cell is ambiguous — 62 of what? The filled
+   diamond is the same glyph that marks a HELD rung in the detail sheet, so
+   the pairing teaches itself: diamond + number is a bond level, and the
+   barred diamond one cell over is the same statement with nothing behind it. */
+.wcell__bond {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--fs-nav);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--c-gold-core);
+  line-height: 1;
+}
+.wcell__mark { width: 7px; height: 7px; flex: 0 0 auto; color: var(--c-gold-core); }
+.wcell__lock { width: 9px; height: 9px; color: var(--tier); flex: 0 0 auto; }
+
+/* Press state is a value shift on the frame. It never touches the pixels,
+   and it never translates them by a fraction of a device pixel. */
+.wcell:active .wcell__plaque {
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--tier) 92%, transparent);
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--tier-face) 74%, var(--c-text-1)) 0%,
+    var(--c-ground) 100%);
+}
+
+/* -------------------------------------------------------------------------
+   6. THE PRIMARY ACTION
+   Pinned above the nav so the sink is always one thumb away. This is where
+   the beveled gold plate lives on this screen.
+   ------------------------------------------------------------------------- */
+
+.rite-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-3);
+  background: var(--c-surface);
+  border-top: 1px solid var(--c-groove);
+  position: relative;
+  z-index: var(--z-panel);
+}
+
+.rite-bar__body { flex: 1 1 auto; min-width: 0; }
+.rite-bar__kicker { letter-spacing: 0.09em; }
+
+.rite-bar__cost {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: 5px;
+}
+.cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-value);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-1);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--ls-tight);
+}
+.cost svg { flex: 0 0 auto; }
+.cost.is-short { color: var(--c-text-2); }
+
+/* Pity counter — a bounded tail, shown rather than hidden. */
+.pity { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.pity__track {
+  flex: 0 0 44px;
+  height: 3px;
+  border-radius: var(--r-pill);
+  background: var(--c-track);
+  box-shadow: inset 0 0 0 1px var(--c-hairline);
+  overflow: hidden;
+}
+.pity__fill {
+  display: block;
+  height: 100%;
+  width: var(--fill, 0%);
+  background: var(--grad-violet-bar);
+}
+.pity__label { color: var(--c-text-2); letter-spacing: 0.02em; }
+
+/* The single most important control on the screen, so it gets the full plate
+   rather than the --sm variant's 36px: 48 tall, 128 wide, and the biggest
+   uninterrupted field of beveled gold in the app. The reference puts roughly
+   two and a half times more gold on screen than we were carrying, and the
+   place to spend that is the primary action, not a second accent. */
+.rite-bar__go {
+  flex: 0 0 auto;
+  min-width: 128px;
+  min-height: 48px;
+  font-size: var(--fs-value-lg);
+  --chamfer-local: var(--chamfer);
+}
+
+/* -------------------------------------------------------------------------
+   7. DETAIL SHEET
+   ------------------------------------------------------------------------- */
+
+.sheet { position: absolute; inset: 0; z-index: var(--z-overlay); }
+
+.sheet__scrim {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklab, var(--c-ground-deep) 86%, transparent);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.sheet.is-open .sheet__scrim { opacity: 1; }
+
+.sheet__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 88%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  background: var(--c-surface);
+  border-radius: var(--r-panel) var(--r-panel) 0 0;
+  /* The Ascend plate is the last thing in here and it must not sit on the
+     home indicator. */
+  padding: var(--s-2) var(--s-4) calc(var(--s-6) + env(safe-area-inset-bottom, 0px));
+  transform: translateY(100%);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.sheet__panel::-webkit-scrollbar { display: none; }
+.sheet.is-open .sheet__panel { transform: translateY(0); }
+
+/* A designed gold edge where the sheet meets the wash — the one place a
+   hairline is allowed to be light, because it is the cabinet's lip. */
+.sheet__panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: var(--s-5);
+  right: var(--s-5);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--c-hairline-gold), transparent);
+}
+
+.sheet__grab { margin: var(--s-2) auto var(--s-3); max-width: 96px; }
+
+.sheet__head { display: flex; align-items: flex-start; gap: var(--s-4); }
+
+/* The bezel: a gold-beveled cabinet with a pixel screen sitting in it at a
+   whole-pixel offset. This is the designed seam between 1994 and 2026. */
+.bezel {
+  flex: 0 0 auto;
+  padding: 2px;
+  background: var(--grad-gold-face);
+  clip-path: polygon(
+    8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px),
+    calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
+}
+.bezel__inner {
+  display: grid;
+  place-items: center;
+  width: 108px;
+  height: 108px;
+  background: linear-gradient(180deg, var(--tier-face) 0%, var(--c-ground) 100%);
+  clip-path: polygon(
+    7px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 7px),
+    calc(100% - 7px) 100%, 7px 100%, 0 calc(100% - 7px), 0 7px);
+}
+/* The portrait is hidden while the sheet is mid-slide — a pixel sprite must
+   never be rendered at a fractional offset, not even for 300ms. It lands
+   crisp on arrival, which reads as a reveal rather than a compromise. */
+.bezel__inner .pixel { visibility: hidden; }
+.sheet.is-settled .bezel__inner .pixel { visibility: visible; }
+
+.sheet__id { flex: 1 1 auto; min-width: 0; padding-top: 2px; }
+
+.sheet__name {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: 25px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  line-height: 1.05;
+  background: var(--grad-gold-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.sheet__epithet {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--c-text-2);
+  margin-top: 3px;
+}
+.sheet__tier {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+.sheet__rarity {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-body);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--tier-word);
+  line-height: 1;
+}
+.sheet__domain {
+  font-size: var(--fs-nav);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+.sheet__tier .pips .pip { width: 5px; height: 5px; }
+
+.sheet__rule { margin: var(--s-4) 0 var(--s-3); }
+
+.sheet__flavour {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--c-text-2);
+  text-align: center;
+  padding-inline: var(--s-2);
+}
+
+.sheet__block { margin-top: var(--s-4); }
+.sheet__block .panel__head { margin-bottom: var(--s-2); }
+
+/* The bond level is the number that matters in that row; the cap is context.
+   Size carries that, not colour. */
+.sheet__lv {
+  font-size: var(--fs-value-lg);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-1);
+  letter-spacing: var(--ls-tight);
+}
+
+/* --- the bond ladder ----------------------------------------------------
+   One row per resonance bonus, gated on the Melvor per-recipe unlock
+   ladder. Held bonuses carry a filled sigil; the rest carry the level they
+   arrive at. Drawbacks are stated in the same size as the upside, because
+   the whole point of signed modifiers is that the player weighs them. */
+
+.ladder { display: flex; flex-direction: column; }
+
+.rung {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 7px 0;
+  border-top: 1px solid var(--c-groove);
+}
+.rung:first-child { border-top: 0; }
+
+.rung__gate {
+  flex: 0 0 30px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-nav);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+  color: var(--c-text-2);
+}
+.rung__mark { width: 8px; height: 8px; flex: 0 0 auto; color: var(--tier); }
+.rung.is-held .rung__mark { color: var(--c-gold-core); }
+
+.rung__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--fs-body);
+  color: var(--c-text-2);
+  line-height: var(--lh-snug);
+}
+.rung.is-held .rung__text { color: var(--c-text-1); }
+.rung.is-cost .rung__text { color: var(--tier-word); }
+
+/* --- ascension ----------------------------------------------------------- */
+
+.ascend {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--c-groove);
+}
+.ascend__body { flex: 1 1 auto; min-width: 0; }
+.ascend__costs { display: flex; align-items: center; gap: var(--s-4); margin-top: 6px; }
+.ascend__go { flex: 0 0 auto; min-width: 124px; min-height: var(--tap-min); }
+.ascend__note { margin-top: 5px; color: var(--c-text-2); }
+
+/* A 44px target on a 30px disc: the ring stays the size the composition wants
+   and the hit area is grown outward with padding, so nothing visual changes
+   and the thumb still lands. */
+.sheet__close {
+  position: absolute;
+  top: calc(var(--s-3) - 7px);
+  right: calc(var(--s-3) - 7px);
+  width: var(--tap-min);
+  height: var(--tap-min);
+  padding: 7px;
+  display: grid;
+  place-items: center;
+  color: var(--c-text-2);
+  background: none;
+  border: 0;
+}
+.sheet__close::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  background: var(--c-chip-fill);
+  border: 1px solid var(--c-hairline);
+}
+.sheet__close svg { width: 13px; height: 13px; position: relative; }
+
+/* -------------------------------------------------------------------------
+   8. THE RITE
+   The one place restrained motion becomes an event. Everything that moves
+   here is CHROME. The sprite itself never fades, never scales, and never
+   sits at a fractional offset — it arrives, whole, on the flash frame,
+   exactly the way a summon lands in a 16-bit battle.
+   ------------------------------------------------------------------------- */
+
+.summon { position: absolute; inset: 0; z-index: var(--z-overlay); }
+
+.summon__ground {
+  position: absolute;
+  inset: 0;
+  background: var(--c-ground-deep);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.summon[data-step] .summon__ground { opacity: 1; }
+
+/* A single wide value-shift behind the sigil. No blur, no glow spam — this
+   is one radial value step, the same trick the reference uses behind its
+   hero, and it stays under the plate.
+
+   Its strength is the tier's. A Faded sprite gets a whisper; an Ascendant
+   floods the frame. Escalating the CEREMONY rather than adding a second
+   colour is how rarity stays on the violet axis even at its loudest — the
+   fifth tier is not a different hue, it is the same hue turned all the way
+   up, which is exactly the move the reference makes with its crystal. */
+.summon__aura {
+  position: absolute;
+  left: 50%;
+  top: 34%;
+  width: 460px;
+  height: 460px;
+  margin: -230px 0 0 -230px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    color-mix(in oklab, var(--c-violet-bright) var(--rite-aura, 30%), transparent) 0%,
+    color-mix(in oklab, var(--c-violet-deep)   calc(var(--rite-aura, 30%) / 2), transparent) 44%,
+    transparent 72%);
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity var(--dur-slow) var(--ease-out),
+              transform 760ms var(--ease-out);
+}
+.summon[data-step="2"] .summon__aura,
+.summon[data-step="3"] .summon__aura,
+.summon[data-step="4"] .summon__aura,
+.summon[data-step="5"] .summon__aura { opacity: 1; transform: scale(1); }
+
+/* Converging light, for the top two tiers ONLY. This is the piece's one
+   genuine escalation: pull a Sovereign and the room changes. Masked to fade
+   out well before the edges so it never becomes a starburst sticker, and
+   held at an alpha where it reads as a value shift rather than as light. */
+.summon__rays {
+  position: absolute;
+  left: 50%;
+  top: 34%;
+  width: 620px;
+  height: 620px;
+  margin: -310px 0 0 -310px;
+  display: none;
+  background: repeating-conic-gradient(from 8deg,
+    color-mix(in oklab, var(--c-violet-bright) 15%, transparent) 0deg 2.4deg,
+    transparent 2.4deg 15deg);
+  /* The stencil below is an ALPHA MASK, not a paint colour — a mask only reads
+     the alpha channel, so no token applies and none is being dodged. */
+  -webkit-mask: radial-gradient(circle, black 6%, transparent 56%);
+          mask: radial-gradient(circle, black 6%, transparent 56%);
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
+  animation: rite-turn 120s linear infinite;
+}
+.summon[data-tier="4"] .summon__rays,
+.summon[data-tier="5"] .summon__rays { display: block; }
+.summon[data-step="2"] .summon__rays,
+.summon[data-step="3"] .summon__rays,
+.summon[data-step="4"] .summon__rays,
+.summon[data-step="5"] .summon__rays { opacity: 1; }
+
+@keyframes rite-turn { to { transform: rotate(360deg); } }
+@keyframes rite-turn-back { to { transform: rotate(-360deg); } }
+
+/* Three bands, and the middle one owns the slack.
+   ---------------------------------------------------------------------------
+   The previous version pinned the eyebrow up, the ledger down, and bracketed
+   the plate-plus-name pair with auto margins. On a 844px frame that dumped
+   the whole leftover ~200px into ONE gap, directly under the rarity word,
+   which reads as a layout somebody abandoned rather than as breathing room.
+
+   A grid fixes it structurally instead of by tuning: header and footer take
+   their content height, the reveal takes 1fr and centres inside it. Whatever
+   room the frame has left is now split evenly ABOVE and BELOW the portrait,
+   which is what "composed" looks like — and the seal, which lives in that
+   band, grows into it instead of leaving it empty. */
+.summon__stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  justify-items: center;
+  padding: var(--s-6) var(--s-5) var(--s-5);
+  text-align: center;
+}
+
+/* Portrait and name are ONE block, centred in the band. Splitting them across
+   grid rows put the whole leftover above the portrait and none of it under
+   the name; centring the pair puts equal air on both sides of the reveal,
+   which is the only arrangement that reads as deliberate. */
+.summon__reveal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-5);
+  width: 100%;
+  min-height: 0;
+}
+
+.summon__top,
+.summon__id,
+.summon__bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.summon__top { gap: var(--s-2); }
+.summon__id { gap: var(--s-2); }
+.summon__bottom { gap: var(--s-4); }
+
+/* The plate and the seal share a centre. */
+.summon__mid {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+/* The moment names itself before the plate arrives. */
+.summon__eyebrow {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-body);
+  letter-spacing: var(--ls-display);
+  text-transform: uppercase;
+  color: var(--c-gold-core);
+  line-height: 1;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.summon__brow-rule {
+  max-width: 148px;
+  margin-top: calc(var(--s-3) * -1 + var(--s-2));
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out) 60ms;
+}
+.summon[data-step] .summon__eyebrow,
+.summon[data-step] .summon__brow-rule { opacity: 1; }
+
+/* --- the binding seal ----------------------------------------------------
+   Two thin rings of graduated ticks, turning against each other under the
+   plate. Every mark is one violet at one alpha — no second hue, no blur, no
+   bloom. It is the same instinct as the diamond in the ornament rule, given
+   a whole screen to work on: the detail is what makes an overlay read as a
+   RITE rather than as a modal with a picture in it.
+
+   Both rings turn slowly enough to be felt and not watched. That is the
+   brief's "restrained motion becomes an event" — the event is the flash and
+   the shake; this is the ceremony they interrupt.
+   ------------------------------------------------------------------------- */
+
+.summon__seal {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.82);
+  transition: opacity var(--dur-slow) var(--ease-out),
+              transform 820ms var(--ease-out);
+}
+.summon[data-step="2"] .summon__seal,
+.summon[data-step="3"] .summon__seal,
+.summon[data-step="4"] .summon__seal,
+.summon[data-step="5"] .summon__seal { opacity: 1; transform: scale(1); }
+
+.summon__ring {
+  position: absolute;
+  border-radius: 50%;
+  --ring: color-mix(in oklab, var(--c-violet-light) 34%, transparent);
+}
+.summon__ring::before,
+.summon__ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+/* the hairline circle */
+.summon__ring::before { box-shadow: inset 0 0 0 1px var(--ring); }
+/* The tick ring, cut to an annulus so the marks read as engraving.
+   As above, the mask is an alpha stencil and carries no colour at all — the
+   keyword is the opaque end of the gradient, never a hue this screen paints. */
+.summon__ring::after {
+  background: repeating-conic-gradient(from 0deg,
+    var(--ring) 0deg var(--tick-w, 1deg), transparent var(--tick-w, 1deg) var(--tick-gap, 15deg));
+  -webkit-mask: radial-gradient(circle, transparent 0 var(--tick-in, 44%), black var(--tick-in, 44%) 50%, transparent 50%);
+          mask: radial-gradient(circle, transparent 0 var(--tick-in, 44%), black var(--tick-in, 44%) 50%, transparent 50%);
+}
+
+.summon__ring--outer {
+  width: 356px;
+  height: 356px;
+  --tick-w: 0.9deg;
+  --tick-gap: 9deg;
+  --tick-in: 46%;
+  animation: rite-turn 96s linear infinite;
+}
+.summon__ring--inner {
+  width: 300px;
+  height: 300px;
+  --ring: color-mix(in oklab, var(--c-violet-light) 26%, transparent);
+  --tick-w: 2.6deg;
+  --tick-gap: 45deg;
+  --tick-in: 42%;
+  animation: rite-turn-back 64s linear infinite;
+}
+
+/* The sigil plate: gold bevel outside, tier value inside, pixel screen in
+   the middle. Same cabinet idea as the sheet bezel, one size up. */
+.summon__frame {
+  position: relative;
+  padding: 6px;
+  margin-block: var(--s-2);
+  background: var(--grad-gold-face);
+  clip-path: polygon(
+    13px 0, calc(100% - 13px) 0, 100% 13px, 100% calc(100% - 13px),
+    calc(100% - 13px) 100%, 13px 100%, 0 calc(100% - 13px), 0 13px);
+  transform: scale(0.86);
+  opacity: 0;
+  transition: transform 420ms var(--ease-out), opacity var(--dur-base) var(--ease-out);
+}
+.summon[data-step="2"] .summon__frame,
+.summon[data-step="3"] .summon__frame,
+.summon[data-step="4"] .summon__frame,
+.summon[data-step="5"] .summon__frame { transform: scale(1); opacity: 1; }
+
+/* 240 screen around a 192px sprite -> a whole 24px inset on every side.
+   The portrait is the payoff, so it takes the largest whole multiple the
+   390px frame will carry: 24 x 8, never 24 x 7.5. */
+.summon__screen {
+  display: grid;
+  place-items: center;
+  width: 240px;
+  height: 240px;
+  /* A big surface needs a lower value than a 98px plaque to read as the
+     same material — area and lightness trade off. */
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--tier-face) 80%, var(--c-ground)) 0%,
+    var(--c-ground) 100%);
+  clip-path: polygon(
+    10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px),
+    calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
+  position: relative;
+}
+
+/* The core that builds before the sprite lands: a violet diamond, growing
+   by value alone. It is removed the instant the Warden appears. */
+.summon__core {
+  position: absolute;
+  width: 68px;
+  height: 68px;
+  transform: rotate(45deg) scale(0.2);
+  background: linear-gradient(180deg, var(--c-violet-bright), var(--c-violet-deep));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--c-violet-light) 60%, transparent);
+  transition: transform 620ms var(--ease-out);
+}
+.summon[data-step="2"] .summon__core { transform: rotate(45deg) scale(1); }
+.summon[data-step="3"] .summon__core,
+.summon[data-step="4"] .summon__core,
+.summon[data-step="5"] .summon__core { display: none; }
+
+/* Hard cut, never a fade. Opacity on a pixel layer is off the table. */
+.summon__sprite { visibility: hidden; }
+.summon[data-step="3"] .summon__sprite,
+.summon[data-step="4"] .summon__sprite,
+.summon[data-step="5"] .summon__sprite { visibility: visible; }
+
+/* The flash. Whole-screen, 90ms, gold-white. Free, and it lands hard. */
+.summon__flash {
+  position: absolute;
+  inset: 0;
+  background: var(--c-gold-light);
+  opacity: 0;
+  pointer-events: none;
+}
+.summon[data-step="3"] .summon__flash { animation: rite-flash 180ms var(--ease-out) 1; }
+@keyframes rite-flash {
+  0%   { opacity: 0; }
+  18%  { opacity: var(--rite-flash, 0.9); }
+  100% { opacity: 0; }
+}
+
+/* Screen shake — the entire frame offset by whole pixels for eight frames.
+   Every offset is an integer, so nothing resamples. */
+#app.is-shaking { animation: rite-shake 150ms steps(1, end) 1; }
+@keyframes rite-shake {
+  0%   { transform: translate( 0px, 0px); }
+  12%  { transform: translate( 3px,-2px); }
+  25%  { transform: translate(-3px, 2px); }
+  38%  { transform: translate( 2px, 2px); }
+  50%  { transform: translate(-2px,-1px); }
+  62%  { transform: translate( 2px,-1px); }
+  75%  { transform: translate(-1px, 1px); }
+  88%  { transform: translate( 1px, 0px); }
+  100% { transform: translate( 0px, 0px); }
+}
+
+/* Everything below the plate arrives in order, tracking in from wide. */
+.summon__name {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: 27px;
+  text-transform: uppercase;
+  line-height: 1.1;
+  background: var(--grad-gold-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  letter-spacing: 0.42em;
+  opacity: 0;
+  transition: letter-spacing 520ms var(--ease-out), opacity 300ms var(--ease-out);
+}
+.summon[data-step="4"] .summon__name,
+.summon[data-step="5"] .summon__name { letter-spacing: 0.09em; opacity: 1; }
+
+.summon__epithet {
+  font-size: var(--fs-label);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-text-2);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out) 80ms;
+}
+.summon__tier {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out) 60ms;
+}
+/* The reference's hero block runs giant numeral -> violet rarity word -> a
+   ruled diamond. This is that block, with the Warden's name where the
+   numeral goes: the rarity word is the second-largest thing on screen and
+   it is the only violet type anywhere in the app. */
+.summon__rarity {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-title);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--tier-word);
+  line-height: 1;
+}
+.summon__tier .pip { width: 7px; height: 7px; }
+.summon__tier { gap: var(--s-3); }
+
+/* The domain line closes the identity block and puts one more piece of gold
+   under the violet rarity word, which is the reference's own pairing: a
+   letter-spaced gold serif above, a violet word below, gold again beneath. */
+.summon__domain {
+  margin-top: var(--s-1);
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-display);
+  text-transform: uppercase;
+  color: var(--c-gold-core);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out) 120ms;
+}
+
+.summon[data-step="4"] .summon__epithet,
+.summon[data-step="5"] .summon__epithet,
+.summon[data-step="4"] .summon__tier,
+.summon[data-step="5"] .summon__tier,
+.summon[data-step="4"] .summon__domain,
+.summon[data-step="5"] .summon__domain { opacity: 1; }
+
+.summon__rule { max-width: 200px; opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }
+.summon[data-step="5"] .summon__rule { opacity: 1; }
+
+/* The sink, made visible: exactly what the Rite consumed. */
+.summon__ledger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--dur-base) var(--ease-out) 60ms,
+              transform var(--dur-base) var(--ease-out) 60ms;
+}
+.summon[data-step="5"] .summon__ledger { opacity: 1; transform: translateY(0); }
+
+.spend { display: flex; align-items: center; gap: var(--s-4); }
+.spend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-value);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Codex 12 -> 13. The whole reason the sink is worth paying. */
+.summon__delta {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: var(--s-1);
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+.summon__delta b {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-value-lg);
+  color: var(--c-gold-core);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* The reason it was worth a seal: the bonus that lands at bond 1. */
+.summon__grant {
+  margin-top: var(--s-2);
+  font-size: var(--fs-body);
+  color: var(--tier-word);
+  letter-spacing: 0.01em;
+}
+
+.summon__cta {
+  min-width: 176px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--dur-base) var(--ease-out) 140ms,
+              transform var(--dur-base) var(--ease-out) 140ms;
+}
+.summon[data-step="5"] .summon__cta { opacity: 1; transform: translateY(0); }
+
+.summon__skip {
+  position: absolute;
+  inset: 0;
+  background: none;
+  border: 0;
+}
+.summon[data-step="5"] .summon__skip { display: none; }
+
+/* -------------------------------------------------------------------------
+   9. REDUCED MOTION
+   base.css already collapses durations. The JS timeline collapses too — see
+   wardens.js — so the Rite resolves instantly to its end state rather than
+   playing silently with nothing visible.
+   ------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .summon__frame,
+  .summon__name,
+  .summon__ledger,
+  .summon__cta { transform: none; }
+  .summon__seal { transform: none; }
+  /* The seal still draws — it is ornament, and ornament is not motion. It
+     simply stops turning, and the flash and the shake do not fire at all. */
+  .summon__ring--outer,
+  .summon__ring--inner,
+  .summon__rays { animation: none; }
+  .summon__flash { display: none; }
+  #app.is-shaking { animation: none; }
+}

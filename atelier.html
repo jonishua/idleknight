@@ -1,0 +1,1040 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#050A10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="The Atelier — Emberveil's original 16-bit sprite library, measured and framed.">
+<title>Emberveil — The Atelier</title>
+
+<link rel="preload" href="src/assets/fonts/cinzel-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="src/styles/tokens.css">
+<link rel="stylesheet" href="src/styles/base.css">
+<link rel="stylesheet" href="src/styles/primitives.css">
+<link rel="stylesheet" href="src/styles/atelier.css">
+</head>
+<body>
+
+<!-- ===================================================================
+     ICON SPRITE — original marks on a 24x24 grid, crisp vector at device
+     resolution. §7: no pixel art in the chrome, ever. A pixel-art nav icon
+     beside a high-DPI gold bevel reads as a bug, not as a style.
+     =================================================================== -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+    <linearGradient id="grad-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="var(--c-gold-light)"/>
+      <stop offset="52%"  stop-color="var(--c-gold-core)"/>
+      <stop offset="100%" stop-color="var(--c-gold-deep)"/>
+    </linearGradient>
+    <linearGradient id="grad-violet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="var(--c-violet-light)"/>
+      <stop offset="55%"  stop-color="var(--c-violet-core)"/>
+      <stop offset="100%" stop-color="var(--c-violet-deep)"/>
+    </linearGradient>
+
+    <symbol id="i-cog" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9.5" fill="url(#grad-gold)"/>
+      <circle cx="12" cy="12" r="9.5" fill="none" stroke="#050A10" stroke-opacity=".55"/>
+      <circle cx="12" cy="12" r="6" fill="none" stroke="#050A10" stroke-opacity=".45" stroke-width="1.4"/>
+      <circle cx="12" cy="12" r="2.4" fill="#050A10" fill-opacity=".5"/>
+    </symbol>
+    <symbol id="i-shard" viewBox="0 0 24 24">
+      <path d="M12 1.5 19 9.5 12 22.5 5 9.5Z" fill="url(#grad-violet)"/>
+      <path d="M12 1.5 19 9.5 12 22.5 5 9.5Z" fill="none" stroke="#050A10" stroke-opacity=".5"/>
+      <path d="M12 1.5 12 22.5M5 9.5 19 9.5" stroke="#050A10" stroke-opacity=".35"/>
+      <path d="M12 1.5 8.6 9.5 12 16Z" fill="#FFFFFF" fill-opacity=".28"/>
+    </symbol>
+    <symbol id="i-focus" viewBox="0 0 24 24">
+      <path d="M13.6 1.5 4.5 13.4h5.6L9.2 22.5 19.5 10h-6.3Z" fill="url(#grad-violet)"/>
+      <path d="M13.6 1.5 4.5 13.4h5.6L9.2 22.5 19.5 10h-6.3Z" fill="none" stroke="#050A10" stroke-opacity=".45"/>
+    </symbol>
+    <symbol id="i-xp" viewBox="0 0 24 24">
+      <path d="M12 1.8 15 9h7l-5.6 4.6 2.2 7.6L12 16.9 5.4 21.2l2.2-7.6L2 9h7Z" fill="url(#grad-gold)"/>
+    </symbol>
+
+    <!-- Standing orders -->
+    <symbol id="i-strike" viewBox="0 0 24 24">
+      <path d="M20.6 2.2 10.4 12.4l1.6 1.6L22.2 3.8Z" fill="currentColor"/>
+      <path d="M9.2 13.6 5.4 17.4l1.4 1.4-2 2 1.4 1.4 2-2 1.4 1.4 3.8-3.8Z" fill="currentColor" fill-opacity=".78"/>
+    </symbol>
+    <symbol id="i-sigil" viewBox="0 0 24 24">
+      <path d="M12 1.8 21 11h-5v4.4h-8V11H3Z" fill="currentColor"/>
+      <path d="M8 17.6h8v4.6H8Z" fill="currentColor" fill-opacity=".68"/>
+    </symbol>
+    <symbol id="i-guard" viewBox="0 0 24 24">
+      <path d="M12 1.6 21 4.7v7.6c0 5.2-3.7 8.6-9 10.1-5.3-1.5-9-4.9-9-10.1V4.7Z"
+            fill="none" stroke="currentColor" stroke-width="1.9"/>
+      <path d="M12 6.4 17 11.8l-5 5.4-5-5.4Z" fill="currentColor" fill-opacity=".8"/>
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24">
+      <path d="M15.4 2.6 6 12l9.4 9.4 2-2L10 12l7.4-7.4Z" fill="currentColor"/>
+    </symbol>
+
+    <!-- Bottom nav -->
+    <symbol id="i-nav-home" viewBox="0 0 24 24">
+      <path d="M12 2.2 22 11h-3v10.5h-5.4v-6.2h-3.2v6.2H5V11H2Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-nav-adept" viewBox="0 0 24 24">
+      <path d="M12 1.6c4.9 0 8 3.1 8 8v4.8l-3 2.6v4.6h-4.2v-4.2h-1.6v4.2H7v-4.6l-3-2.6V9.6c0-4.9 3.1-8 8-8Z"
+            fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M7.4 8.8h9.2v3.2H7.4Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-nav-skills" viewBox="0 0 24 24">
+      <path d="M2.5 9.2h13.2c2.6 0 4 1.3 5.8 3.4H8.4c-3.4 0-5.2-1.4-5.9-3.4Z" fill="currentColor"/>
+      <path d="M6.5 14.2h9.4l1.8 7.2H4.6Z" fill="currentColor" fill-opacity=".72"/>
+      <path d="M9.6 2.6h4.2v5.2H9.6Z" fill="currentColor" fill-opacity=".55"/>
+    </symbol>
+    <symbol id="i-nav-relics" viewBox="0 0 24 24">
+      <path d="M6.2 3.4h11.6L22 9.4 12 21.6 2 9.4Z" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M2 9.4h20M6.2 3.4 9 9.4l3 12.2M17.8 3.4 15 9.4" fill="none"
+            stroke="currentColor" stroke-width="1.2" stroke-opacity=".6"/>
+    </symbol>
+    <symbol id="i-nav-wardens" viewBox="0 0 24 24">
+      <ellipse cx="12" cy="12" rx="7.4" ry="10.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <ellipse cx="12" cy="12" rx="2.9" ry="5.6" fill="currentColor"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="app">
+
+  <!-- ================= TOP BAR ================= -->
+  <div class="topbar safe-top">
+    <a class="backlink" href="battle.html" style="margin-right:auto">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chevron"/></svg>
+      Encounter
+    </a>
+    <div class="chip">
+      <span class="chip__icon"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-cog"/></svg></span>
+      <span class="chip__value" id="cogs">12.45M</span>
+    </div>
+    <div class="chip">
+      <span class="chip__icon"><svg viewBox="0 0 24 24" width="15" height="15"><use href="#i-shard"/></svg></span>
+      <span class="chip__value" id="shards">1,250</span>
+    </div>
+  </div>
+
+  <div class="screen">
+
+    <header class="atelier-head">
+      <h1 class="atelier-head__title">The Atelier</h1>
+      <p class="atelier-head__sub">
+        Every sprite in Emberveil is drawn here, on the SNES's own colour grid,
+        and shipped at 1&times;. This page is the receipt.
+      </p>
+      <div class="ornament-rule atelier-head__rule"><span class="ornament-rule__diamond"></span></div>
+    </header>
+
+    <main class="screen__body screen__body--atelier">
+
+      <!-- ============ 01 · THE RULE ============ -->
+      <section class="sect">
+        <div class="sect__head">
+          <span class="sect__no">01</span>
+          <h2 class="sect__name">Five-bit</h2>
+        </div>
+        <p class="sect__note">
+          The SNES stored colour as <b>BGR555</b> &mdash; five bits a channel, thirty-two
+          levels. So every channel of every pixel we ship is a multiple of eight,
+          and white is <b>#F8F8F8</b>, never #FFFFFF. The numbers below are measured by
+          decoding the PNGs back off disk, not by trusting the code that wrote them.
+        </p>
+        <div class="panel">
+          <div class="proof" id="proof"></div>
+          <hr class="divider">
+          <p class="t-label">The quantiser</p>
+          <p class="sect__note" style="margin-top:6px">
+            <b>snes(v) = min(248, round(v / 8) &times; 8)</b> &mdash; one function, applied to
+            every colour before it is allowed onto a surface. The rasteriser throws
+            on an off-grid value rather than rounding it quietly, which is why the
+            off-grid count opposite is zero and not <i>nearly</i> zero.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ 02 · SCALE ============ -->
+      <section class="sect">
+        <div class="sect__head">
+          <span class="sect__no">02</span>
+          <h2 class="sect__name">Integer only</h2>
+        </div>
+        <p class="sect__note">
+          Fractional scaling of pixel art is the one unforgivable sin. Step the
+          Slagmaw through the factors and watch the arithmetic stay whole &mdash; there
+          is no &times;2.5 on this bench because there is no &times;2.5 in the game.
+        </p>
+        <div class="panel">
+          <div class="bench__stage" id="benchStage"></div>
+          <div class="bench__read">
+            <span class="t-label">Rendered</span>
+            <span class="bench__math" id="benchMath">&mdash;</span>
+          </div>
+          <div class="bench__steps" id="benchSteps"></div>
+          <hr class="divider">
+          <p class="sect__note">
+            The encounter stage is <b>192 &times; 168</b> &mdash; 8:7, the real SNES aspect &mdash;
+            at <b>&times;2</b>, which is <b>384</b> CSS px inside a 390 px viewport with 3 px of
+            gold bezel each side and nothing left over. On a DPR-3 phone that is
+            1152 device px: an exact &times;3 of the CSS layer and &times;6 of the stage.
+            Every step stays whole.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ 03 · THE FIELD ============ -->
+      <section class="sect">
+        <div class="sect__head">
+          <span class="sect__no">03</span>
+          <h2 class="sect__name">The Slagfen</h2>
+        </div>
+        <p class="sect__note">
+          An ash basin under a bruised sky, where the old refinery stacks still
+          burn. Painted per 8&times;8 tile the way the hardware spent its palette:
+          the median tile here holds <b id="tileMedian">&mdash;</b> colours.
+        </p>
+        <div id="fieldMount"></div>
+        <div class="panel">
+          <p class="t-label">Scene ramps</p>
+          <div id="sceneRamps" style="margin-top:10px;display:flex;flex-direction:column;gap:12px"></div>
+        </div>
+      </section>
+
+      <!-- ============ 04 · THE ADEPTS ============ -->
+      <section class="sect">
+        <div class="sect__head">
+          <span class="sect__no">04</span>
+          <h2 class="sect__name">The adepts</h2>
+        </div>
+        <p class="sect__note">
+          <b>16 &times; 24</b>, exactly two tiles by three, about 2.7 heads tall. The head is
+          a silhouette &mdash; hair or helmet &mdash; never a face; at this width the eyes are
+          one dark pixel pair and nothing else. Action poses widen to <b>24 &times; 32</b>
+          because an outstretched weapon needs the extra tile column. And the
+          critical pose is a whole different drawing, not an icon hung on the idle:
+          that is how the party's condition reads across the field with no UI
+          element saying so.
+        </p>
+        <div id="adepts"></div>
+      </section>
+
+      <!-- ============ 05 · THE BESTIARY ============ -->
+      <section class="sect">
+        <div class="sect__head">
+          <span class="sect__no">05</span>
+          <h2 class="sect__name">The bestiary</h2>
+        </div>
+        <p class="sect__note">
+          Zero idle frames, by design. A monster built as one sprite with a
+          rotating four-slot ramp is more alive than one with a mediocre four-frame
+          loop and costs a quarter of the art. The Slagmaw's seams below are
+          burning on exactly that trick &mdash; one drawing, four palette rotations.
+        </p>
+        <div id="beasts"></div>
+      </section>
+
+      <!-- ============ 06 · THE CABINET ============ -->
+      <section class="sect">
+        <div class="sect__head">
+          <span class="sect__no">06</span>
+          <h2 class="sect__name">The rail</h2>
+        </div>
+        <p class="sect__note">
+          Not a 1 px stroke: a <b>4 px lit metal rail</b> with corners chamfered over
+          four pixels on a 45&deg; diagonal, lit from the upper left like everything
+          else. The geometry is ported verbatim and the metal is swapped &mdash; silver
+          out, our gold in. Behind it runs the interior wash: twenty steps,
+          subtracting eight from all three channels each time and clamping at zero,
+          which is what makes the foot of a window go deep instead of grey.
+        </p>
+        <div class="panel">
+          <div class="anatomy">
+            <div class="anatomy__row">
+              <div class="anatomy__spec" id="railSpec"></div>
+              <div class="anatomy__legend" id="railLegend"></div>
+            </div>
+          </div>
+          <hr class="divider">
+          <p class="t-label">Interior wash &mdash; 20 steps</p>
+          <div style="margin-top:10px">
+            <div class="ramp" id="washRamp"></div>
+            <div class="ramp-legend">
+              <span id="washTop">&mdash;</span>
+              <span id="washBottom">&mdash;</span>
+            </div>
+          </div>
+          <p class="sect__note" style="margin-top:10px">
+            The battle band paints steps <b id="washSlice">&mdash;</b> of it. Windows at
+            different heights sample different parts of one continuous wash, which
+            is why stacked windows look like a single lit surface.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ 07 · THE GAUGE ============ -->
+      <section class="sect">
+        <div class="sect__head">
+          <span class="sect__no">07</span>
+          <h2 class="sect__name">The gauge</h2>
+        </div>
+        <p class="sect__note">
+          The single best piece of UI in the source material and the reason is its
+          proportions: a <b>40 &times; 7</b> capsule whose fill is exactly three rows &mdash;
+          grey, white, grey &mdash; so it reads as a rounded tube at three pixels tall.
+          The empty track has <i>no colour at all</i>. The window's wash shows straight
+          through it, so a gauge at the top of the band and one at the foot look
+          different, and that is correct.
+        </p>
+        <div class="panel">
+          <div class="gauge-bench">
+            <div id="gaugeSpec"></div>
+            <div>
+              <p class="t-label">Fill</p>
+              <p class="gauge-bench__read" id="gaugeRead">0%</p>
+            </div>
+          </div>
+          <hr class="divider">
+          <div class="anatomy__legend" id="gaugeLegend"></div>
+        </div>
+      </section>
+
+      <!-- ============ 08 · THE FACE ============ -->
+      <section class="sect">
+        <div class="sect__head">
+          <span class="sect__no">08</span>
+          <h2 class="sect__name">The face</h2>
+        </div>
+        <p class="sect__note">
+          Seven-pixel cap height in an eight-pixel cell, proportional rather than
+          monospaced, and &mdash; the trait almost every retro-web attempt misses &mdash;
+          <b>two-pixel stems</b>. Every glyph carries a hard 1 px black shadow at
+          (+1, +1): no blur, no alpha, non-optional. It is what keeps white text
+          legible over a painted battlefield.
+        </p>
+        <div id="faceMount"></div>
+      </section>
+
+      <!-- ============ 09 · RELICS ============ -->
+      <section class="sect">
+        <div class="sect__head">
+          <span class="sect__no">09</span>
+          <h2 class="sect__name">Relics &amp; effects</h2>
+        </div>
+        <p class="sect__note">
+          Sixteen-pixel icons and the strike effects. Spell and impact art is an
+          overlay held for a handful of ticks, then gone &mdash; actions are
+          translations, not animations.
+        </p>
+        <div class="panel">
+          <div class="relics" id="relics"></div>
+          <hr class="divider">
+          <p class="t-label">Effects</p>
+          <div class="relics" id="effects" style="margin-top:10px"></div>
+        </div>
+      </section>
+
+      <!-- ============ 10 · THE LEDGER ============ -->
+      <section class="sect">
+        <div class="sect__head">
+          <span class="sect__no">10</span>
+          <h2 class="sect__name">The ledger</h2>
+        </div>
+        <p class="sect__note">
+          Every file in the library, measured off the shipped bytes. <b>Cols</b> is the
+          palette count, budgeted at fifteen plus transparent <i>per sprite</i>.
+          A painted scene is budgeted per 8&times;8 tile instead &mdash; that is how the
+          hardware spent it &mdash; so those rows carry a <b>Tile</b> figure,
+          median over max, and it is the max that has to stay under fifteen.
+          <b>Dith</b> is 2&times;2 checkerboard coverage against a ceiling of four
+          percent, because dithering is a spice and not a technique. The build
+          fails on a breach rather than reporting one.
+        </p>
+        <div class="panel">
+          <div class="ledger-scroll">
+            <table class="ledger">
+              <thead>
+                <tr><th>Asset</th><th>Size</th><th>Cols</th><th>Tile</th><th>Dith</th><th>Grid</th></tr>
+              </thead>
+              <tbody id="ledger"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <p class="boot-error" id="bootError" hidden></p>
+
+    </main>
+  </div>
+
+  <!-- ================= BOTTOM NAV ================= -->
+  <nav class="nav safe-bottom" aria-label="Primary">
+    <a class="nav__item" href="index.html">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-home"/></svg>
+      <span class="nav__label">Home</span>
+    </a>
+    <button class="nav__item" type="button">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-adept"/></svg>
+      <span class="nav__label">Adept</span>
+    </button>
+    <a class="nav__item" href="battle.html">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-skills"/></svg>
+      <span class="nav__label">Skills</span>
+    </a>
+    <button class="nav__item is-active" type="button">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-relics"/></svg>
+      <span class="nav__label">Atelier</span>
+    </button>
+    <button class="nav__item" type="button">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-wardens"/></svg>
+      <span class="nav__label">Wardens</span>
+    </button>
+  </nav>
+
+</div>
+
+<script type="module">
+/* =========================================================================
+   THE ATELIER — gallery runtime.
+
+   Reads src/assets/sprites/atelier/manifest.json and builds every exhibit
+   from it. Nothing on this page is transcribed by hand: the colour counts,
+   the dither percentages, the palettes, the ramp, the geometry and the names
+   are all whatever the last build actually produced. If the art changes and
+   the page still claims the old numbers, the page is lying — so it does not
+   get the chance.
+
+   ONE RULE GOVERNS EVERY MOUNT BELOW.
+
+     scaleFor(w, avail) picks the LARGEST INTEGER factor that fits, floor'd,
+     never below 1. Every width written to the DOM is w * scale, an integer
+     number of CSS pixels, and every exhibit is centred by grid placement
+     rather than by a margin that could resolve to a half pixel.
+
+   That is the entire defence against the failure this page exists to
+   disprove, and it is why the caption on each vitrine states its factor: a
+   claim you can check beats a claim you cannot.
+   ========================================================================= */
+
+const MANIFEST = "src/assets/sprites/atelier/manifest.json";
+const BASE = "src/assets/sprites/atelier/";
+const url = (src) => src.replace("src/assets/sprites/atelier/", BASE);
+
+/* ---- tiny DOM helpers --------------------------------------------------- */
+
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+};
+const mount = (id) => document.getElementById(id);
+const pct = (v) => `${(v * 100).toFixed(1)}%`;
+
+/**
+ * The largest integer magnification of `w` that fits in `avail`.
+ * Math.floor, not Math.round — rounding up is how a pixel-art page ends up
+ * resampling, and one fractional factor anywhere undoes the whole argument.
+ */
+const scaleFor = (w, avail, max = 6) =>
+  Math.max(1, Math.min(max, Math.floor(avail / w)));
+
+/**
+ * The vitrine: a gold-railed case with a hard dark inner cut, sized to an
+ * exact integer multiple of the artwork.
+ *
+ * The rail, the border-radius and the gradient all live on the OUTSIDE of the
+ * cut. Nothing inside it is touched by a chrome effect — §7's first rule,
+ * enforced structurally rather than remembered.
+ */
+function vitrine(node, w, h, scale, cap, rail) {
+  const box = el("div", "vitrine" + (cap ? " vitrine--capped" : ""));
+  if (rail) box.style.setProperty("--rail", `${rail}px`);
+  const glass = el("div", "vitrine__glass");
+  glass.style.width = `${w * scale}px`;
+  glass.style.height = `${h * scale}px`;
+  node.classList.add("px");
+  node.style.width = `${w * scale}px`;
+  node.style.height = `${h * scale}px`;
+  glass.append(node);
+  box.append(glass);
+  if (cap) {
+    const bar = el("div", "vitrine__cap");
+    bar.append(el("span", null, cap), el("span", null, `×${scale}`));
+    box.append(bar);
+  }
+  return box;
+}
+
+/** An <img> for a manifest record, never pre-scaled on disk. */
+const sprite = (rec, alt) => {
+  const img = new Image();
+  img.src = url(rec.src);
+  img.alt = alt || "";
+  img.decoding = "sync";
+  return img;
+};
+
+const swatchRow = (hexes) => {
+  const row = el("div", "swatches");
+  for (const h of hexes) {
+    const s = el("span", "swatch");
+    s.style.background = h;
+    s.title = h;
+    row.append(s);
+  }
+  return row;
+};
+
+/* ---- boot --------------------------------------------------------------- */
+
+const mf = await fetch(MANIFEST).then((r) => {
+  if (!r.ok) throw new Error(`manifest ${r.status}`);
+  return r.json();
+});
+
+const bySrc = new Map(mf.audit.map((a) => [a.src, a]));
+const audit = (rec) => bySrc.get(rec.src) || rec;
+
+/* The width a panel's contents actually get: the screen minus both gutters
+   minus both panel paddings. Measured from the live layout rather than
+   assumed, so a wider phone gets a bigger exhibit instead of a stale number. */
+function innerWidth() {
+  const probe = document.querySelector(".panel");
+  return Math.floor(probe ? probe.clientWidth - 32 : 326);
+}
+
+/* ---- 01 · proof --------------------------------------------------------- */
+{
+  const sprites = mf.audit.filter((a) => a.kind === "sprite");
+  const offGrid = mf.audit.reduce((n, a) => n + a.offGrid, 0);
+  const maxCols = Math.max(...sprites.map((a) => a.colours));
+  const maxDith = Math.max(...mf.audit.map((a) => a.dither));
+  const cells = [
+    [String(offGrid), "px off-grid"],
+    [String(maxCols), "colours max"],
+    [pct(maxDith), "dither max"],
+  ];
+  for (const [v, l] of cells) {
+    const c = el("div", "proof__cell");
+    c.append(el("span", "proof__value", v), el("span", "proof__label", l));
+    mount("proof").append(c);
+  }
+}
+
+/* ---- 02 · the scale bench ----------------------------------------------- */
+{
+  const rec = mf.monsters.find((m) => m.id === "slagmaw").sprite;
+  const stage = mount("benchStage");
+  const steps = mount("benchSteps");
+  const math = mount("benchMath");
+  let current = 3;
+
+  function render() {
+    stage.replaceChildren();
+    const img = sprite(rec, "Slagmaw at native resolution");
+    stage.append(vitrine(img, rec.w, rec.h, current, "Slagmaw"));
+    math.innerHTML =
+      `${rec.w} × ${rec.h} <em>×${current} =</em> ` +
+      `${rec.w * current} × ${rec.h * current} <em>CSS px</em>`;
+    [...steps.children].forEach((b, i) =>
+      b.setAttribute("aria-pressed", String(i + 1 === current)));
+  }
+
+  for (let s = 1; s <= 5; s++) {
+    const b = el("button", "bench__step", `×${s}`);
+    b.type = "button";
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", () => { current = s; render(); });
+    steps.append(b);
+  }
+  render();
+}
+
+/* ---- 03 · the field ----------------------------------------------------- */
+{
+  const f = mf.scene.field;
+  mount("tileMedian").textContent = String(audit(f).tileMedian);
+
+  /* The field is shown at the same factor the encounter screen uses, in a
+     vitrine of the same anatomy, so the gallery and the game agree about what
+     this scene looks like.
+
+     It is full-bleed for exactly the reason the cabinet is. 192 × 2 = 384, and
+     384 + 3 px of rail on each side = 390, the whole viewport, with nothing
+     left over. Keep the section's 16 px gutters and only 358 px are available,
+     which floors the factor to ×1 and shows the scene at half the size the
+     game draws it at. So the gutters come off, and the arithmetic that governs
+     the encounter screen governs this exhibit too. */
+  const host = mount("fieldMount");
+  const RAIL = 3;
+  const wrap = el("div");
+  wrap.style.cssText =
+    "display:flex;justify-content:center;margin-inline:calc(-1 * var(--gutter))";
+  host.append(wrap);
+  const avail = Math.floor(wrap.clientWidth) - RAIL * 2;
+  const scale = scaleFor(f.w, avail);
+  wrap.append(vitrine(sprite(f, "The Slagfen"), f.w, f.h, scale, "The Slagfen", RAIL));
+
+  const ramps = mount("sceneRamps");
+  const named = [
+    ["Sky", mf.palette.scene.sky],
+    ["Ground", mf.palette.scene.ground],
+    ["Ember", mf.palette.scene.ember],
+  ];
+  for (const [name, hexes] of named) {
+    if (!Array.isArray(hexes)) continue;
+    const block = el("div");
+    const head = el("div");
+    head.style.display = "flex";
+    head.style.justifyContent = "space-between";
+    head.append(el("span", "t-label", name),
+      el("span", "t-label", `${hexes.length} steps`));
+    const ramp = el("div", "ramp");
+    ramp.style.marginTop = "6px";
+    for (const h of hexes) {
+      const s = el("span", "ramp__step");
+      s.style.background = h;
+      s.title = h;
+      ramp.append(s);
+    }
+    const legend = el("div", "ramp-legend");
+    legend.append(el("span", null, hexes[0]), el("span", null, hexes[hexes.length - 1]));
+    block.append(head, ramp, legend);
+    ramps.append(block);
+  }
+}
+
+/* ---- 04 · the adepts ---------------------------------------------------- */
+{
+  const host = mount("adepts");
+  const POSES = [["idle", "Idle"], ["critical", "Critical"], ["attack", "Action"]];
+  for (const h of mf.heroes) {
+    const card = el("section", "panel exhibit");
+    const top = el("div", "exhibit__top");
+    const body = el("div", "exhibit__body");
+    body.append(el("h3", "exhibit__name", h.full));
+    body.append(el("p", "exhibit__role", h.order));
+    body.append(el("p", "exhibit__blurb", h.blurb));
+
+    const a = audit(h.poses.idle);
+    const meta = el("div", "exhibit__meta");
+    meta.innerHTML =
+      `<span><b>${a.colours}</b> colours</span>` +
+      `<span><b>${a.w}×${a.h}</b> idle</span>` +
+      `<span><b>${h.poses.attack.w}×${h.poses.attack.h}</b> action</span>`;
+    body.append(meta);
+    top.append(body);
+    card.append(top);
+
+    card.append(swatchRow(h.palette.map((p) => p.hex)));
+
+    /* Three poses, one shared factor. Sizing each to its own best fit would
+       make the 24×32 action pose smaller than the 16×24 idle beside it and
+       silently misreport the anatomy the section just described. */
+    const strip = el("div", "poses");
+    const cellW = Math.floor((innerWidth() - 16) / 3) - 10;
+    const scale = Math.min(
+      ...POSES.map(([k]) => scaleFor(h.poses[k].w, cellW, 4))
+    );
+    for (const [key, label] of POSES) {
+      const rec = h.poses[key];
+      const cell = el("div", "poses__cell");
+      const wrap = el("div");
+      wrap.style.display = "flex";
+      wrap.style.justifyContent = "center";
+      wrap.append(vitrine(sprite(rec, `${h.name}, ${label.toLowerCase()}`),
+        rec.w, rec.h, scale));
+      cell.append(wrap, el("p", "poses__label", `${label} · ×${scale}`));
+      strip.append(cell);
+    }
+    card.append(strip);
+    host.append(card);
+  }
+}
+
+/* ---- 05 · the bestiary -------------------------------------------------- */
+{
+  const host = mount("beasts");
+  for (const m of mf.monsters) {
+    const card = el("section", "panel exhibit");
+    const a = audit(m.sprite);
+
+    const body = el("div", "exhibit__body");
+    body.append(el("h3", "exhibit__name", m.name));
+    body.append(el("p", "exhibit__role", `${m.klass} · ${a.w} × ${a.h}`));
+    body.append(el("p", "exhibit__blurb", m.blurb));
+    const meta = el("div", "exhibit__meta");
+    meta.innerHTML =
+      `<span><b>${a.colours}</b> colours</span>` +
+      `<span><b>${pct(a.dither)}</b> dithered</span>` +
+      `<span><b>${m.cycle ? m.cycle.length : 0}</b> cycling slots</span>`;
+    body.append(meta);
+    card.append(body);
+
+    const avail = innerWidth();
+    const scale = scaleFor(a.w, avail, 4);
+    const wrap = el("div");
+    wrap.style.cssText = "display:flex;justify-content:center;margin-top:12px";
+
+    if (m.cycle && m.cycle.length > 1) {
+      /* Palette cycling, rendered the way the hardware did it: one drawing,
+         its ramp slots rotated. A canvas rather than an <img> because the
+         rotation is a pixel operation and has to stay on the 5-bit grid —
+         a CSS filter would emit off-grid colour and give the trick away. */
+      const cv = el("canvas");
+      cv.width = a.w;
+      cv.height = a.h;
+      const g = cv.getContext("2d", { willReadFrequently: true });
+      g.imageSmoothingEnabled = false;
+      wrap.append(vitrine(cv, a.w, a.h, scale, m.name));
+      const img = sprite(m.sprite, m.name);
+      img.addEventListener("load", () => {
+        g.drawImage(img, 0, 0);
+        const src = g.getImageData(0, 0, a.w, a.h);
+        const ramp = m.cycle.map((h) => [
+          parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16),
+        ]);
+        const frames = [];
+        for (let shift = 0; shift < ramp.length; shift++) {
+          const out = new ImageData(new Uint8ClampedArray(src.data), a.w, a.h);
+          for (let i = 0; i < out.data.length; i += 4) {
+            if (out.data[i + 3] === 0) continue;
+            for (let k = 0; k < ramp.length; k++) {
+              if (out.data[i] === ramp[k][0] && out.data[i + 1] === ramp[k][1] &&
+                  out.data[i + 2] === ramp[k][2]) {
+                const t = ramp[(k + shift) % ramp.length];
+                out.data[i] = t[0]; out.data[i + 1] = t[1]; out.data[i + 2] = t[2];
+                break;
+              }
+            }
+          }
+          frames.push(out);
+        }
+        let n = 0;
+        setInterval(() => { g.putImageData(frames[n++ % frames.length], 0, 0); }, 180);
+      });
+    } else {
+      wrap.append(vitrine(sprite(m.sprite, m.name), a.w, a.h, scale, m.name));
+    }
+    card.append(wrap);
+
+    const pal = el("div");
+    pal.style.marginTop = "12px";
+    pal.append(el("p", "t-label", m.cycle ? "Page · cycling slots marked" : "Page"));
+    const row = swatchRow(a.palette);
+    row.style.marginTop = "6px";
+    if (m.cycle) {
+      const cyc = new Set(m.cycle);
+      [...row.children].forEach((s, i) => {
+        if (cyc.has(a.palette[i])) {
+          s.style.boxShadow = "inset 0 0 0 1px var(--c-ground), 0 0 0 1px var(--c-violet-light)";
+        }
+      });
+    }
+    pal.append(row);
+    card.append(pal);
+    host.append(card);
+  }
+}
+
+/* ---- 06 · the rail ------------------------------------------------------ */
+{
+  const rec = mf.chrome.railDemo;
+  const scale = 4;
+  const spec = mount("railSpec");
+  const img = sprite(rec, "The rail cross-section");
+  img.classList.add("px");
+  img.style.width = `${rec.w * scale}px`;
+  img.style.height = `${rec.h * scale}px`;
+  const shell = el("div");
+  shell.style.cssText = "line-height:0;font-size:0";
+  shell.append(img);
+  spec.append(shell);
+
+  const legend = mount("railLegend");
+  const rail = mf.palette.rail;
+  const rows = [
+    [rail.f8, "Crest", "outer, lit"],
+    [rail.b8, "Tube", "mid"],
+    [rail.g60, "Turn", "shadow side"],
+    [rail.g38, "Cut", "rail to interior"],
+  ];
+  for (const [hex, name, note] of rows) {
+    const line = el("div", "anatomy__line");
+    const key = el("span", "anatomy__key");
+    key.style.background = hex;
+    line.append(key, el("b", null, name), el("span", null, `${hex} · ${note}`));
+    legend.append(line);
+  }
+
+  const wash = mf.palette.windowRamp;
+  const bar = mount("washRamp");
+  wash.forEach((h, i) => {
+    const s = el("span", "ramp__step");
+    s.style.background = h;
+    s.title = `${i} · ${h}`;
+    bar.append(s);
+  });
+  mount("washTop").textContent = `0 · ${wash[0]}`;
+  mount("washBottom").textContent = `${wash.length - 1} · ${wash[wash.length - 1]}`;
+  mount("washSlice").textContent =
+    `${mf.palette.bandSlice[0]}–${mf.palette.bandSlice[1]}`;
+}
+
+/* ---- 07 · the gauge ----------------------------------------------------- */
+{
+  const geom = mf.chrome.atbGeometry;
+  const scale = 6;
+  const cv = el("canvas");
+  cv.width = geom.w;
+  cv.height = geom.h;
+  const g = cv.getContext("2d");
+  g.imageSmoothingEnabled = false;
+
+  const host = mount("gaugeSpec");
+  const box = vitrine(cv, geom.w, geom.h, scale);
+  host.append(box);
+
+  const capsule = sprite(mf.chrome.atb, "ATB capsule");
+  const read = mount("gaugeRead");
+
+  /* The empty track really is empty — the capsule PNG has no fill in it —
+     so the glass behind shows through exactly the way the window's wash does
+     in the encounter. Painting a darker well here would be the easy lie. */
+  let t = 0;
+  capsule.addEventListener("load", () => {
+    setInterval(() => {
+      t = (t + 0.012) % 1.18;
+      const v = Math.min(1, t);
+      g.clearRect(0, 0, geom.w, geom.h);
+      g.drawImage(capsule, 0, 0);
+      const filled = Math.round(v * geom.fillTravel);
+      if (filled > 0) {
+        g.fillStyle = geom.edge;
+        g.fillRect(geom.fillX, geom.fillY, filled, 1);
+        g.fillRect(geom.fillX, geom.fillY + 2, filled, 1);
+        g.fillStyle = geom.core;
+        g.fillRect(geom.fillX, geom.fillY + 1, filled, 1);
+      }
+      read.textContent = `${Math.round(v * 100)}%`;
+    }, 50);
+  });
+
+  const legend = mount("gaugeLegend");
+  const rows = [
+    [mf.palette.atb.outline, "Outline", "1 px lozenge, caps step in"],
+    [geom.core, "Core", `row ${geom.fillY + 1}, the white centre`],
+    [geom.edge, "Edge", `rows ${geom.fillY} and ${geom.fillY + 2}`],
+    [null, "Travel", `${geom.fillTravel} px inside a ${geom.w} px capsule`],
+  ];
+  for (const [hex, name, note] of rows) {
+    const line = el("div", "anatomy__line");
+    const key = el("span", "anatomy__key");
+    key.style.background = hex || "transparent";
+    if (!hex) key.style.boxShadow = "inset 0 0 0 1px var(--c-hairline-gold)";
+    line.append(key, el("b", null, name), el("span", null, note));
+    legend.append(line);
+  }
+}
+
+/* ---- 08 · the face ------------------------------------------------------ */
+{
+  /* Specimen text drawn glyph by glyph out of the atlas, with the (+1,+1)
+     shadow the reference calls non-optional, then magnified by an integer.
+     Rendering it rather than showing the atlas is the point: the shadow is a
+     property of how the face is DRAWN, and an atlas dump would not show it. */
+  const rec = mf.fonts.ui;
+  const m = rec.metrics;
+  const line1 = "Emberveil · Slagfen";
+  const line2 = "1722 HP · Wave 3/5";
+
+  const advance = (ch) => {
+    const i = ch.codePointAt(0) - m.first;
+    return i >= 0 && i < m.count ? m.advance[i] : 0;
+  };
+  const measure = (s) => Math.max(0, [...s].reduce((w, c) => w + advance(c), 0) - 1);
+
+  const W = Math.max(measure(line1), measure(line2)) + 3;
+  const H = m.cellH * 2 + 4;
+  const cv = el("canvas");
+  cv.width = W;
+  cv.height = H;
+  const g = cv.getContext("2d");
+  g.imageSmoothingEnabled = false;
+
+  const atlas = sprite(rec, "");
+  atlas.addEventListener("load", () => {
+    const tint = (colour) => {
+      const c = el("canvas");
+      c.width = atlas.width;
+      c.height = atlas.height;
+      const x = c.getContext("2d");
+      x.imageSmoothingEnabled = false;
+      x.drawImage(atlas, 0, 0);
+      x.globalCompositeOperation = "source-in";
+      x.fillStyle = colour;
+      x.fillRect(0, 0, c.width, c.height);
+      return c;
+    };
+    const sheets = {
+      shadow: tint(mf.palette.text.shadow),
+      primary: tint(mf.palette.text.primary),
+      label: tint(mf.palette.text.label),
+    };
+    const draw = (str, x0, y0, colour) => {
+      let px = x0;
+      for (const ch of str) {
+        const i = ch.codePointAt(0) - m.first;
+        if (i >= 0 && i < m.count) {
+          const sx = (i % m.cols) * m.cellW;
+          const sy = Math.floor(i / m.cols) * m.cellH;
+          g.drawImage(sheets.shadow, sx, sy, m.cellW, m.cellH, px + 1, y0 + 1, m.cellW, m.cellH);
+          g.drawImage(sheets[colour], sx, sy, m.cellW, m.cellH, px, y0, m.cellW, m.cellH);
+        }
+        px += advance(ch);
+      }
+    };
+    draw(line1, 1, 1, "primary");
+    draw(line2, 1, m.cellH + 3, "label");
+  });
+
+  const host = mount("faceMount");
+  const scale = scaleFor(W, innerWidth() + 32, 4);
+  const wrap = el("div");
+  wrap.style.cssText = "display:flex;justify-content:center";
+  wrap.append(vitrine(cv, W, H, scale, `${m.cellH} px cell`));
+  host.append(wrap);
+}
+
+/* ---- 09 · relics -------------------------------------------------------- */
+{
+  const put = (host, list, label) => {
+    const avail = Math.floor((innerWidth() - 16) / 3) - 10;
+    for (const it of list) {
+      const rec = it.rec;
+      const cell = el("div", "relics__cell");
+      const wrap = el("div");
+      wrap.style.cssText = "display:flex;justify-content:center";
+      wrap.append(vitrine(sprite(rec, it.name), rec.w, rec.h,
+        scaleFor(rec.w, avail, 4)));
+      cell.append(wrap, el("p", "relics__name", `${it.name} · ${rec.w}×${rec.h}`));
+      host.append(cell);
+    }
+  };
+  put(mount("relics"), mf.items.map((i) => ({ name: i.name, rec: i.sprite })));
+  put(mount("effects"), [
+    { name: "Slash", rec: mf.fx.slash },
+    { name: "Impact", rec: mf.fx.impact },
+    { name: "Sigil", rec: mf.fx.sigil },
+  ]);
+}
+
+/* ---- the snap pass ------------------------------------------------------
+   Integer SCALE is only half of the rule. §7 gives the other half: "Never
+   place the stage at a fractional CSS offset — a left: 3.5px re-introduces
+   subpixel sampling and undoes all of it. Round every position to whole CSS
+   pixels."
+
+   Measured on this page before this existed, all 29 exhibits were on
+   fractional offsets — every one of them correctly scaled and every one of
+   them landing on something like y = 2165.563. Flowed text does not owe
+   anyone a whole number: a serif heading resolves to a fractional height, a
+   flex row divides 326 px by three, and the remainder lands on the artwork.
+   A gallery arguing for integer discipline while resampling every sprite in
+   it would be the most embarrassing possible way to lose this argument.
+
+   So after layout settles, every .px node is measured against its scroll
+   container and pulled back by its own sub-pixel remainder. The correction is
+   a relative offset, not a transform, because a transform would promote the
+   node to a compositing layer and hand the fractional placement straight back
+   to the compositor.
+   ------------------------------------------------------------------------ */
+function snapPixels() {
+  const scroller = document.querySelector(".screen");
+  if (!scroller) return 0;
+  const nodes = [...document.querySelectorAll(".px")];
+
+  /* Two passes, and the second one is not superstition. Blink lays out on a
+     1/64 px LayoutUnit grid, so the correction we write is itself quantised
+     and leaves a residue of up to 1/64. Measured: one pass takes 29 offenders
+     down to 14 with a worst error of 0.015625 — exactly one LayoutUnit — and
+     a second pass, applied on top of the first rather than replacing it,
+     takes it to zero. Three is the cap so a pathological layout cannot spin. */
+  let worst = 0;
+  for (let pass = 0; pass < 3; pass++) {
+    const sr = scroller.getBoundingClientRect();
+    worst = 0;
+    for (const node of nodes) {
+      const r = node.getBoundingClientRect();
+      const x = r.left - sr.left + scroller.scrollLeft;
+      const y = r.top - sr.top + scroller.scrollTop;
+      // Round, not floor: nearest whole pixel is at most half a pixel away,
+      // so the artwork never visibly shifts to satisfy the rule.
+      const dx = x - Math.round(x);
+      const dy = y - Math.round(y);
+      worst = Math.max(worst, Math.abs(dx), Math.abs(dy));
+      // Accumulate onto the existing offset. Resetting to zero first and
+      // re-deriving is what stalls at one LayoutUnit forever.
+      if (Math.abs(dx) > 0.0001) {
+        node.style.left = `${((parseFloat(node.style.left) || 0) - dx).toFixed(4)}px`;
+      }
+      if (Math.abs(dy) > 0.0001) {
+        node.style.top = `${((parseFloat(node.style.top) || 0) - dy).toFixed(4)}px`;
+      }
+    }
+    if (worst <= 0.0001) break;
+  }
+  return worst;
+}
+
+/* Run it once the things that move the page have finished moving it: the
+   webfont swapping in re-flows every heading, and an image that has not
+   decoded yet has no height. */
+async function scheduleSnap() {
+  snapPixels();
+  try { await document.fonts.ready; } catch { /* no Font Loading API */ }
+  await Promise.all([...document.images].map((i) =>
+    i.complete ? null : new Promise((r) => i.addEventListener("load", r, { once: true }))
+  ));
+  requestAnimationFrame(() => {
+    snapPixels();
+    window.__APP_READY__ = true;
+  });
+}
+
+let snapTimer = 0;
+window.addEventListener("resize", () => {
+  clearTimeout(snapTimer);
+  snapTimer = setTimeout(snapPixels, 120);
+});
+
+/* ---- 10 · the ledger ---------------------------------------------------- */
+{
+  const body = mount("ledger");
+  for (const a of mf.audit) {
+    const tr = el("tr");
+    tr.append(el("td", null, a.src.replace(BASE, "")));
+    tr.append(el("td", null, `${a.w}×${a.h}`));
+    tr.append(el("td", null, String(a.colours)));
+    /* A painted background is budgeted PER 8x8 TILE, not globally — that is
+       how the hardware actually spent its palette, and it is why the scene
+       rows below carry colour counts far past fifteen without failing. The
+       number that is under budget for them is this one. */
+    tr.append(el("td", null, a.kind === "scene" ? `${a.tileMedian}/${a.tileMax}` : "—"));
+    tr.append(el("td", null, pct(a.dither)));
+    const v = el("td", a.ok ? "ledger__ok" : "ledger__bad", a.ok ? "5-bit" : "FAIL");
+    tr.append(v);
+    body.append(tr);
+  }
+}
+
+/* __APP_READY__ is set by scheduleSnap once the snap pass has actually run,
+   not here — a screenshot taken before the exhibits are on whole pixels would
+   photograph the bug this page exists to disprove. */
+scheduleSnap();
+</script>
+</body>
+</html>

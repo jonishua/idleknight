@@ -1,0 +1,429 @@
+/* =========================================================================
+   EMBERVEIL — ENCOUNTER SCREEN
+
+   Consumes tokens.css and primitives.css. No raw hex: every colour here is a
+   token, because the moment one screen invents a gold the palette discipline
+   that makes the reference read as expensive is gone.
+
+   THE CABINET IS THE POINT OF THIS FILE.
+
+   reference/ui-bar.md closes by naming the hardest visual problem in the
+   project: "The seam where a 16-bit sprite meets a 2026 mobile UI." And
+   ffvi-art.md §7 says how to solve it — "The frame is where they meet, and
+   it should be an explicit, designed object: a gold-beveled bezel with a
+   hard 1px inner edge, and the pixel stage sitting inside it flush at an
+   integer offset. Think of it as a cabinet with a screen in it."
+
+   So the bezel below is beveled gold with a 1px dark cut at its inner edge,
+   full-bleed, and its SIDE rails are exactly 3px because the arithmetic gives
+   them no choice: 390 - 3 - 3 = 384 = 192 x 2, integer, no remainder, nothing
+   to round. Make the side rails 4px and the stage no longer fits; round the
+   stage down and it blurs. There is one right answer for that number and this
+   is it. The top and bottom rails are 7px, where no such constraint applies
+   and a 3px band would read as a hairline rather than as metal.
+
+   Two things never cross that line, per §7:
+     1. No chrome effect touches a pixel — no box-shadow, filter,
+        border-radius or opacity on or over the stage.
+     2. No pixel art appears in the chrome — every icon out here is crisp
+        vector at device resolution.
+   ========================================================================= */
+
+/* =========================================================================
+   1. ENCOUNTER HEADER
+   Location in letter-spaced gold serif, wave counter right, and the
+   reference's diamond-interrupted rule underneath. The rule is what makes
+   the cabinet below read as a framed object rather than a stray image.
+   ========================================================================= */
+
+.encounter-head {
+  flex: 0 0 auto;
+  padding: var(--s-2) var(--gutter) var(--s-3);
+}
+
+.encounter-head__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.encounter-head__place {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-title);
+  letter-spacing: var(--ls-display);
+  text-transform: uppercase;
+  color: var(--c-gold-core);
+  line-height: var(--lh-tight);
+}
+
+.encounter-head__region {
+  margin-top: 2px;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+.encounter-head__wave {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex: 0 0 auto;
+}
+
+.encounter-head__wave .t-label { white-space: nowrap; }
+
+.encounter-head__rule { margin-top: var(--s-3); }
+
+/* =========================================================================
+   2. THE CABINET
+   ========================================================================= */
+
+.cabinet {
+  flex: 0 0 auto;
+  position: relative;
+  isolation: isolate;
+  /* Full-bleed on purpose: a side gutter would eat the 6px of slack that
+     makes 384 fit inside 390.
+
+     The SIDE rails are 3px because the arithmetic gives them no choice.
+     The TOP and BOTTOM rails are 7px because vertical space is free here and
+     a bezel that is 3px on all four sides reads as a hairline outline, not as
+     metal. Depth costs nothing where nothing is competing for it. */
+  margin-inline: 0;
+  padding: var(--bezel-v) var(--bezel-h);
+  --bezel-h: 3px;
+  --bezel-v: 7px;
+  background: var(--grad-gold-face);
+  /* The crest and the foot: §2's light is upper-left, so the top edge of the
+     rail catches it and the bottom edge sits in shadow. Two 1px lines do the
+     entire job of turning a gold band into a machined plate. */
+  border-top: 1px solid var(--c-gold-light);
+  border-bottom: 1px solid var(--c-gold-deep);
+}
+
+/* The hard inner edge. It lives INSIDE the bezel so it costs the stage no
+   width, and it is dark — the reference is explicit that separation here is a
+   cut groove, never a bright hairline. */
+.cabinet::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--bezel-v) - 2px) calc(var(--bezel-h) - 2px);
+  border: 1px solid var(--c-ground-deep);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* A diamond notch cut into the centre of the top rail, matching the ornament
+   on the header rule above it. The reference calls this kind of thing out by
+   name: "a thin rule interrupted by a small diamond ornament at its center —
+   that diamond is the kind of micro-detail that separates premium from
+   generic." One ornament, repeated, is what makes a set of screens read as
+   one cabinet rather than as four pages.
+   It is sized to STAY INSIDE THE RAIL, and that is a hard constraint rather
+   than a nicety. A rotated square reaches half its diagonal past its centre:
+   at 5px that is 3.54px, so with the box at top:1 the ornament spans -0.04 to
+   7.04 and the rail is 0 to 8. The first version of this was 9px and reached
+   11.9px — nearly 4px over the stage's top rows — which is a chrome effect
+   painting on pixels, the one thing §7 says must never happen. Change the
+   size here and you have to redo that arithmetic. */
+.cabinet::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  transform: translateX(-50%) rotate(45deg);
+  transform-origin: center;
+  background: var(--c-ground-deep);
+  border-right: 1px solid var(--c-gold-light);
+  border-bottom: 1px solid var(--c-gold-light);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cabinet__screen {
+  position: relative;
+  overflow: hidden;          /* a too-narrow viewport crops by whole pixels
+                                rather than scaling by a fraction */
+  background: var(--c-ground-deep);
+  line-height: 0;
+  font-size: 0;
+}
+
+/* The pixel stage. Declaration order matters: crisp-edges is the fallback,
+   pixelated is what modern browsers must land on. */
+.cabinet__screen canvas {
+  display: block;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
+  transform: translateZ(0);  /* keep it off a fractional compositing layer */
+
+  /* base.css carries the usual responsive reset — `img, svg, canvas {
+     max-width: 100% }` — and on this one element it is actively harmful.
+     Measured on a 360 px viewport: the stage's explicit 384 px width was
+     clamped to 354 while its height stayed 336, so the sprite layer rendered
+     at 1.84x horizontally and 2x vertically. Fractional AND non-uniform, the
+     precise failure this screen exists to prevent, produced by a line of CSS
+     nobody wrote with pixel art in mind.
+
+     A stage too wide for the viewport keeps its integer factor and is cropped
+     by the cabinet's overflow instead. Losing fifteen columns of a battlefield
+     costs nothing; resampling every sprite on it costs the whole look. */
+  max-width: none;
+}
+
+/* The caption strip under the cabinet: what the screen is, stated plainly,
+   the way a good instrument panel labels itself. */
+.cabinet-note {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--gutter) 0;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+.cabinet-note b {
+  color: var(--c-gold-core);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.cabinet-note__dot {
+  width: 3px;
+  height: 3px;
+  transform: rotate(45deg);
+  background: var(--c-gold-core);
+  flex: 0 0 auto;
+}
+
+/* =========================================================================
+   3. STANDING ORDER — a segmented control, not four competing gold plates.
+   Only the ACTIVE order gets the pressed-metal treatment; the others stay
+   quiet so exactly one thing on the row is saturated.
+   ========================================================================= */
+
+.orders {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-2);
+}
+
+.order {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  min-height: var(--tap-min);
+  padding: var(--s-2) var(--s-1);
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+  color: var(--c-text-2);
+
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-body);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+
+  clip-path: polygon(
+    var(--chamfer) 0, calc(100% - var(--chamfer)) 0,
+    100% var(--chamfer), 100% calc(100% - var(--chamfer)),
+    calc(100% - var(--chamfer)) 100%, var(--chamfer) 100%,
+    0 calc(100% - var(--chamfer)), 0 var(--chamfer)
+  );
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.order.is-active {
+  background: var(--grad-gold-face);
+  color: var(--c-ground);
+  border-color: transparent;
+}
+
+.order.is-active::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid var(--c-hairline-gold);
+  clip-path: polygon(
+    calc(var(--chamfer) - 2px) 0, calc(100% - (var(--chamfer) - 2px)) 0,
+    100% calc(var(--chamfer) - 2px), 100% calc(100% - (var(--chamfer) - 2px)),
+    calc(100% - (var(--chamfer) - 2px)) 100%, calc(var(--chamfer) - 2px) 100%,
+    0 calc(100% - (var(--chamfer) - 2px)), 0 calc(var(--chamfer) - 2px)
+  );
+  pointer-events: none;
+}
+
+.order__glyph {
+  width: 18px;
+  height: 18px;
+  color: currentColor;
+}
+
+.order:active { transform: translateY(1px); }
+
+/* =========================================================================
+   4. SPOILS PANEL
+   Same anatomy as the home screen's progress panel: label, value row,
+   bar, groove divider, two-up stat split. Consistency across screens is
+   most of what "premium" means.
+   ========================================================================= */
+
+.spoils__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-bottom: var(--s-2);
+}
+
+.spoils__skill {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+
+.spoils__level {
+  font-family: var(--ff-display);
+  font-weight: 900;
+  font-size: var(--fs-display);
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+  background: var(--grad-gold-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.spoils__bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  margin-top: var(--s-2);
+}
+
+.spoils__meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+
+.gains {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+}
+
+.gains__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gains__item svg { flex: 0 0 auto; }
+
+.gains__value {
+  font-size: var(--fs-value);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.gains__unit {
+  font-size: var(--fs-nav);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+/* Roster strip: the three beasts of this region, at 16-bit, in the chrome —
+   framed the same way the stage is, in miniature. */
+.roster {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+
+.roster__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: var(--s-2) 2px;
+  background: var(--c-groove);
+  border-radius: var(--r-sm);
+}
+
+.roster__frame {
+  width: 100%;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.roster__frame img {
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+.roster__name {
+  font-size: var(--fs-nav);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* =========================================================================
+   5. MISC
+   ========================================================================= */
+
+.screen__body--battle {
+  gap: var(--s-3);
+  padding-top: var(--s-3);
+}
+
+.boot-error {
+  margin: var(--s-4) var(--gutter);
+  padding: var(--s-3);
+  border: 1px solid var(--c-hairline-gold);
+  border-radius: var(--r-sm);
+  color: var(--c-text-2);
+  font-size: var(--fs-body);
+}
+
+/* min-height, not padding: the label is 24px tall on its own and a link that
+   navigates away from the screen has to clear the 44px touch minimum like any
+   other control. Measured at 162x24 before this. */
+.backlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--tap-min);
+  padding: var(--s-1) 0;
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+.backlink svg { width: 12px; height: 12px; }

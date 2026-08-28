@@ -1,0 +1,4152 @@
+{
+  "benchmark": {
+    "note": "measured at build time from reference/shots/ffvi-battle-native-a.png by tools/pixel/audit.mjs",
+    "hero": {
+      "crop": "188,64 16x24",
+      "w": 16,
+      "h": 24,
+      "opaque": 384,
+      "colours": 19,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.0026041666666666665,
+      "flatMain": 0.005649717514124294,
+      "mainArea": 177,
+      "families": [
+        {
+          "n": 177,
+          "depth": 13,
+          "grey": false,
+          "hue": 28
+        },
+        {
+          "n": 123,
+          "depth": 2,
+          "grey": true,
+          "hue": -1
+        },
+        {
+          "n": 65,
+          "depth": 3,
+          "grey": false,
+          "hue": 224
+        },
+        {
+          "n": 19,
+          "depth": 1,
+          "grey": false,
+          "hue": 60
+        }
+      ],
+      "tileMedian": 10,
+      "tileMax": 13,
+      "kind": "sprite"
+    },
+    "monster": {
+      "crop": "18,83 77x57, hide only",
+      "w": 77,
+      "h": 57,
+      "opaque": 1696,
+      "colours": 12,
+      "offGrid": 0,
+      "dither": 0.0047169811320754715,
+      "flat": 0.03242924528301887,
+      "flatMain": 0.04176904176904177,
+      "mainArea": 1221,
+      "families": [
+        {
+          "n": 1221,
+          "depth": 3,
+          "grey": false,
+          "hue": 66
+        },
+        {
+          "n": 364,
+          "depth": 2,
+          "grey": false,
+          "hue": 120
+        },
+        {
+          "n": 100,
+          "depth": 6,
+          "grey": false,
+          "hue": 179
+        },
+        {
+          "n": 11,
+          "depth": 1,
+          "grey": true,
+          "hue": 192
+        }
+      ],
+      "tileMedian": 4,
+      "tileMax": 6,
+      "kind": "sprite"
+    }
+  },
+  "generated": "tools/pixel/build.mjs",
+  "note": "Every asset is authored and shipped at 1x. Scale with integers only.",
+  "stage": {
+    "w": 192,
+    "h": 168
+  },
+  "scene": {
+    "id": "slagfen",
+    "name": "The Slagfen",
+    "region": "Emberveil Basin",
+    "blurb": "Where the refinery dumped what it could not use. The ground is still warm eleven years on.",
+    "horizon": 58,
+    "contactShadow": "#181008",
+    "field": {
+      "src": "src/assets/sprites/atelier/scenes/slagfen.png",
+      "kind": "scene",
+      "w": 192,
+      "h": 110,
+      "colours": 30,
+      "offGrid": 0,
+      "dither": 0.012215909090909092,
+      "flat": 0.4005208333333333,
+      "flatMain": 0.31438807126258717,
+      "mainArea": 10328,
+      "families": [
+        {
+          "n": 10328,
+          "depth": 15,
+          "grey": false,
+          "hue": 30
+        },
+        {
+          "n": 9253,
+          "depth": 10,
+          "grey": false,
+          "hue": 288
+        },
+        {
+          "n": 781,
+          "depth": 3,
+          "grey": false,
+          "hue": 327
+        },
+        {
+          "n": 617,
+          "depth": 1,
+          "grey": true,
+          "hue": 300
+        }
+      ],
+      "opaque": 21120,
+      "tileMedian": 4,
+      "tileMax": 10,
+      "palette": [
+        "#100808",
+        "#100810",
+        "#180820",
+        "#181008",
+        "#181018",
+        "#201028",
+        "#281810",
+        "#281838",
+        "#282028",
+        "#382018",
+        "#302030",
+        "#302040",
+        "#402838",
+        "#402848",
+        "#483028",
+        "#483050",
+        "#583858",
+        "#584030",
+        "#684058",
+        "#705040",
+        "#804858",
+        "#886050",
+        "#985860",
+        "#A07860",
+        "#B07060",
+        "#B08838",
+        "#C08868",
+        "#B89078",
+        "#D8A848",
+        "#F8D8A0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    "ash": {
+      "src": "src/assets/sprites/atelier/scenes/slagfen-ash.png",
+      "kind": "sprite",
+      "w": 192,
+      "h": 34,
+      "colours": 2,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0,
+      "flatMain": 0,
+      "mainArea": 65,
+      "families": [
+        {
+          "n": 65,
+          "depth": 2,
+          "grey": true,
+          "hue": 330
+        }
+      ],
+      "opaque": 65,
+      "tileMedian": 1,
+      "tileMax": 2,
+      "palette": [
+        "#605058",
+        "#807078"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    "size": {
+      "w": 192,
+      "h": 110
+    }
+  },
+  "heroes": [
+    {
+      "id": "rell",
+      "name": "Rell",
+      "full": "Rell Vantance",
+      "order": "Bladewarden",
+      "blurb": "Holds the line while the sigils charge. Plate steel, wine tabard, a blade older than the refinery.",
+      "palette": [
+        {
+          "key": "k",
+          "hex": "#180810"
+        },
+        {
+          "key": "a",
+          "hex": "#683820"
+        },
+        {
+          "key": "b",
+          "hex": "#B07850"
+        },
+        {
+          "key": "c",
+          "hex": "#E0A878"
+        },
+        {
+          "key": "m",
+          "hex": "#F8D8B0"
+        },
+        {
+          "key": "d",
+          "hex": "#281818"
+        },
+        {
+          "key": "e",
+          "hex": "#503028"
+        },
+        {
+          "key": "f",
+          "hex": "#785040"
+        },
+        {
+          "key": "g",
+          "hex": "#384050"
+        },
+        {
+          "key": "h",
+          "hex": "#788090"
+        },
+        {
+          "key": "i",
+          "hex": "#B0B8C8"
+        },
+        {
+          "key": "p",
+          "hex": "#500820"
+        },
+        {
+          "key": "q",
+          "hex": "#981038"
+        },
+        {
+          "key": "r",
+          "hex": "#D84058"
+        },
+        {
+          "key": "z",
+          "hex": "#E0E0E8"
+        },
+        {
+          "key": "j",
+          "hex": "#384050"
+        }
+      ],
+      "poses": {
+        "idle": {
+          "src": "src/assets/sprites/atelier/heroes/rell-idle.png",
+          "kind": "sprite",
+          "w": 16,
+          "h": 24,
+          "colours": 14,
+          "offGrid": 0,
+          "dither": 0,
+          "flat": 0.02564102564102564,
+          "flatMain": 0,
+          "mainArea": 97,
+          "families": [
+            {
+              "n": 97,
+              "depth": 4,
+              "grey": false,
+              "hue": 332
+            },
+            {
+              "n": 73,
+              "depth": 7,
+              "grey": false,
+              "hue": 17
+            },
+            {
+              "n": 47,
+              "depth": 2,
+              "grey": true,
+              "hue": 220
+            },
+            {
+              "n": 17,
+              "depth": 1,
+              "grey": false,
+              "hue": 220
+            }
+          ],
+          "opaque": 234,
+          "tileMedian": 7,
+          "tileMax": 9,
+          "palette": [
+            "#180810",
+            "#281818",
+            "#500820",
+            "#503028",
+            "#981038",
+            "#384050",
+            "#683820",
+            "#785040",
+            "#D84058",
+            "#788090",
+            "#B07850",
+            "#E0A878",
+            "#B0B8C8",
+            "#F8D8B0"
+          ],
+          "ok": true,
+          "problems": []
+        },
+        "critical": {
+          "src": "src/assets/sprites/atelier/heroes/rell-critical.png",
+          "kind": "sprite",
+          "w": 16,
+          "h": 24,
+          "colours": 14,
+          "offGrid": 0,
+          "dither": 0,
+          "flat": 0.039603960396039604,
+          "flatMain": 0.0125,
+          "mainArea": 80,
+          "families": [
+            {
+              "n": 80,
+              "depth": 4,
+              "grey": false,
+              "hue": 333
+            },
+            {
+              "n": 67,
+              "depth": 7,
+              "grey": false,
+              "hue": 15
+            },
+            {
+              "n": 47,
+              "depth": 2,
+              "grey": true,
+              "hue": 220
+            },
+            {
+              "n": 8,
+              "depth": 1,
+              "grey": false,
+              "hue": 220
+            }
+          ],
+          "opaque": 202,
+          "tileMedian": 8,
+          "tileMax": 10,
+          "palette": [
+            "#180810",
+            "#281818",
+            "#500820",
+            "#503028",
+            "#981038",
+            "#384050",
+            "#683820",
+            "#785040",
+            "#D84058",
+            "#788090",
+            "#B07850",
+            "#E0A878",
+            "#B0B8C8",
+            "#F8D8B0"
+          ],
+          "ok": true,
+          "problems": []
+        },
+        "attack": {
+          "src": "src/assets/sprites/atelier/heroes/rell-attack.png",
+          "kind": "sprite",
+          "w": 24,
+          "h": 32,
+          "colours": 15,
+          "offGrid": 0,
+          "dither": 0,
+          "flat": 0.04113924050632911,
+          "flatMain": 0.015267175572519083,
+          "mainArea": 131,
+          "families": [
+            {
+              "n": 131,
+              "depth": 4,
+              "grey": false,
+              "hue": 332
+            },
+            {
+              "n": 97,
+              "depth": 3,
+              "grey": true,
+              "hue": 220
+            },
+            {
+              "n": 76,
+              "depth": 7,
+              "grey": false,
+              "hue": 16
+            },
+            {
+              "n": 12,
+              "depth": 1,
+              "grey": false,
+              "hue": 220
+            }
+          ],
+          "opaque": 316,
+          "tileMedian": 4,
+          "tileMax": 8,
+          "palette": [
+            "#180810",
+            "#281818",
+            "#500820",
+            "#503028",
+            "#981038",
+            "#384050",
+            "#683820",
+            "#785040",
+            "#D84058",
+            "#788090",
+            "#B07850",
+            "#E0A878",
+            "#B0B8C8",
+            "#F8D8B0",
+            "#E0E0E8"
+          ],
+          "ok": true,
+          "problems": []
+        }
+      }
+    },
+    {
+      "id": "iska",
+      "name": "Iska",
+      "full": "Iska Doryn",
+      "order": "Cogwright",
+      "blurb": "Reads a machine the way a physician reads a pulse. Brass goggles, oiled coat, a spanner she swings.",
+      "palette": [
+        {
+          "key": "k",
+          "hex": "#180810"
+        },
+        {
+          "key": "a",
+          "hex": "#684830"
+        },
+        {
+          "key": "b",
+          "hex": "#B08868"
+        },
+        {
+          "key": "c",
+          "hex": "#E8B890"
+        },
+        {
+          "key": "m",
+          "hex": "#F8E0C0"
+        },
+        {
+          "key": "d",
+          "hex": "#584828"
+        },
+        {
+          "key": "e",
+          "hex": "#988048"
+        },
+        {
+          "key": "f",
+          "hex": "#E0C888"
+        },
+        {
+          "key": "g",
+          "hex": "#281008"
+        },
+        {
+          "key": "h",
+          "hex": "#804818"
+        },
+        {
+          "key": "i",
+          "hex": "#D08840"
+        },
+        {
+          "key": "p",
+          "hex": "#806018"
+        },
+        {
+          "key": "q",
+          "hex": "#C09830"
+        },
+        {
+          "key": "r",
+          "hex": "#F0D060"
+        },
+        {
+          "key": "z",
+          "hex": "#B0B8C0"
+        },
+        {
+          "key": "j",
+          "hex": "#281008"
+        }
+      ],
+      "poses": {
+        "idle": {
+          "src": "src/assets/sprites/atelier/heroes/iska-idle.png",
+          "kind": "sprite",
+          "w": 16,
+          "h": 24,
+          "colours": 14,
+          "offGrid": 0,
+          "dither": 0,
+          "flat": 0.012244897959183673,
+          "flatMain": 0.01818181818181818,
+          "mainArea": 165,
+          "families": [
+            {
+              "n": 165,
+              "depth": 13,
+              "grey": false,
+              "hue": 32
+            },
+            {
+              "n": 80,
+              "depth": 1,
+              "grey": false,
+              "hue": 330
+            }
+          ],
+          "opaque": 245,
+          "tileMedian": 8,
+          "tileMax": 9,
+          "palette": [
+            "#180810",
+            "#281008",
+            "#584828",
+            "#684830",
+            "#804818",
+            "#806018",
+            "#988048",
+            "#B08868",
+            "#D08840",
+            "#C09830",
+            "#E8B890",
+            "#E0C888",
+            "#F0D060",
+            "#F8E0C0"
+          ],
+          "ok": true,
+          "problems": []
+        },
+        "critical": {
+          "src": "src/assets/sprites/atelier/heroes/iska-critical.png",
+          "kind": "sprite",
+          "w": 16,
+          "h": 24,
+          "colours": 14,
+          "offGrid": 0,
+          "dither": 0,
+          "flat": 0.01485148514851485,
+          "flatMain": 0.014388489208633094,
+          "mainArea": 139,
+          "families": [
+            {
+              "n": 139,
+              "depth": 13,
+              "grey": false,
+              "hue": 31
+            },
+            {
+              "n": 63,
+              "depth": 1,
+              "grey": false,
+              "hue": 330
+            }
+          ],
+          "opaque": 202,
+          "tileMedian": 8,
+          "tileMax": 10,
+          "palette": [
+            "#180810",
+            "#281008",
+            "#584828",
+            "#684830",
+            "#804818",
+            "#806018",
+            "#988048",
+            "#B08868",
+            "#D08840",
+            "#C09830",
+            "#E8B890",
+            "#E0C888",
+            "#F0D060",
+            "#F8E0C0"
+          ],
+          "ok": true,
+          "problems": []
+        },
+        "attack": {
+          "src": "src/assets/sprites/atelier/heroes/iska-attack.png",
+          "kind": "sprite",
+          "w": 24,
+          "h": 32,
+          "colours": 14,
+          "offGrid": 0,
+          "dither": 0,
+          "flat": 0.043478260869565216,
+          "flatMain": 0.07738095238095238,
+          "mainArea": 168,
+          "families": [
+            {
+              "n": 168,
+              "depth": 12,
+              "grey": false,
+              "hue": 31
+            },
+            {
+              "n": 93,
+              "depth": 1,
+              "grey": false,
+              "hue": 330
+            },
+            {
+              "n": 38,
+              "depth": 1,
+              "grey": true,
+              "hue": 210
+            }
+          ],
+          "opaque": 299,
+          "tileMedian": 4,
+          "tileMax": 10,
+          "palette": [
+            "#180810",
+            "#281008",
+            "#584828",
+            "#684830",
+            "#804818",
+            "#806018",
+            "#988048",
+            "#B08868",
+            "#D08840",
+            "#C09830",
+            "#B0B8C0",
+            "#E8B890",
+            "#E0C888",
+            "#F0D060"
+          ],
+          "ok": true,
+          "problems": []
+        }
+      }
+    },
+    {
+      "id": "maren",
+      "name": "Maren",
+      "full": "Maren Sable",
+      "order": "Voidcaller",
+      "blurb": "Speaks to the things that live between the veils. Ash-pale, indigo-robed, always the last to move.",
+      "palette": [
+        {
+          "key": "k",
+          "hex": "#100818"
+        },
+        {
+          "key": "a",
+          "hex": "#705040"
+        },
+        {
+          "key": "b",
+          "hex": "#B89078"
+        },
+        {
+          "key": "c",
+          "hex": "#E8C0A0"
+        },
+        {
+          "key": "m",
+          "hex": "#F8E0C8"
+        },
+        {
+          "key": "d",
+          "hex": "#605868"
+        },
+        {
+          "key": "e",
+          "hex": "#A8A0B8"
+        },
+        {
+          "key": "f",
+          "hex": "#E8E0E8"
+        },
+        {
+          "key": "g",
+          "hex": "#180830"
+        },
+        {
+          "key": "h",
+          "hex": "#382078"
+        },
+        {
+          "key": "i",
+          "hex": "#6048B8"
+        },
+        {
+          "key": "p",
+          "hex": "#584018"
+        },
+        {
+          "key": "q",
+          "hex": "#907028"
+        },
+        {
+          "key": "r",
+          "hex": "#D8B858"
+        },
+        {
+          "key": "z",
+          "hex": "#E0D8F8"
+        },
+        {
+          "key": "j",
+          "hex": "#180830"
+        }
+      ],
+      "poses": {
+        "idle": {
+          "src": "src/assets/sprites/atelier/heroes/maren-idle.png",
+          "kind": "sprite",
+          "w": 16,
+          "h": 24,
+          "colours": 15,
+          "offGrid": 0,
+          "dither": 0,
+          "flat": 0.03461538461538462,
+          "flatMain": 0.022598870056497175,
+          "mainArea": 177,
+          "families": [
+            {
+              "n": 177,
+              "depth": 4,
+              "grey": false,
+              "hue": 263
+            },
+            {
+              "n": 47,
+              "depth": 6,
+              "grey": false,
+              "hue": 34
+            },
+            {
+              "n": 36,
+              "depth": 5,
+              "grey": true,
+              "hue": 260
+            }
+          ],
+          "opaque": 260,
+          "tileMedian": 7,
+          "tileMax": 9,
+          "palette": [
+            "#100818",
+            "#180830",
+            "#382078",
+            "#584018",
+            "#705040",
+            "#6048B8",
+            "#605868",
+            "#907028",
+            "#B89078",
+            "#A8A0B8",
+            "#D8B858",
+            "#E8C0A0",
+            "#E0D8F8",
+            "#E8E0E8",
+            "#F8E0C8"
+          ],
+          "ok": true,
+          "problems": []
+        },
+        "critical": {
+          "src": "src/assets/sprites/atelier/heroes/maren-critical.png",
+          "kind": "sprite",
+          "w": 16,
+          "h": 24,
+          "colours": 13,
+          "offGrid": 0,
+          "dither": 0,
+          "flat": 0.030927835051546393,
+          "flatMain": 0.008849557522123894,
+          "mainArea": 113,
+          "families": [
+            {
+              "n": 113,
+              "depth": 4,
+              "grey": false,
+              "hue": 264
+            },
+            {
+              "n": 41,
+              "depth": 3,
+              "grey": true,
+              "hue": 260
+            },
+            {
+              "n": 40,
+              "depth": 6,
+              "grey": false,
+              "hue": 35
+            }
+          ],
+          "opaque": 194,
+          "tileMedian": 7,
+          "tileMax": 8,
+          "palette": [
+            "#100818",
+            "#180830",
+            "#382078",
+            "#584018",
+            "#705040",
+            "#6048B8",
+            "#605868",
+            "#907028",
+            "#B89078",
+            "#A8A0B8",
+            "#D8B858",
+            "#E8C0A0",
+            "#E8E0E8"
+          ],
+          "ok": true,
+          "problems": []
+        },
+        "attack": {
+          "src": "src/assets/sprites/atelier/heroes/maren-attack.png",
+          "kind": "sprite",
+          "w": 24,
+          "h": 32,
+          "colours": 15,
+          "offGrid": 0,
+          "dither": 0,
+          "flat": 0.04262295081967213,
+          "flatMain": 0.022598870056497175,
+          "mainArea": 177,
+          "families": [
+            {
+              "n": 177,
+              "depth": 4,
+              "grey": false,
+              "hue": 263
+            },
+            {
+              "n": 65,
+              "depth": 6,
+              "grey": false,
+              "hue": 35
+            },
+            {
+              "n": 63,
+              "depth": 5,
+              "grey": true,
+              "hue": 260
+            }
+          ],
+          "opaque": 305,
+          "tileMedian": 4,
+          "tileMax": 8,
+          "palette": [
+            "#100818",
+            "#180830",
+            "#382078",
+            "#584018",
+            "#705040",
+            "#6048B8",
+            "#605868",
+            "#907028",
+            "#B89078",
+            "#A8A0B8",
+            "#D8B858",
+            "#E8C0A0",
+            "#E0D8F8",
+            "#E8E0E8",
+            "#F8E0C8"
+          ],
+          "ok": true,
+          "problems": []
+        }
+      }
+    },
+    {
+      "id": "tessin",
+      "name": "Tessin",
+      "full": "Tessin Gale",
+      "order": "Skyknave",
+      "blurb": "Came down off the mooring towers and never quite landed. Storm-teal scarf, harness leather, two knives.",
+      "palette": [
+        {
+          "key": "k",
+          "hex": "#081018"
+        },
+        {
+          "key": "a",
+          "hex": "#683820"
+        },
+        {
+          "key": "b",
+          "hex": "#B07850"
+        },
+        {
+          "key": "c",
+          "hex": "#E0A878"
+        },
+        {
+          "key": "m",
+          "hex": "#F8D8B0"
+        },
+        {
+          "key": "d",
+          "hex": "#081810"
+        },
+        {
+          "key": "e",
+          "hex": "#204030"
+        },
+        {
+          "key": "f",
+          "hex": "#407860"
+        },
+        {
+          "key": "g",
+          "hex": "#281808"
+        },
+        {
+          "key": "h",
+          "hex": "#583820"
+        },
+        {
+          "key": "i",
+          "hex": "#906840"
+        },
+        {
+          "key": "p",
+          "hex": "#084048"
+        },
+        {
+          "key": "q",
+          "hex": "#107880"
+        },
+        {
+          "key": "r",
+          "hex": "#48C0C8"
+        },
+        {
+          "key": "z",
+          "hex": "#C0C8D0"
+        },
+        {
+          "key": "j",
+          "hex": "#281808"
+        }
+      ],
+      "poses": {
+        "idle": {
+          "src": "src/assets/sprites/atelier/heroes/tessin-idle.png",
+          "kind": "sprite",
+          "w": 16,
+          "h": 24,
+          "colours": 15,
+          "offGrid": 0,
+          "dither": 0,
+          "flat": 0.0163265306122449,
+          "flatMain": 0,
+          "mainArea": 101,
+          "families": [
+            {
+              "n": 101,
+              "depth": 4,
+              "grey": false,
+              "hue": 205
+            },
+            {
+              "n": 96,
+              "depth": 7,
+              "grey": false,
+              "hue": 28
+            },
+            {
+              "n": 43,
+              "depth": 3,
+              "grey": false,
+              "hue": 151
+            },
+            {
+              "n": 5,
+              "depth": 1,
+              "grey": true,
+              "hue": 210
+            }
+          ],
+          "opaque": 245,
+          "tileMedian": 7,
+          "tileMax": 9,
+          "palette": [
+            "#081018",
+            "#081810",
+            "#281808",
+            "#084048",
+            "#204030",
+            "#583820",
+            "#683820",
+            "#107880",
+            "#407860",
+            "#906840",
+            "#B07850",
+            "#48C0C8",
+            "#E0A878",
+            "#C0C8D0",
+            "#F8D8B0"
+          ],
+          "ok": true,
+          "problems": []
+        },
+        "critical": {
+          "src": "src/assets/sprites/atelier/heroes/tessin-critical.png",
+          "kind": "sprite",
+          "w": 16,
+          "h": 24,
+          "colours": 15,
+          "offGrid": 0,
+          "dither": 0,
+          "flat": 0.03571428571428571,
+          "flatMain": 0.02531645569620253,
+          "mainArea": 79,
+          "families": [
+            {
+              "n": 79,
+              "depth": 4,
+              "grey": false,
+              "hue": 205
+            },
+            {
+              "n": 78,
+              "depth": 7,
+              "grey": false,
+              "hue": 27
+            },
+            {
+              "n": 36,
+              "depth": 3,
+              "grey": false,
+              "hue": 151
+            },
+            {
+              "n": 3,
+              "depth": 1,
+              "grey": true,
+              "hue": 210
+            }
+          ],
+          "opaque": 196,
+          "tileMedian": 8,
+          "tileMax": 8,
+          "palette": [
+            "#081018",
+            "#081810",
+            "#281808",
+            "#084048",
+            "#204030",
+            "#583820",
+            "#683820",
+            "#107880",
+            "#407860",
+            "#906840",
+            "#B07850",
+            "#48C0C8",
+            "#E0A878",
+            "#C0C8D0",
+            "#F8D8B0"
+          ],
+          "ok": true,
+          "problems": []
+        },
+        "attack": {
+          "src": "src/assets/sprites/atelier/heroes/tessin-attack.png",
+          "kind": "sprite",
+          "w": 24,
+          "h": 32,
+          "colours": 15,
+          "offGrid": 0,
+          "dither": 0,
+          "flat": 0.03663003663003663,
+          "flatMain": 0.06086956521739131,
+          "mainArea": 115,
+          "families": [
+            {
+              "n": 115,
+              "depth": 7,
+              "grey": false,
+              "hue": 27
+            },
+            {
+              "n": 105,
+              "depth": 4,
+              "grey": false,
+              "hue": 205
+            },
+            {
+              "n": 36,
+              "depth": 3,
+              "grey": false,
+              "hue": 151
+            },
+            {
+              "n": 17,
+              "depth": 1,
+              "grey": true,
+              "hue": 210
+            }
+          ],
+          "opaque": 273,
+          "tileMedian": 4,
+          "tileMax": 11,
+          "palette": [
+            "#081018",
+            "#081810",
+            "#281808",
+            "#084048",
+            "#204030",
+            "#583820",
+            "#683820",
+            "#107880",
+            "#407860",
+            "#906840",
+            "#B07850",
+            "#48C0C8",
+            "#E0A878",
+            "#C0C8D0",
+            "#F8D8B0"
+          ],
+          "ok": true,
+          "problems": []
+        }
+      }
+    }
+  ],
+  "monsters": [
+    {
+      "id": "slagmaw",
+      "name": "Slagmaw",
+      "klass": "Medium",
+      "blurb": "Sleeps in the cooling slag until something warm walks past. The cracks in its plates never went out.",
+      "sprite": {
+        "src": "src/assets/sprites/atelier/monsters/slagmaw.png",
+        "kind": "sprite",
+        "w": 88,
+        "h": 64,
+        "colours": 14,
+        "offGrid": 0,
+        "dither": 0.002520478890989288,
+        "flat": 0.14650283553875237,
+        "flatMain": 0.06325301204819277,
+        "mainArea": 1328,
+        "families": [
+          {
+            "n": 1328,
+            "depth": 8,
+            "grey": false,
+            "hue": 26
+          },
+          {
+            "n": 585,
+            "depth": 1,
+            "grey": false,
+            "hue": 330
+          },
+          {
+            "n": 437,
+            "depth": 1,
+            "grey": false,
+            "hue": 0
+          },
+          {
+            "n": 370,
+            "depth": 1,
+            "grey": false,
+            "hue": 240
+          }
+        ],
+        "opaque": 3174,
+        "tileMedian": 5,
+        "tileMax": 11,
+        "palette": [
+          "#100808",
+          "#180810",
+          "#181820",
+          "#302018",
+          "#383040",
+          "#504030",
+          "#605868",
+          "#786050",
+          "#D04800",
+          "#F07810",
+          "#A89078",
+          "#9890A8",
+          "#F8C060",
+          "#F8D800"
+        ],
+        "ok": true,
+        "problems": []
+      },
+      "cycle": [
+        "#902800",
+        "#D04800",
+        "#F07810",
+        "#F8C060"
+      ]
+    },
+    {
+      "id": "cinderwisp",
+      "name": "Cinderwisp",
+      "klass": "Small",
+      "blurb": "What is left when a furnace-hand forgets to come home. Follows lantern light. Will not be spoken to.",
+      "sprite": {
+        "src": "src/assets/sprites/atelier/monsters/cinderwisp.png",
+        "kind": "sprite",
+        "w": 40,
+        "h": 40,
+        "colours": 10,
+        "offGrid": 0,
+        "dither": 0,
+        "flat": 0.14171122994652408,
+        "flatMain": 0.1584,
+        "mainArea": 625,
+        "families": [
+          {
+            "n": 625,
+            "depth": 5,
+            "grey": false,
+            "hue": 331
+          },
+          {
+            "n": 112,
+            "depth": 4,
+            "grey": false,
+            "hue": 33
+          },
+          {
+            "n": 11,
+            "depth": 1,
+            "grey": false,
+            "hue": 300
+          }
+        ],
+        "opaque": 748,
+        "tileMedian": 4,
+        "tileMax": 7,
+        "palette": [
+          "#080008",
+          "#180810",
+          "#380820",
+          "#601038",
+          "#883058",
+          "#C04800",
+          "#B06070",
+          "#F08810",
+          "#F8C858",
+          "#F8E8B0"
+        ],
+        "ok": true,
+        "problems": []
+      },
+      "cycle": [
+        "#C04800",
+        "#F08810",
+        "#F8C858",
+        "#F8E8B0"
+      ]
+    },
+    {
+      "id": "gloamstag",
+      "name": "Gloamstag",
+      "klass": "Medium",
+      "blurb": "Walks the Deepstone galleries where the moss still glows. Its antlers are older than its body.",
+      "sprite": {
+        "src": "src/assets/sprites/atelier/monsters/gloamstag.png",
+        "kind": "sprite",
+        "w": 64,
+        "h": 56,
+        "colours": 12,
+        "offGrid": 0,
+        "dither": 0,
+        "flat": 0.095,
+        "flatMain": 0.12622222222222224,
+        "mainArea": 1125,
+        "families": [
+          {
+            "n": 1125,
+            "depth": 4,
+            "grey": false,
+            "hue": 206
+          },
+          {
+            "n": 400,
+            "depth": 1,
+            "grey": false,
+            "hue": 240
+          },
+          {
+            "n": 145,
+            "depth": 3,
+            "grey": false,
+            "hue": 153
+          },
+          {
+            "n": 72,
+            "depth": 2,
+            "grey": true,
+            "hue": 204
+          }
+        ],
+        "opaque": 1800,
+        "tileMedian": 5,
+        "tileMax": 9,
+        "palette": [
+          "#080810",
+          "#101820",
+          "#102820",
+          "#283848",
+          "#285840",
+          "#605848",
+          "#486878",
+          "#50A070",
+          "#708898",
+          "#98D048",
+          "#A0B8C8",
+          "#D8D0B8"
+        ],
+        "ok": true,
+        "problems": []
+      },
+      "cycle": null
+    },
+    {
+      "id": "fluewyrm",
+      "name": "Fluewyrm",
+      "klass": "Medium",
+      "blurb": "Nests in the cold flues and comes down when they stoke. Iron scale, and a temper about the heat.",
+      "sprite": {
+        "src": "src/assets/sprites/atelier/monsters/fluewyrm.png",
+        "kind": "sprite",
+        "w": 80,
+        "h": 48,
+        "colours": 13,
+        "offGrid": 0,
+        "dither": 0,
+        "flat": 0.0684931506849315,
+        "flatMain": 0.09166666666666666,
+        "mainArea": 840,
+        "families": [
+          {
+            "n": 840,
+            "depth": 5,
+            "grey": false,
+            "hue": 214
+          },
+          {
+            "n": 276,
+            "depth": 2,
+            "grey": false,
+            "hue": 243
+          },
+          {
+            "n": 101,
+            "depth": 2,
+            "grey": false,
+            "hue": 270
+          },
+          {
+            "n": 93,
+            "depth": 3,
+            "grey": true,
+            "hue": 0
+          }
+        ],
+        "opaque": 1314,
+        "tileMedian": 5,
+        "tileMax": 8,
+        "palette": [
+          "#080810",
+          "#101828",
+          "#301848",
+          "#203048",
+          "#603098",
+          "#385070",
+          "#786070",
+          "#587898",
+          "#A878D8",
+          "#88A8C0",
+          "#B0A0A0",
+          "#F8A020",
+          "#E8E0D0"
+        ],
+        "ok": true,
+        "problems": []
+      },
+      "cycle": null
+    },
+    {
+      "id": "ashgrieve",
+      "name": "Ashgrieve",
+      "klass": "Medium",
+      "blurb": "A furnace-hand who never came up. Still walking the shift, still carrying the light it died holding.",
+      "sprite": {
+        "src": "src/assets/sprites/atelier/monsters/ashgrieve.png",
+        "kind": "sprite",
+        "w": 48,
+        "h": 64,
+        "colours": 15,
+        "offGrid": 0,
+        "dither": 0,
+        "flat": 0.18577981651376146,
+        "flatMain": 0.17788018433179723,
+        "mainArea": 1085,
+        "families": [
+          {
+            "n": 1085,
+            "depth": 4,
+            "grey": false,
+            "hue": 294
+          },
+          {
+            "n": 492,
+            "depth": 7,
+            "grey": false,
+            "hue": 9
+          },
+          {
+            "n": 144,
+            "depth": 2,
+            "grey": true,
+            "hue": 300
+          },
+          {
+            "n": 23,
+            "depth": 2,
+            "grey": false,
+            "hue": 42
+          }
+        ],
+        "opaque": 1744,
+        "tileMedian": 4,
+        "tileMax": 8,
+        "palette": [
+          "#100810",
+          "#181018",
+          "#201818",
+          "#302038",
+          "#403030",
+          "#403830",
+          "#504058",
+          "#B03000",
+          "#685050",
+          "#685850",
+          "#786078",
+          "#F07000",
+          "#A090A8",
+          "#F8B840",
+          "#F8E8B0"
+        ],
+        "ok": true,
+        "problems": []
+      },
+      "cycle": [
+        "#B03000",
+        "#F07000",
+        "#F8B840"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "emberglass-vial",
+      "name": "Emberglass Vial",
+      "kind": "Restorative",
+      "blurb": "Bottled furnace-light. Drink it and the cold stops mattering for a while.",
+      "sprite": {
+        "src": "src/assets/sprites/atelier/items/emberglass-vial.png",
+        "kind": "sprite",
+        "w": 16,
+        "h": 16,
+        "colours": 7,
+        "offGrid": 0,
+        "dither": 0,
+        "flat": 0.043478260869565216,
+        "flatMain": 0,
+        "mainArea": 33,
+        "families": [
+          {
+            "n": 33,
+            "depth": 1,
+            "grey": false,
+            "hue": 300
+          },
+          {
+            "n": 30,
+            "depth": 3,
+            "grey": false,
+            "hue": 18
+          },
+          {
+            "n": 21,
+            "depth": 2,
+            "grey": false,
+            "hue": 201
+          },
+          {
+            "n": 8,
+            "depth": 1,
+            "grey": true,
+            "hue": 200
+          }
+        ],
+        "opaque": 92,
+        "tileMedian": 5,
+        "tileMax": 7,
+        "palette": [
+          "#100810",
+          "#802010",
+          "#385058",
+          "#D85820",
+          "#7890A0",
+          "#F8B058",
+          "#C0D0D8"
+        ],
+        "ok": true,
+        "problems": []
+      }
+    },
+    {
+      "id": "cogwrights-spanner",
+      "name": "Cogwright's Spanner",
+      "kind": "Arm",
+      "blurb": "Iska's own, re-forged twice. Turns a bolt and breaks a jaw.",
+      "sprite": {
+        "src": "src/assets/sprites/atelier/items/cogwrights-spanner.png",
+        "kind": "sprite",
+        "w": 16,
+        "h": 16,
+        "colours": 3,
+        "offGrid": 0,
+        "dither": 0,
+        "flat": 0,
+        "flatMain": 0,
+        "mainArea": 33,
+        "families": [
+          {
+            "n": 33,
+            "depth": 1,
+            "grey": false,
+            "hue": 300
+          },
+          {
+            "n": 16,
+            "depth": 1,
+            "grey": true,
+            "hue": 200
+          },
+          {
+            "n": 13,
+            "depth": 1,
+            "grey": false,
+            "hue": 204
+          }
+        ],
+        "opaque": 62,
+        "tileMedian": 3,
+        "tileMax": 3,
+        "palette": [
+          "#100810",
+          "#7890A0",
+          "#C0D0D8"
+        ],
+        "ok": true,
+        "problems": []
+      }
+    },
+    {
+      "id": "voidcallers-focus",
+      "name": "Voidcaller's Focus",
+      "kind": "Arm",
+      "blurb": "The crystal was cut from a veil-fall. It hums when something is listening.",
+      "sprite": {
+        "src": "src/assets/sprites/atelier/items/voidcallers-focus.png",
+        "kind": "sprite",
+        "w": 16,
+        "h": 16,
+        "colours": 6,
+        "offGrid": 0,
+        "dither": 0,
+        "flat": 0.014285714285714285,
+        "flatMain": 0.027777777777777776,
+        "mainArea": 36,
+        "families": [
+          {
+            "n": 36,
+            "depth": 3,
+            "grey": false,
+            "hue": 263
+          },
+          {
+            "n": 26,
+            "depth": 1,
+            "grey": false,
+            "hue": 300
+          },
+          {
+            "n": 8,
+            "depth": 2,
+            "grey": false,
+            "hue": 24
+          }
+        ],
+        "opaque": 70,
+        "tileMedian": 4,
+        "tileMax": 4,
+        "palette": [
+          "#100810",
+          "#401808",
+          "#301060",
+          "#6030B0",
+          "#785030",
+          "#A880E8"
+        ],
+        "ok": true,
+        "problems": []
+      }
+    },
+    {
+      "id": "warden-seal",
+      "name": "Warden Seal",
+      "kind": "Relic",
+      "blurb": "Struck for the last basin wardens. Nine were made; four are accounted for.",
+      "sprite": {
+        "src": "src/assets/sprites/atelier/items/warden-seal.png",
+        "kind": "sprite",
+        "w": 16,
+        "h": 16,
+        "colours": 4,
+        "offGrid": 0,
+        "dither": 0,
+        "flat": 0.10869565217391304,
+        "flatMain": 0.14705882352941177,
+        "mainArea": 102,
+        "families": [
+          {
+            "n": 102,
+            "depth": 3,
+            "grey": false,
+            "hue": 38
+          },
+          {
+            "n": 36,
+            "depth": 1,
+            "grey": false,
+            "hue": 300
+          }
+        ],
+        "opaque": 138,
+        "tileMedian": 4,
+        "tileMax": 4,
+        "palette": [
+          "#100810",
+          "#B08838",
+          "#F8B058",
+          "#F8D8A0"
+        ],
+        "ok": true,
+        "problems": []
+      }
+    },
+    {
+      "id": "slag-ingot",
+      "name": "Slag Ingot",
+      "kind": "Material",
+      "blurb": "Refinery tailings, re-poured. Still warm in the middle if you split it.",
+      "sprite": {
+        "src": "src/assets/sprites/atelier/items/slag-ingot.png",
+        "kind": "sprite",
+        "w": 16,
+        "h": 16,
+        "colours": 5,
+        "offGrid": 0,
+        "dither": 0,
+        "flat": 0.12389380530973451,
+        "flatMain": 0.20634920634920634,
+        "mainArea": 63,
+        "families": [
+          {
+            "n": 63,
+            "depth": 2,
+            "grey": false,
+            "hue": 197
+          },
+          {
+            "n": 36,
+            "depth": 1,
+            "grey": false,
+            "hue": 300
+          },
+          {
+            "n": 14,
+            "depth": 2,
+            "grey": false,
+            "hue": 13
+          }
+        ],
+        "opaque": 113,
+        "tileMedian": 5,
+        "tileMax": 5,
+        "palette": [
+          "#100810",
+          "#802010",
+          "#385058",
+          "#D85820",
+          "#7890A0"
+        ],
+        "ok": true,
+        "problems": []
+      }
+    },
+    {
+      "id": "ashroot",
+      "name": "Ashroot",
+      "kind": "Material",
+      "blurb": "Grows only where the ground burned. Bitter, and the only thing that grows here.",
+      "sprite": {
+        "src": "src/assets/sprites/atelier/items/ashroot.png",
+        "kind": "sprite",
+        "w": 16,
+        "h": 16,
+        "colours": 5,
+        "offGrid": 0,
+        "dither": 0,
+        "flat": 0.01904761904761905,
+        "flatMain": 0,
+        "mainArea": 47,
+        "families": [
+          {
+            "n": 47,
+            "depth": 1,
+            "grey": false,
+            "hue": 300
+          },
+          {
+            "n": 42,
+            "depth": 3,
+            "grey": false,
+            "hue": 25
+          },
+          {
+            "n": 16,
+            "depth": 1,
+            "grey": true,
+            "hue": 200
+          }
+        ],
+        "opaque": 105,
+        "tileMedian": 4,
+        "tileMax": 4,
+        "palette": [
+          "#100810",
+          "#401808",
+          "#785030",
+          "#A87848",
+          "#C0D0D8"
+        ],
+        "ok": true,
+        "problems": []
+      }
+    }
+  ],
+  "fx": {
+    "slash": {
+      "src": "src/assets/sprites/atelier/fx/slash.png",
+      "kind": "sprite",
+      "w": 32,
+      "h": 28,
+      "colours": 3,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0,
+      "flatMain": 0,
+      "mainArea": 90,
+      "families": [
+        {
+          "n": 90,
+          "depth": 2,
+          "grey": true,
+          "hue": -1
+        },
+        {
+          "n": 39,
+          "depth": 1,
+          "grey": false,
+          "hue": 204
+        }
+      ],
+      "opaque": 129,
+      "tileMedian": 3,
+      "tileMax": 3,
+      "palette": [
+        "#7890A0",
+        "#C0D0D8",
+        "#F8F8F8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    "impact": {
+      "src": "src/assets/sprites/atelier/fx/impact.png",
+      "kind": "sprite",
+      "w": 24,
+      "h": 24,
+      "colours": 4,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.10989010989010989,
+      "flatMain": 0.09876543209876543,
+      "mainArea": 81,
+      "families": [
+        {
+          "n": 81,
+          "depth": 3,
+          "grey": false,
+          "hue": 32
+        },
+        {
+          "n": 10,
+          "depth": 1,
+          "grey": true,
+          "hue": -1
+        }
+      ],
+      "opaque": 91,
+      "tileMedian": 3,
+      "tileMax": 3,
+      "palette": [
+        "#C03800",
+        "#F08810",
+        "#F8D8A0",
+        "#F8F8F8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    "sigil": {
+      "src": "src/assets/sprites/atelier/fx/sigil.png",
+      "kind": "sprite",
+      "w": 32,
+      "h": 32,
+      "colours": 3,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0,
+      "flatMain": 0,
+      "mainArea": 323,
+      "families": [
+        {
+          "n": 323,
+          "depth": 3,
+          "grey": false,
+          "hue": 263
+        }
+      ],
+      "opaque": 323,
+      "tileMedian": 3,
+      "tileMax": 3,
+      "palette": [
+        "#301060",
+        "#6030B0",
+        "#A880E8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    "shadowSmall": {
+      "src": "src/assets/sprites/atelier/fx/shadow-small.png",
+      "kind": "sprite",
+      "w": 14,
+      "h": 3,
+      "colours": 1,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0,
+      "flatMain": 0,
+      "mainArea": 17,
+      "families": [
+        {
+          "n": 17,
+          "depth": 1,
+          "grey": false,
+          "hue": 30
+        }
+      ],
+      "opaque": 17,
+      "tileMedian": 0,
+      "tileMax": 0,
+      "palette": [
+        "#181008"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    "shadowMed": {
+      "src": "src/assets/sprites/atelier/fx/shadow-med.png",
+      "kind": "sprite",
+      "w": 26,
+      "h": 3,
+      "colours": 1,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0,
+      "flatMain": 0,
+      "mainArea": 32,
+      "families": [
+        {
+          "n": 32,
+          "depth": 1,
+          "grey": false,
+          "hue": 30
+        }
+      ],
+      "opaque": 32,
+      "tileMedian": 0,
+      "tileMax": 0,
+      "palette": [
+        "#181008"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    "shadowLarge": {
+      "src": "src/assets/sprites/atelier/fx/shadow-large.png",
+      "kind": "sprite",
+      "w": 46,
+      "h": 5,
+      "colours": 1,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.1791044776119403,
+      "flatMain": 0.1791044776119403,
+      "mainArea": 67,
+      "families": [
+        {
+          "n": 67,
+          "depth": 1,
+          "grey": false,
+          "hue": 30
+        }
+      ],
+      "opaque": 67,
+      "tileMedian": 0,
+      "tileMax": 0,
+      "palette": [
+        "#181008"
+      ],
+      "ok": true,
+      "problems": []
+    }
+  },
+  "chrome": {
+    "band": {
+      "src": "src/assets/sprites/atelier/ui/window-band.png",
+      "kind": "scene",
+      "w": 192,
+      "h": 58,
+      "colours": 17,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.5264350453172205,
+      "flatMain": 0.6510976179355441,
+      "mainArea": 8564,
+      "families": [
+        {
+          "n": 8564,
+          "depth": 9,
+          "grey": false,
+          "hue": 257
+        },
+        {
+          "n": 2028,
+          "depth": 8,
+          "grey": false,
+          "hue": 35
+        }
+      ],
+      "opaque": 10592,
+      "tileMedian": 2,
+      "tileMax": 8,
+      "palette": [
+        "#000008",
+        "#000010",
+        "#000018",
+        "#080020",
+        "#100028",
+        "#180830",
+        "#201008",
+        "#201038",
+        "#281840",
+        "#302048",
+        "#503010",
+        "#704818",
+        "#886028",
+        "#B08838",
+        "#C8A050",
+        "#E0C080",
+        "#F8E0B0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    "atb": {
+      "src": "src/assets/sprites/atelier/ui/atb-capsule.png",
+      "kind": "sprite",
+      "w": 40,
+      "h": 7,
+      "colours": 1,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.022727272727272728,
+      "flatMain": 0.022727272727272728,
+      "mainArea": 88,
+      "families": [
+        {
+          "n": 88,
+          "depth": 1,
+          "grey": true,
+          "hue": -1
+        }
+      ],
+      "opaque": 88,
+      "tileMedian": 0,
+      "tileMax": 0,
+      "palette": [
+        "#A0A0A0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    "railDemo": {
+      "src": "src/assets/sprites/atelier/ui/rail-specimen.png",
+      "kind": "scene",
+      "w": 56,
+      "h": 40,
+      "colours": 16,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.35545454545454547,
+      "flatMain": 0.4943109987357775,
+      "mainArea": 1582,
+      "families": [
+        {
+          "n": 1582,
+          "depth": 8,
+          "grey": false,
+          "hue": 257
+        },
+        {
+          "n": 618,
+          "depth": 8,
+          "grey": false,
+          "hue": 35
+        }
+      ],
+      "opaque": 2200,
+      "tileMedian": 5,
+      "tileMax": 9,
+      "palette": [
+        "#000010",
+        "#000018",
+        "#080020",
+        "#100028",
+        "#180830",
+        "#201008",
+        "#201038",
+        "#281840",
+        "#302048",
+        "#503010",
+        "#704818",
+        "#886028",
+        "#B08838",
+        "#C8A050",
+        "#E0C080",
+        "#F8E0B0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    "geometry": {
+      "y": 110,
+      "h": 58,
+      "left": {
+        "x": 2,
+        "w": 72
+      },
+      "right": {
+        "x": 78,
+        "w": 112
+      },
+      "rowPitch": 12,
+      "rowTop": 5,
+      "nameX": 82,
+      "hpRight": 142,
+      "atbX": 145,
+      "enemyX": 6
+    },
+    "atbGeometry": {
+      "w": 40,
+      "h": 7,
+      "fillX": 4,
+      "fillTravel": 34,
+      "fillY": 2,
+      "fillRows": 3,
+      "edge": "#808080",
+      "core": "#F8F8F8"
+    }
+  },
+  "fonts": {
+    "ui": {
+      "src": "src/assets/sprites/atelier/font-ui.png",
+      "kind": "sprite",
+      "w": 144,
+      "h": 66,
+      "colours": 1,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.03368683718028696,
+      "flatMain": 0.03368683718028696,
+      "mainArea": 1603,
+      "families": [
+        {
+          "n": 1603,
+          "depth": 1,
+          "grey": true,
+          "hue": -1
+        }
+      ],
+      "opaque": 1603,
+      "tileMedian": 1,
+      "tileMax": 1,
+      "palette": [
+        "#F8F8F8"
+      ],
+      "ok": true,
+      "problems": [],
+      "metrics": {
+        "name": "ui",
+        "cellW": 9,
+        "cellH": 11,
+        "cols": 16,
+        "first": 32,
+        "count": 91,
+        "advance": [
+          4,
+          3,
+          6,
+          0,
+          0,
+          7,
+          0,
+          3,
+          5,
+          5,
+          6,
+          7,
+          4,
+          5,
+          3,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          3,
+          4,
+          0,
+          0,
+          0,
+          6,
+          0,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          7,
+          6,
+          5,
+          6,
+          6,
+          6,
+          8,
+          7,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          7,
+          8,
+          7,
+          7,
+          6,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          6,
+          6,
+          6,
+          6,
+          6,
+          5,
+          6,
+          6,
+          5,
+          5,
+          6,
+          5,
+          9,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          5,
+          6,
+          7,
+          9,
+          7,
+          7,
+          6
+        ],
+        "lineHeight": 11
+      }
+    },
+    "damage": {
+      "src": "src/assets/sprites/atelier/font-damage.png",
+      "kind": "sprite",
+      "w": 128,
+      "h": 22,
+      "colours": 1,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.03968253968253968,
+      "flatMain": 0.03968253968253968,
+      "mainArea": 378,
+      "families": [
+        {
+          "n": 378,
+          "depth": 1,
+          "grey": true,
+          "hue": -1
+        }
+      ],
+      "opaque": 378,
+      "tileMedian": 1,
+      "tileMax": 1,
+      "palette": [
+        "#F8F8F8"
+      ],
+      "ok": true,
+      "problems": [],
+      "metrics": {
+        "name": "damage",
+        "cellW": 8,
+        "cellH": 11,
+        "cols": 16,
+        "first": 32,
+        "count": 26,
+        "advance": [
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          6,
+          0,
+          0,
+          8,
+          8,
+          8,
+          8,
+          8,
+          8,
+          8,
+          8,
+          8,
+          8
+        ],
+        "lineHeight": 11
+      }
+    }
+  },
+  "palette": {
+    "windowRamp": [
+      "#807098",
+      "#786890",
+      "#706088",
+      "#685880",
+      "#605078",
+      "#584870",
+      "#504068",
+      "#483860",
+      "#403058",
+      "#382850",
+      "#302048",
+      "#281840",
+      "#201038",
+      "#180830",
+      "#100028",
+      "#080020",
+      "#000018",
+      "#000010",
+      "#000008",
+      "#000000"
+    ],
+    "bandSlice": [
+      9,
+      18
+    ],
+    "rail": {
+      "f8": "#F8E0B0",
+      "d8": "#E0C080",
+      "b8": "#C8A050",
+      "a8": "#B89040",
+      "g80": "#B08838",
+      "g60": "#886028",
+      "g50": "#704818",
+      "g38": "#503010",
+      "g00": "#201008"
+    },
+    "atb": {
+      "outline": "#A0A0A0",
+      "edge": "#808080",
+      "core": "#F8F8F8"
+    },
+    "text": {
+      "primary": "#F8F8F8",
+      "shadow": "#000000",
+      "label": "#D8A848",
+      "ready": "#B098D8",
+      "dim": "#9098A0",
+      "damage": "#F8F8F8",
+      "heal": "#78E058",
+      "crit": "#F8D800"
+    },
+    "scene": {
+      "sky": [
+        "#180820",
+        "#201028",
+        "#281838",
+        "#302040",
+        "#402848",
+        "#483050",
+        "#583858",
+        "#684058",
+        "#804858",
+        "#985860",
+        "#B07060",
+        "#C08868"
+      ],
+      "ridgeFar": [
+        "#281828",
+        "#302030",
+        "#402838"
+      ],
+      "ridgeNear": [
+        "#180810",
+        "#201018",
+        "#301820"
+      ],
+      "stack": [
+        "#100810",
+        "#181018",
+        "#282028"
+      ],
+      "ember": [
+        "#B08838",
+        "#D8A848",
+        "#F8D8A0"
+      ],
+      "ground": [
+        "#181008",
+        "#281810",
+        "#382018",
+        "#483028",
+        "#584030",
+        "#705040"
+      ],
+      "groundLit": [
+        "#886050",
+        "#A07860",
+        "#B89078"
+      ],
+      "crack": "#100808",
+      "ash": [
+        "#605058",
+        "#807078"
+      ],
+      "shadow": "#181008"
+    }
+  },
+  "audit": [
+    {
+      "src": "src/assets/sprites/atelier/font-ui.png",
+      "kind": "sprite",
+      "w": 144,
+      "h": 66,
+      "colours": 1,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.03368683718028696,
+      "flatMain": 0.03368683718028696,
+      "mainArea": 1603,
+      "families": [
+        {
+          "n": 1603,
+          "depth": 1,
+          "grey": true,
+          "hue": -1
+        }
+      ],
+      "opaque": 1603,
+      "tileMedian": 1,
+      "tileMax": 1,
+      "palette": [
+        "#F8F8F8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/font-damage.png",
+      "kind": "sprite",
+      "w": 128,
+      "h": 22,
+      "colours": 1,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.03968253968253968,
+      "flatMain": 0.03968253968253968,
+      "mainArea": 378,
+      "families": [
+        {
+          "n": 378,
+          "depth": 1,
+          "grey": true,
+          "hue": -1
+        }
+      ],
+      "opaque": 378,
+      "tileMedian": 1,
+      "tileMax": 1,
+      "palette": [
+        "#F8F8F8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/heroes/rell-idle.png",
+      "kind": "sprite",
+      "w": 16,
+      "h": 24,
+      "colours": 14,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.02564102564102564,
+      "flatMain": 0,
+      "mainArea": 97,
+      "families": [
+        {
+          "n": 97,
+          "depth": 4,
+          "grey": false,
+          "hue": 332
+        },
+        {
+          "n": 73,
+          "depth": 7,
+          "grey": false,
+          "hue": 17
+        },
+        {
+          "n": 47,
+          "depth": 2,
+          "grey": true,
+          "hue": 220
+        },
+        {
+          "n": 17,
+          "depth": 1,
+          "grey": false,
+          "hue": 220
+        }
+      ],
+      "opaque": 234,
+      "tileMedian": 7,
+      "tileMax": 9,
+      "palette": [
+        "#180810",
+        "#281818",
+        "#500820",
+        "#503028",
+        "#981038",
+        "#384050",
+        "#683820",
+        "#785040",
+        "#D84058",
+        "#788090",
+        "#B07850",
+        "#E0A878",
+        "#B0B8C8",
+        "#F8D8B0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/heroes/rell-critical.png",
+      "kind": "sprite",
+      "w": 16,
+      "h": 24,
+      "colours": 14,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.039603960396039604,
+      "flatMain": 0.0125,
+      "mainArea": 80,
+      "families": [
+        {
+          "n": 80,
+          "depth": 4,
+          "grey": false,
+          "hue": 333
+        },
+        {
+          "n": 67,
+          "depth": 7,
+          "grey": false,
+          "hue": 15
+        },
+        {
+          "n": 47,
+          "depth": 2,
+          "grey": true,
+          "hue": 220
+        },
+        {
+          "n": 8,
+          "depth": 1,
+          "grey": false,
+          "hue": 220
+        }
+      ],
+      "opaque": 202,
+      "tileMedian": 8,
+      "tileMax": 10,
+      "palette": [
+        "#180810",
+        "#281818",
+        "#500820",
+        "#503028",
+        "#981038",
+        "#384050",
+        "#683820",
+        "#785040",
+        "#D84058",
+        "#788090",
+        "#B07850",
+        "#E0A878",
+        "#B0B8C8",
+        "#F8D8B0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/heroes/rell-attack.png",
+      "kind": "sprite",
+      "w": 24,
+      "h": 32,
+      "colours": 15,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.04113924050632911,
+      "flatMain": 0.015267175572519083,
+      "mainArea": 131,
+      "families": [
+        {
+          "n": 131,
+          "depth": 4,
+          "grey": false,
+          "hue": 332
+        },
+        {
+          "n": 97,
+          "depth": 3,
+          "grey": true,
+          "hue": 220
+        },
+        {
+          "n": 76,
+          "depth": 7,
+          "grey": false,
+          "hue": 16
+        },
+        {
+          "n": 12,
+          "depth": 1,
+          "grey": false,
+          "hue": 220
+        }
+      ],
+      "opaque": 316,
+      "tileMedian": 4,
+      "tileMax": 8,
+      "palette": [
+        "#180810",
+        "#281818",
+        "#500820",
+        "#503028",
+        "#981038",
+        "#384050",
+        "#683820",
+        "#785040",
+        "#D84058",
+        "#788090",
+        "#B07850",
+        "#E0A878",
+        "#B0B8C8",
+        "#F8D8B0",
+        "#E0E0E8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/heroes/iska-idle.png",
+      "kind": "sprite",
+      "w": 16,
+      "h": 24,
+      "colours": 14,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.012244897959183673,
+      "flatMain": 0.01818181818181818,
+      "mainArea": 165,
+      "families": [
+        {
+          "n": 165,
+          "depth": 13,
+          "grey": false,
+          "hue": 32
+        },
+        {
+          "n": 80,
+          "depth": 1,
+          "grey": false,
+          "hue": 330
+        }
+      ],
+      "opaque": 245,
+      "tileMedian": 8,
+      "tileMax": 9,
+      "palette": [
+        "#180810",
+        "#281008",
+        "#584828",
+        "#684830",
+        "#804818",
+        "#806018",
+        "#988048",
+        "#B08868",
+        "#D08840",
+        "#C09830",
+        "#E8B890",
+        "#E0C888",
+        "#F0D060",
+        "#F8E0C0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/heroes/iska-critical.png",
+      "kind": "sprite",
+      "w": 16,
+      "h": 24,
+      "colours": 14,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.01485148514851485,
+      "flatMain": 0.014388489208633094,
+      "mainArea": 139,
+      "families": [
+        {
+          "n": 139,
+          "depth": 13,
+          "grey": false,
+          "hue": 31
+        },
+        {
+          "n": 63,
+          "depth": 1,
+          "grey": false,
+          "hue": 330
+        }
+      ],
+      "opaque": 202,
+      "tileMedian": 8,
+      "tileMax": 10,
+      "palette": [
+        "#180810",
+        "#281008",
+        "#584828",
+        "#684830",
+        "#804818",
+        "#806018",
+        "#988048",
+        "#B08868",
+        "#D08840",
+        "#C09830",
+        "#E8B890",
+        "#E0C888",
+        "#F0D060",
+        "#F8E0C0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/heroes/iska-attack.png",
+      "kind": "sprite",
+      "w": 24,
+      "h": 32,
+      "colours": 14,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.043478260869565216,
+      "flatMain": 0.07738095238095238,
+      "mainArea": 168,
+      "families": [
+        {
+          "n": 168,
+          "depth": 12,
+          "grey": false,
+          "hue": 31
+        },
+        {
+          "n": 93,
+          "depth": 1,
+          "grey": false,
+          "hue": 330
+        },
+        {
+          "n": 38,
+          "depth": 1,
+          "grey": true,
+          "hue": 210
+        }
+      ],
+      "opaque": 299,
+      "tileMedian": 4,
+      "tileMax": 10,
+      "palette": [
+        "#180810",
+        "#281008",
+        "#584828",
+        "#684830",
+        "#804818",
+        "#806018",
+        "#988048",
+        "#B08868",
+        "#D08840",
+        "#C09830",
+        "#B0B8C0",
+        "#E8B890",
+        "#E0C888",
+        "#F0D060"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/heroes/maren-idle.png",
+      "kind": "sprite",
+      "w": 16,
+      "h": 24,
+      "colours": 15,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.03461538461538462,
+      "flatMain": 0.022598870056497175,
+      "mainArea": 177,
+      "families": [
+        {
+          "n": 177,
+          "depth": 4,
+          "grey": false,
+          "hue": 263
+        },
+        {
+          "n": 47,
+          "depth": 6,
+          "grey": false,
+          "hue": 34
+        },
+        {
+          "n": 36,
+          "depth": 5,
+          "grey": true,
+          "hue": 260
+        }
+      ],
+      "opaque": 260,
+      "tileMedian": 7,
+      "tileMax": 9,
+      "palette": [
+        "#100818",
+        "#180830",
+        "#382078",
+        "#584018",
+        "#705040",
+        "#6048B8",
+        "#605868",
+        "#907028",
+        "#B89078",
+        "#A8A0B8",
+        "#D8B858",
+        "#E8C0A0",
+        "#E0D8F8",
+        "#E8E0E8",
+        "#F8E0C8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/heroes/maren-critical.png",
+      "kind": "sprite",
+      "w": 16,
+      "h": 24,
+      "colours": 13,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.030927835051546393,
+      "flatMain": 0.008849557522123894,
+      "mainArea": 113,
+      "families": [
+        {
+          "n": 113,
+          "depth": 4,
+          "grey": false,
+          "hue": 264
+        },
+        {
+          "n": 41,
+          "depth": 3,
+          "grey": true,
+          "hue": 260
+        },
+        {
+          "n": 40,
+          "depth": 6,
+          "grey": false,
+          "hue": 35
+        }
+      ],
+      "opaque": 194,
+      "tileMedian": 7,
+      "tileMax": 8,
+      "palette": [
+        "#100818",
+        "#180830",
+        "#382078",
+        "#584018",
+        "#705040",
+        "#6048B8",
+        "#605868",
+        "#907028",
+        "#B89078",
+        "#A8A0B8",
+        "#D8B858",
+        "#E8C0A0",
+        "#E8E0E8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/heroes/maren-attack.png",
+      "kind": "sprite",
+      "w": 24,
+      "h": 32,
+      "colours": 15,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.04262295081967213,
+      "flatMain": 0.022598870056497175,
+      "mainArea": 177,
+      "families": [
+        {
+          "n": 177,
+          "depth": 4,
+          "grey": false,
+          "hue": 263
+        },
+        {
+          "n": 65,
+          "depth": 6,
+          "grey": false,
+          "hue": 35
+        },
+        {
+          "n": 63,
+          "depth": 5,
+          "grey": true,
+          "hue": 260
+        }
+      ],
+      "opaque": 305,
+      "tileMedian": 4,
+      "tileMax": 8,
+      "palette": [
+        "#100818",
+        "#180830",
+        "#382078",
+        "#584018",
+        "#705040",
+        "#6048B8",
+        "#605868",
+        "#907028",
+        "#B89078",
+        "#A8A0B8",
+        "#D8B858",
+        "#E8C0A0",
+        "#E0D8F8",
+        "#E8E0E8",
+        "#F8E0C8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/heroes/tessin-idle.png",
+      "kind": "sprite",
+      "w": 16,
+      "h": 24,
+      "colours": 15,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.0163265306122449,
+      "flatMain": 0,
+      "mainArea": 101,
+      "families": [
+        {
+          "n": 101,
+          "depth": 4,
+          "grey": false,
+          "hue": 205
+        },
+        {
+          "n": 96,
+          "depth": 7,
+          "grey": false,
+          "hue": 28
+        },
+        {
+          "n": 43,
+          "depth": 3,
+          "grey": false,
+          "hue": 151
+        },
+        {
+          "n": 5,
+          "depth": 1,
+          "grey": true,
+          "hue": 210
+        }
+      ],
+      "opaque": 245,
+      "tileMedian": 7,
+      "tileMax": 9,
+      "palette": [
+        "#081018",
+        "#081810",
+        "#281808",
+        "#084048",
+        "#204030",
+        "#583820",
+        "#683820",
+        "#107880",
+        "#407860",
+        "#906840",
+        "#B07850",
+        "#48C0C8",
+        "#E0A878",
+        "#C0C8D0",
+        "#F8D8B0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/heroes/tessin-critical.png",
+      "kind": "sprite",
+      "w": 16,
+      "h": 24,
+      "colours": 15,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.03571428571428571,
+      "flatMain": 0.02531645569620253,
+      "mainArea": 79,
+      "families": [
+        {
+          "n": 79,
+          "depth": 4,
+          "grey": false,
+          "hue": 205
+        },
+        {
+          "n": 78,
+          "depth": 7,
+          "grey": false,
+          "hue": 27
+        },
+        {
+          "n": 36,
+          "depth": 3,
+          "grey": false,
+          "hue": 151
+        },
+        {
+          "n": 3,
+          "depth": 1,
+          "grey": true,
+          "hue": 210
+        }
+      ],
+      "opaque": 196,
+      "tileMedian": 8,
+      "tileMax": 8,
+      "palette": [
+        "#081018",
+        "#081810",
+        "#281808",
+        "#084048",
+        "#204030",
+        "#583820",
+        "#683820",
+        "#107880",
+        "#407860",
+        "#906840",
+        "#B07850",
+        "#48C0C8",
+        "#E0A878",
+        "#C0C8D0",
+        "#F8D8B0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/heroes/tessin-attack.png",
+      "kind": "sprite",
+      "w": 24,
+      "h": 32,
+      "colours": 15,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.03663003663003663,
+      "flatMain": 0.06086956521739131,
+      "mainArea": 115,
+      "families": [
+        {
+          "n": 115,
+          "depth": 7,
+          "grey": false,
+          "hue": 27
+        },
+        {
+          "n": 105,
+          "depth": 4,
+          "grey": false,
+          "hue": 205
+        },
+        {
+          "n": 36,
+          "depth": 3,
+          "grey": false,
+          "hue": 151
+        },
+        {
+          "n": 17,
+          "depth": 1,
+          "grey": true,
+          "hue": 210
+        }
+      ],
+      "opaque": 273,
+      "tileMedian": 4,
+      "tileMax": 11,
+      "palette": [
+        "#081018",
+        "#081810",
+        "#281808",
+        "#084048",
+        "#204030",
+        "#583820",
+        "#683820",
+        "#107880",
+        "#407860",
+        "#906840",
+        "#B07850",
+        "#48C0C8",
+        "#E0A878",
+        "#C0C8D0",
+        "#F8D8B0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/monsters/slagmaw.png",
+      "kind": "sprite",
+      "w": 88,
+      "h": 64,
+      "colours": 14,
+      "offGrid": 0,
+      "dither": 0.002520478890989288,
+      "flat": 0.14650283553875237,
+      "flatMain": 0.06325301204819277,
+      "mainArea": 1328,
+      "families": [
+        {
+          "n": 1328,
+          "depth": 8,
+          "grey": false,
+          "hue": 26
+        },
+        {
+          "n": 585,
+          "depth": 1,
+          "grey": false,
+          "hue": 330
+        },
+        {
+          "n": 437,
+          "depth": 1,
+          "grey": false,
+          "hue": 0
+        },
+        {
+          "n": 370,
+          "depth": 1,
+          "grey": false,
+          "hue": 240
+        }
+      ],
+      "opaque": 3174,
+      "tileMedian": 5,
+      "tileMax": 11,
+      "palette": [
+        "#100808",
+        "#180810",
+        "#181820",
+        "#302018",
+        "#383040",
+        "#504030",
+        "#605868",
+        "#786050",
+        "#D04800",
+        "#F07810",
+        "#A89078",
+        "#9890A8",
+        "#F8C060",
+        "#F8D800"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/monsters/cinderwisp.png",
+      "kind": "sprite",
+      "w": 40,
+      "h": 40,
+      "colours": 10,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.14171122994652408,
+      "flatMain": 0.1584,
+      "mainArea": 625,
+      "families": [
+        {
+          "n": 625,
+          "depth": 5,
+          "grey": false,
+          "hue": 331
+        },
+        {
+          "n": 112,
+          "depth": 4,
+          "grey": false,
+          "hue": 33
+        },
+        {
+          "n": 11,
+          "depth": 1,
+          "grey": false,
+          "hue": 300
+        }
+      ],
+      "opaque": 748,
+      "tileMedian": 4,
+      "tileMax": 7,
+      "palette": [
+        "#080008",
+        "#180810",
+        "#380820",
+        "#601038",
+        "#883058",
+        "#C04800",
+        "#B06070",
+        "#F08810",
+        "#F8C858",
+        "#F8E8B0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/monsters/gloamstag.png",
+      "kind": "sprite",
+      "w": 64,
+      "h": 56,
+      "colours": 12,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.095,
+      "flatMain": 0.12622222222222224,
+      "mainArea": 1125,
+      "families": [
+        {
+          "n": 1125,
+          "depth": 4,
+          "grey": false,
+          "hue": 206
+        },
+        {
+          "n": 400,
+          "depth": 1,
+          "grey": false,
+          "hue": 240
+        },
+        {
+          "n": 145,
+          "depth": 3,
+          "grey": false,
+          "hue": 153
+        },
+        {
+          "n": 72,
+          "depth": 2,
+          "grey": true,
+          "hue": 204
+        }
+      ],
+      "opaque": 1800,
+      "tileMedian": 5,
+      "tileMax": 9,
+      "palette": [
+        "#080810",
+        "#101820",
+        "#102820",
+        "#283848",
+        "#285840",
+        "#605848",
+        "#486878",
+        "#50A070",
+        "#708898",
+        "#98D048",
+        "#A0B8C8",
+        "#D8D0B8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/monsters/fluewyrm.png",
+      "kind": "sprite",
+      "w": 80,
+      "h": 48,
+      "colours": 13,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.0684931506849315,
+      "flatMain": 0.09166666666666666,
+      "mainArea": 840,
+      "families": [
+        {
+          "n": 840,
+          "depth": 5,
+          "grey": false,
+          "hue": 214
+        },
+        {
+          "n": 276,
+          "depth": 2,
+          "grey": false,
+          "hue": 243
+        },
+        {
+          "n": 101,
+          "depth": 2,
+          "grey": false,
+          "hue": 270
+        },
+        {
+          "n": 93,
+          "depth": 3,
+          "grey": true,
+          "hue": 0
+        }
+      ],
+      "opaque": 1314,
+      "tileMedian": 5,
+      "tileMax": 8,
+      "palette": [
+        "#080810",
+        "#101828",
+        "#301848",
+        "#203048",
+        "#603098",
+        "#385070",
+        "#786070",
+        "#587898",
+        "#A878D8",
+        "#88A8C0",
+        "#B0A0A0",
+        "#F8A020",
+        "#E8E0D0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/monsters/ashgrieve.png",
+      "kind": "sprite",
+      "w": 48,
+      "h": 64,
+      "colours": 15,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.18577981651376146,
+      "flatMain": 0.17788018433179723,
+      "mainArea": 1085,
+      "families": [
+        {
+          "n": 1085,
+          "depth": 4,
+          "grey": false,
+          "hue": 294
+        },
+        {
+          "n": 492,
+          "depth": 7,
+          "grey": false,
+          "hue": 9
+        },
+        {
+          "n": 144,
+          "depth": 2,
+          "grey": true,
+          "hue": 300
+        },
+        {
+          "n": 23,
+          "depth": 2,
+          "grey": false,
+          "hue": 42
+        }
+      ],
+      "opaque": 1744,
+      "tileMedian": 4,
+      "tileMax": 8,
+      "palette": [
+        "#100810",
+        "#181018",
+        "#201818",
+        "#302038",
+        "#403030",
+        "#403830",
+        "#504058",
+        "#B03000",
+        "#685050",
+        "#685850",
+        "#786078",
+        "#F07000",
+        "#A090A8",
+        "#F8B840",
+        "#F8E8B0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/scenes/slagfen.png",
+      "kind": "scene",
+      "w": 192,
+      "h": 110,
+      "colours": 30,
+      "offGrid": 0,
+      "dither": 0.012215909090909092,
+      "flat": 0.4005208333333333,
+      "flatMain": 0.31438807126258717,
+      "mainArea": 10328,
+      "families": [
+        {
+          "n": 10328,
+          "depth": 15,
+          "grey": false,
+          "hue": 30
+        },
+        {
+          "n": 9253,
+          "depth": 10,
+          "grey": false,
+          "hue": 288
+        },
+        {
+          "n": 781,
+          "depth": 3,
+          "grey": false,
+          "hue": 327
+        },
+        {
+          "n": 617,
+          "depth": 1,
+          "grey": true,
+          "hue": 300
+        }
+      ],
+      "opaque": 21120,
+      "tileMedian": 4,
+      "tileMax": 10,
+      "palette": [
+        "#100808",
+        "#100810",
+        "#180820",
+        "#181008",
+        "#181018",
+        "#201028",
+        "#281810",
+        "#281838",
+        "#282028",
+        "#382018",
+        "#302030",
+        "#302040",
+        "#402838",
+        "#402848",
+        "#483028",
+        "#483050",
+        "#583858",
+        "#584030",
+        "#684058",
+        "#705040",
+        "#804858",
+        "#886050",
+        "#985860",
+        "#A07860",
+        "#B07060",
+        "#B08838",
+        "#C08868",
+        "#B89078",
+        "#D8A848",
+        "#F8D8A0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/scenes/slagfen-ash.png",
+      "kind": "sprite",
+      "w": 192,
+      "h": 34,
+      "colours": 2,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0,
+      "flatMain": 0,
+      "mainArea": 65,
+      "families": [
+        {
+          "n": 65,
+          "depth": 2,
+          "grey": true,
+          "hue": 330
+        }
+      ],
+      "opaque": 65,
+      "tileMedian": 1,
+      "tileMax": 2,
+      "palette": [
+        "#605058",
+        "#807078"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/ui/window-band.png",
+      "kind": "scene",
+      "w": 192,
+      "h": 58,
+      "colours": 17,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.5264350453172205,
+      "flatMain": 0.6510976179355441,
+      "mainArea": 8564,
+      "families": [
+        {
+          "n": 8564,
+          "depth": 9,
+          "grey": false,
+          "hue": 257
+        },
+        {
+          "n": 2028,
+          "depth": 8,
+          "grey": false,
+          "hue": 35
+        }
+      ],
+      "opaque": 10592,
+      "tileMedian": 2,
+      "tileMax": 8,
+      "palette": [
+        "#000008",
+        "#000010",
+        "#000018",
+        "#080020",
+        "#100028",
+        "#180830",
+        "#201008",
+        "#201038",
+        "#281840",
+        "#302048",
+        "#503010",
+        "#704818",
+        "#886028",
+        "#B08838",
+        "#C8A050",
+        "#E0C080",
+        "#F8E0B0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/ui/atb-capsule.png",
+      "kind": "sprite",
+      "w": 40,
+      "h": 7,
+      "colours": 1,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.022727272727272728,
+      "flatMain": 0.022727272727272728,
+      "mainArea": 88,
+      "families": [
+        {
+          "n": 88,
+          "depth": 1,
+          "grey": true,
+          "hue": -1
+        }
+      ],
+      "opaque": 88,
+      "tileMedian": 0,
+      "tileMax": 0,
+      "palette": [
+        "#A0A0A0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/ui/rail-specimen.png",
+      "kind": "scene",
+      "w": 56,
+      "h": 40,
+      "colours": 16,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.35545454545454547,
+      "flatMain": 0.4943109987357775,
+      "mainArea": 1582,
+      "families": [
+        {
+          "n": 1582,
+          "depth": 8,
+          "grey": false,
+          "hue": 257
+        },
+        {
+          "n": 618,
+          "depth": 8,
+          "grey": false,
+          "hue": 35
+        }
+      ],
+      "opaque": 2200,
+      "tileMedian": 5,
+      "tileMax": 9,
+      "palette": [
+        "#000010",
+        "#000018",
+        "#080020",
+        "#100028",
+        "#180830",
+        "#201008",
+        "#201038",
+        "#281840",
+        "#302048",
+        "#503010",
+        "#704818",
+        "#886028",
+        "#B08838",
+        "#C8A050",
+        "#E0C080",
+        "#F8E0B0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/items/emberglass-vial.png",
+      "kind": "sprite",
+      "w": 16,
+      "h": 16,
+      "colours": 7,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.043478260869565216,
+      "flatMain": 0,
+      "mainArea": 33,
+      "families": [
+        {
+          "n": 33,
+          "depth": 1,
+          "grey": false,
+          "hue": 300
+        },
+        {
+          "n": 30,
+          "depth": 3,
+          "grey": false,
+          "hue": 18
+        },
+        {
+          "n": 21,
+          "depth": 2,
+          "grey": false,
+          "hue": 201
+        },
+        {
+          "n": 8,
+          "depth": 1,
+          "grey": true,
+          "hue": 200
+        }
+      ],
+      "opaque": 92,
+      "tileMedian": 5,
+      "tileMax": 7,
+      "palette": [
+        "#100810",
+        "#802010",
+        "#385058",
+        "#D85820",
+        "#7890A0",
+        "#F8B058",
+        "#C0D0D8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/items/cogwrights-spanner.png",
+      "kind": "sprite",
+      "w": 16,
+      "h": 16,
+      "colours": 3,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0,
+      "flatMain": 0,
+      "mainArea": 33,
+      "families": [
+        {
+          "n": 33,
+          "depth": 1,
+          "grey": false,
+          "hue": 300
+        },
+        {
+          "n": 16,
+          "depth": 1,
+          "grey": true,
+          "hue": 200
+        },
+        {
+          "n": 13,
+          "depth": 1,
+          "grey": false,
+          "hue": 204
+        }
+      ],
+      "opaque": 62,
+      "tileMedian": 3,
+      "tileMax": 3,
+      "palette": [
+        "#100810",
+        "#7890A0",
+        "#C0D0D8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/items/voidcallers-focus.png",
+      "kind": "sprite",
+      "w": 16,
+      "h": 16,
+      "colours": 6,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.014285714285714285,
+      "flatMain": 0.027777777777777776,
+      "mainArea": 36,
+      "families": [
+        {
+          "n": 36,
+          "depth": 3,
+          "grey": false,
+          "hue": 263
+        },
+        {
+          "n": 26,
+          "depth": 1,
+          "grey": false,
+          "hue": 300
+        },
+        {
+          "n": 8,
+          "depth": 2,
+          "grey": false,
+          "hue": 24
+        }
+      ],
+      "opaque": 70,
+      "tileMedian": 4,
+      "tileMax": 4,
+      "palette": [
+        "#100810",
+        "#401808",
+        "#301060",
+        "#6030B0",
+        "#785030",
+        "#A880E8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/items/warden-seal.png",
+      "kind": "sprite",
+      "w": 16,
+      "h": 16,
+      "colours": 4,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.10869565217391304,
+      "flatMain": 0.14705882352941177,
+      "mainArea": 102,
+      "families": [
+        {
+          "n": 102,
+          "depth": 3,
+          "grey": false,
+          "hue": 38
+        },
+        {
+          "n": 36,
+          "depth": 1,
+          "grey": false,
+          "hue": 300
+        }
+      ],
+      "opaque": 138,
+      "tileMedian": 4,
+      "tileMax": 4,
+      "palette": [
+        "#100810",
+        "#B08838",
+        "#F8B058",
+        "#F8D8A0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/items/slag-ingot.png",
+      "kind": "sprite",
+      "w": 16,
+      "h": 16,
+      "colours": 5,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.12389380530973451,
+      "flatMain": 0.20634920634920634,
+      "mainArea": 63,
+      "families": [
+        {
+          "n": 63,
+          "depth": 2,
+          "grey": false,
+          "hue": 197
+        },
+        {
+          "n": 36,
+          "depth": 1,
+          "grey": false,
+          "hue": 300
+        },
+        {
+          "n": 14,
+          "depth": 2,
+          "grey": false,
+          "hue": 13
+        }
+      ],
+      "opaque": 113,
+      "tileMedian": 5,
+      "tileMax": 5,
+      "palette": [
+        "#100810",
+        "#802010",
+        "#385058",
+        "#D85820",
+        "#7890A0"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/items/ashroot.png",
+      "kind": "sprite",
+      "w": 16,
+      "h": 16,
+      "colours": 5,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.01904761904761905,
+      "flatMain": 0,
+      "mainArea": 47,
+      "families": [
+        {
+          "n": 47,
+          "depth": 1,
+          "grey": false,
+          "hue": 300
+        },
+        {
+          "n": 42,
+          "depth": 3,
+          "grey": false,
+          "hue": 25
+        },
+        {
+          "n": 16,
+          "depth": 1,
+          "grey": true,
+          "hue": 200
+        }
+      ],
+      "opaque": 105,
+      "tileMedian": 4,
+      "tileMax": 4,
+      "palette": [
+        "#100810",
+        "#401808",
+        "#785030",
+        "#A87848",
+        "#C0D0D8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/fx/slash.png",
+      "kind": "sprite",
+      "w": 32,
+      "h": 28,
+      "colours": 3,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0,
+      "flatMain": 0,
+      "mainArea": 90,
+      "families": [
+        {
+          "n": 90,
+          "depth": 2,
+          "grey": true,
+          "hue": -1
+        },
+        {
+          "n": 39,
+          "depth": 1,
+          "grey": false,
+          "hue": 204
+        }
+      ],
+      "opaque": 129,
+      "tileMedian": 3,
+      "tileMax": 3,
+      "palette": [
+        "#7890A0",
+        "#C0D0D8",
+        "#F8F8F8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/fx/impact.png",
+      "kind": "sprite",
+      "w": 24,
+      "h": 24,
+      "colours": 4,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.10989010989010989,
+      "flatMain": 0.09876543209876543,
+      "mainArea": 81,
+      "families": [
+        {
+          "n": 81,
+          "depth": 3,
+          "grey": false,
+          "hue": 32
+        },
+        {
+          "n": 10,
+          "depth": 1,
+          "grey": true,
+          "hue": -1
+        }
+      ],
+      "opaque": 91,
+      "tileMedian": 3,
+      "tileMax": 3,
+      "palette": [
+        "#C03800",
+        "#F08810",
+        "#F8D8A0",
+        "#F8F8F8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/fx/sigil.png",
+      "kind": "sprite",
+      "w": 32,
+      "h": 32,
+      "colours": 3,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0,
+      "flatMain": 0,
+      "mainArea": 323,
+      "families": [
+        {
+          "n": 323,
+          "depth": 3,
+          "grey": false,
+          "hue": 263
+        }
+      ],
+      "opaque": 323,
+      "tileMedian": 3,
+      "tileMax": 3,
+      "palette": [
+        "#301060",
+        "#6030B0",
+        "#A880E8"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/fx/shadow-small.png",
+      "kind": "sprite",
+      "w": 14,
+      "h": 3,
+      "colours": 1,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0,
+      "flatMain": 0,
+      "mainArea": 17,
+      "families": [
+        {
+          "n": 17,
+          "depth": 1,
+          "grey": false,
+          "hue": 30
+        }
+      ],
+      "opaque": 17,
+      "tileMedian": 0,
+      "tileMax": 0,
+      "palette": [
+        "#181008"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/fx/shadow-med.png",
+      "kind": "sprite",
+      "w": 26,
+      "h": 3,
+      "colours": 1,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0,
+      "flatMain": 0,
+      "mainArea": 32,
+      "families": [
+        {
+          "n": 32,
+          "depth": 1,
+          "grey": false,
+          "hue": 30
+        }
+      ],
+      "opaque": 32,
+      "tileMedian": 0,
+      "tileMax": 0,
+      "palette": [
+        "#181008"
+      ],
+      "ok": true,
+      "problems": []
+    },
+    {
+      "src": "src/assets/sprites/atelier/fx/shadow-large.png",
+      "kind": "sprite",
+      "w": 46,
+      "h": 5,
+      "colours": 1,
+      "offGrid": 0,
+      "dither": 0,
+      "flat": 0.1791044776119403,
+      "flatMain": 0.1791044776119403,
+      "mainArea": 67,
+      "families": [
+        {
+          "n": 67,
+          "depth": 1,
+          "grey": false,
+          "hue": 30
+        }
+      ],
+      "opaque": 67,
+      "tileMedian": 0,
+      "tileMax": 0,
+      "palette": [
+        "#181008"
+      ],
+      "ok": true,
+      "problems": []
+    }
+  ]
+}

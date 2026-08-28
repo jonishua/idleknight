@@ -1,0 +1,17 @@
+{
+  "piece": "scaffold",
+  "round": 0,
+  "score": 55,
+  "wins": false,
+  "biggestGap": "The hero has no art. The reference gives ~40% of the screen to full-bleed painterly art with a scrim; ours is a CSS gradient plus a vector skyline, so the top third reads empty and the giant numeral floats on nothing. Everything else is chrome that art has to sit inside.",
+  "evidence": [
+    "BASELINE, NOT A CRITIC VERDICT: this is the scaffold agent's own assessment of its own output, recorded at round 0 so the progress page has real data. It has not been through a blind comparison.",
+    "Palette verified against reference/shots/ui-bar.png by sampling pixels, not by eye: ground #050A10, panel #13171B, gold fill sampled #DBAB4B vs token #D7A747, violet sampled #6E37B9 vs token #763CC3.",
+    "Confirmed the reference's third correction directly: the empty progress track samples #14181C, identical to the panel fill. The track is not a darker well.",
+    "Home screen fits 390x844 with no scroll: hero 300px, four panels, 60px nav.",
+    "Chrome primitives are in place and consumed by the home screen: panel, groove divider, gold and violet progress bars, chamfered gold button with inner bevel, currency chips, action cards, diamond ornament rule, bottom nav with the warm active background.",
+    "Pixel-art pipeline is proven end to end: original 16x16 PNGs authored by tools/make-sprite.mjs, scaled x3 by CSS with image-rendering: pixelated, integer factors only. Visible on the Skills tab.",
+    "Gaps beyond the hero: no real pixel-art content anywhere in the chrome, the gold crest is vector rather than rendered metal, and four of five nav tabs are honest placeholders."
+  ],
+  "timestamp": "2026-08-26T22:55:00Z"
+}

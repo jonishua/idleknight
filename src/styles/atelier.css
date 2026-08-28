@@ -1,0 +1,622 @@
+/* =========================================================================
+   EMBERVEIL — THE ATELIER
+
+   The gallery of the pixel library, and the page that has to WIN the
+   argument this whole piece exists to settle.
+
+   reference/ui-bar.md closes on it: "The seam where a 16-bit sprite meets a
+   2026 mobile UI is the hardest visual problem in the project and the first
+   thing a critic should attack." And ffvi-art.md §7 gives the answer — a
+   cabinet with a screen in it.
+
+   So this file has exactly one big idea, the VITRINE: every single piece of
+   pixel art on this page sits inside a gold-beveled case with a hard dark
+   inner cut, at an integer scale, on an integer offset. Nothing is ever laid
+   loose on a panel. A sprite on a flat background is a sprite that has been
+   pasted on; a sprite behind glass is an exhibit. That difference is the
+   whole thesis, and it costs about forty lines of CSS.
+
+   The two rules that never bend (§7):
+     1. No chrome effect touches a pixel. Every border-radius, box-shadow,
+        gradient and opacity on this page stops at the vitrine's inner cut.
+        Inside it there is nothing but nearest-neighbour bytes.
+     2. No pixel art in the chrome. Section marks, the nav and the ornament
+        rules are crisp vector at device resolution.
+
+   Consumes tokens.css and primitives.css. No raw hex.
+   ========================================================================= */
+
+/* =========================================================================
+   1. PAGE FURNITURE
+   ========================================================================= */
+
+.atelier-head {
+  flex: 0 0 auto;
+  padding: var(--s-2) var(--gutter) var(--s-4);
+}
+
+.atelier-head__title {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-display);
+  letter-spacing: var(--ls-display);
+  text-transform: uppercase;
+  line-height: var(--lh-tight);
+  background-image: var(--grad-gold-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.atelier-head__sub {
+  margin-top: 6px;
+  font-size: var(--fs-body);
+  color: var(--c-text-2);
+  line-height: var(--lh-body);
+}
+
+.atelier-head__rule { margin-top: var(--s-4); }
+
+/* Section heading: a gold rule, the number, the name. The numeral is the
+   only ornament — hierarchy by size and letter-spacing, never by fading. */
+.sect {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.sect__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+}
+
+.sect__no {
+  flex: 0 0 auto;
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-value-lg);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gold-core);
+  letter-spacing: var(--ls-normal);
+}
+
+.sect__name {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-title);
+  letter-spacing: var(--ls-display);
+  text-transform: uppercase;
+  color: var(--c-text-1);
+  line-height: var(--lh-tight);
+}
+
+.sect__note {
+  font-size: var(--fs-body);
+  color: var(--c-text-2);
+  line-height: var(--lh-body);
+}
+
+.sect__note b { color: var(--c-gold-core); font-weight: var(--fw-bold); }
+.sect__note i { color: var(--c-violet-light); font-style: normal; }
+
+/* =========================================================================
+   2. THE VITRINE — the one idea on this page
+
+   Same anatomy as the encounter screen's cabinet, shrunk: a beveled gold
+   rail, a lit crest at the top, a shadowed foot at the bottom, and a hard
+   dark cut on the inside so the metal never touches the art.
+
+   The inner surface is --c-ground-deep, not black: the pixels have their own
+   tinted darks and a true black behind them reads as a hole.
+   ========================================================================= */
+
+.vitrine {
+  --rail: 4px;
+  position: relative;
+  display: block;
+  padding: var(--rail);
+  background: var(--grad-gold-metal);
+  border-top: 1px solid var(--c-gold-light);
+  border-bottom: 1px solid var(--c-gold-deep);
+  border-radius: 3px;
+  line-height: 0;
+  font-size: 0;
+}
+
+/* The hard inner cut.
+   OUTLINE, not border, and this is not a style preference — it is the bug
+   this page exists to not have. base.css sets box-sizing: border-box
+   globally, so a 1 px border on an element whose width is set to exactly
+   w x scale steals a pixel from the CONTENT box at each edge, and `overflow:
+   hidden` then quietly crops the outermost column and row off every sprite
+   in the gallery. An outline draws outside the box and takes no layout width,
+   so the artwork keeps every pixel it was authored with and the exhibit stays
+   an exact integer multiple. It also lands the cut on the rail's inner edge,
+   which is where §7 asks for it. */
+.vitrine__glass {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--c-ground-deep);
+  outline: 1px solid var(--c-ground-deep);
+  outline-offset: 0;
+}
+
+/* Every pixel image on this page, without exception. Declaration order
+   matters: crisp-edges is the fallback, pixelated is the target.
+
+   `position: relative` is here so the snap pass in atelier.html can nudge a
+   node by its sub-pixel remainder without disturbing the layout around it.
+   There is deliberately no `transform` on this rule: a transform promotes the
+   node to its own compositing layer, and a layer whose contents are then
+   composited at a fractional offset is the very thing we are correcting. */
+.px {
+  display: block;
+  position: relative;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
+
+  /* base.css sets `img, svg, canvas { max-width: 100% }`. Every exhibit here
+     is already sized by scaleFor() to fit its container, so that clamp should
+     never fire — but if it ever did it would silently rescale the artwork by
+     a fraction while leaving its height alone, which is the one defect this
+     page is a proof against. Opt out explicitly rather than rely on the
+     arithmetic staying correct forever. */
+  max-width: none;
+}
+
+/* A vitrine that carries a caption bar along its foot. */
+.vitrine--capped { padding-bottom: 0; }
+
+.vitrine__cap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding: 3px 5px 4px;
+  font-family: var(--ff-sans);
+  font-size: var(--fs-nav);
+  line-height: 1.2;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-ground);
+  font-weight: var(--fw-bold);
+}
+
+.vitrine__cap span { font-variant-numeric: tabular-nums; }
+
+/* =========================================================================
+   3. PROOF TILES — the measured headline
+   ========================================================================= */
+
+.proof {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-2);
+}
+
+.proof__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: var(--s-3) var(--s-1);
+  background: var(--c-groove);
+  border-radius: var(--r-sm);
+  text-align: center;
+}
+
+.proof__value {
+  font-family: var(--ff-display);
+  font-weight: 900;
+  font-size: var(--fs-title);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  background-image: var(--grad-gold-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.proof__label {
+  font-size: var(--fs-nav);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+/* =========================================================================
+   4. THE SCALE BENCH
+   Proves the one thing this piece exists to prove: integer factors only.
+   ========================================================================= */
+
+.bench__stage {
+  display: flex;
+  justify-content: center;
+  padding: var(--s-3) 0;
+  min-height: 200px;
+  align-items: center;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.bench__steps {
+  display: flex;
+  gap: var(--s-1);
+  margin-top: var(--s-2);
+}
+
+.bench__step {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: var(--tap-min);
+  padding: var(--s-2) 0;
+  background: var(--c-groove);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-sm);
+  color: var(--c-text-2);
+  font-family: var(--ff-sans);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--ls-normal);
+  line-height: 1;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.bench__step[aria-pressed="true"] {
+  background: var(--grad-gold-face);
+  border-color: transparent;
+  color: var(--c-ground);
+}
+
+.bench__read {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+
+.bench__math {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text-1);
+  font-weight: var(--fw-bold);
+}
+
+.bench__math em {
+  font-style: normal;
+  color: var(--c-text-2);
+  font-weight: var(--fw-regular);
+}
+
+/* =========================================================================
+   5. SWATCH ROWS — the palette, stated in hex
+   ========================================================================= */
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px var(--c-bevel-dark);
+}
+
+/* The wide variant carries its hex underneath — used where the actual value
+   is the point, not the impression. */
+.ramp {
+  display: flex;
+  gap: 1px;
+  width: 100%;
+}
+
+.ramp__step {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 22px;
+}
+
+.ramp__step:first-child { border-radius: 3px 0 0 3px; }
+.ramp__step:last-child  { border-radius: 0 3px 3px 0; }
+
+.ramp-legend {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  font-size: var(--fs-nav);
+  letter-spacing: var(--ls-normal);
+  color: var(--c-text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================================
+   6. EXHIBIT CARDS — adepts, beasts, relics
+   ========================================================================= */
+
+.exhibit + .exhibit { margin-top: var(--s-3); }
+
+.exhibit__top {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+
+.exhibit__body { flex: 1 1 auto; min-width: 0; }
+
+.exhibit__name {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-value-lg);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-text-1);
+  line-height: var(--lh-tight);
+}
+
+.exhibit__role {
+  margin-top: 3px;
+  font-size: var(--fs-nav);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-gold-core);
+}
+
+.exhibit__blurb {
+  margin-top: var(--s-2);
+  font-size: var(--fs-body);
+  color: var(--c-text-2);
+  line-height: var(--lh-body);
+}
+
+.exhibit__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-3);
+  margin-top: var(--s-2);
+  font-size: var(--fs-nav);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.exhibit__meta b {
+  color: var(--c-text-1);
+  font-weight: var(--fw-bold);
+}
+
+/* The pose strip: one vitrine per pose, captioned.
+
+   The 24x32 action pose is taller than the two 16x24 poses beside it, and
+   that difference is information — so the cells stretch and the vitrines
+   bottom-align, which puts all three captions on one line while still
+   letting the action pose stand a head above its neighbours. */
+.poses {
+  display: flex;
+  align-items: stretch;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+
+.poses__cell {
+  flex: 1 1 0;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+
+.poses__cell > div:first-child { align-items: flex-end; }
+
+.poses__label {
+  margin-top: 5px;
+  font-size: var(--fs-nav);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+  text-align: center;
+}
+
+/* Relics: a tight grid of small vitrines. */
+.relics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-2);
+}
+
+.relics__cell { display: flex; flex-direction: column; gap: 5px; }
+
+.relics__name {
+  font-size: var(--fs-nav);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* =========================================================================
+   7. ANATOMY DIAGRAMS — the rail and the gauge, pulled apart
+
+   These are the two pieces of FFVI's UI the reference says to steal
+   wholesale, so they get shown at a magnification where you can count the
+   pixels and check the claim.
+   ========================================================================= */
+
+.anatomy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+/* Specimen above, legend below. Side by side, a 224px rail leaves the legend
+   about 90px and every line breaks after two words — the layout was fighting
+   the content. Stacked, the legend gets the full width and reads in one pass. */
+.anatomy__row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.anatomy__spec { flex: 0 0 auto; }
+
+.anatomy__legend {
+  align-self: stretch;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px var(--s-3);
+}
+
+.anatomy__line {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--fs-nav);
+  letter-spacing: var(--ls-normal);
+  color: var(--c-text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.anatomy__key {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px var(--c-bevel-dark);
+}
+
+.anatomy__line b {
+  color: var(--c-text-1);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-normal);
+}
+
+/* The live gauge sits on its own so the fill can be watched moving. */
+.gauge-bench {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.gauge-bench__read {
+  font-family: var(--ff-display);
+  font-weight: 900;
+  font-size: var(--fs-title);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  background-image: var(--grad-gold-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* =========================================================================
+   8. THE LEDGER — the audit, rendered
+   ========================================================================= */
+
+.ledger {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--ff-sans);
+  font-size: var(--fs-nav);
+  font-variant-numeric: tabular-nums;
+}
+
+.ledger th {
+  text-align: right;
+  padding: 5px 0 5px var(--s-2);
+  font-size: var(--fs-nav);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+  border-bottom: 1px solid var(--c-groove-cut);
+  white-space: nowrap;
+}
+
+.ledger th:first-child,
+.ledger td:first-child { text-align: left; padding-left: 0; }
+
+.ledger td {
+  text-align: right;
+  padding: 4px 0 4px var(--s-2);
+  color: var(--c-text-1);
+  border-bottom: 1px solid var(--c-groove-cut);
+  white-space: nowrap;
+}
+
+.ledger tr:last-child td { border-bottom: 0; }
+
+.ledger td:first-child {
+  color: var(--c-text-2);
+  width: 99%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0;
+}
+
+/* The verdict column. Gold is the pass state — this UI has two accents and
+   neither of them is green. */
+.ledger__ok {
+  color: var(--c-gold-core);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-label);
+}
+
+.ledger__bad { color: var(--c-violet-light); font-weight: var(--fw-bold); }
+
+.ledger-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  margin-top: var(--s-2);
+}
+
+/* =========================================================================
+   9. MISC
+   ========================================================================= */
+
+.screen__body--atelier {
+  gap: var(--s-5);
+  padding-top: var(--s-2);
+  padding-bottom: var(--s-6);
+}
+
+/* min-height, not padding: the label is 24px tall on its own and a link that
+   navigates away from the screen has to clear the 44px touch minimum like any
+   other control. Measured at 162x24 before this. */
+.backlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--tap-min);
+  padding: var(--s-1) 0;
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+.backlink svg { width: 12px; height: 12px; }
+
+.boot-error {
+  margin: var(--s-4) var(--gutter);
+  padding: var(--s-3);
+  border: 1px solid var(--c-hairline-gold);
+  border-radius: var(--r-sm);
+  color: var(--c-text-2);
+  font-size: var(--fs-body);
+}

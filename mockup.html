@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="color-scheme" content="dark">
+<!-- The one literal colour in this document: a meta tag cannot read a custom
+     property. It is --c-ground from src/styles/tokens.css, kept in step by hand. -->
+<meta name="theme-color" content="#050A10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Emberveil — an idle RPG of wardens, sigils and the long refinement.">
+<title>Emberveil</title>
+
+<link rel="preload" href="src/assets/fonts/cinzel-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="src/assets/art/hero/ember-gate.png" as="image" fetchpriority="high">
+<link rel="stylesheet" href="src/styles/tokens.css">
+<link rel="stylesheet" href="src/styles/base.css">
+<link rel="stylesheet" href="src/styles/primitives.css">
+<link rel="stylesheet" href="src/styles/hero.css">
+<link rel="stylesheet" href="src/styles/home.css">
+</head>
+<body>
+
+<!-- ===================================================================
+     ICON SPRITE — all original marks, drawn on a 24x24 grid.
+
+     Every icon is authored once as a <path> in <defs> and stamped twice
+     inside its <symbol>: once in currentColor, once in #bevel. That second
+     pass is a light-to-shadow ramp over the shape's own bounding box, so a
+     flat glyph picks up a lit top and a shadowed underside and reads as
+     metal — the same rule the CSS applies to every gold surface.
+
+     Colours are var() references into tokens.css: inline SVG inherits custom
+     properties, so there is no hex in this file either.
+     =================================================================== -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute" focusable="false">
+  <defs>
+    <linearGradient id="grad-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="var(--c-gold-light)"/>
+      <stop offset="34%"  stop-color="var(--c-gold-core)"/>
+      <stop offset="66%"  stop-color="var(--c-gold-mid)"/>
+      <stop offset="100%" stop-color="var(--c-gold-deep)"/>
+    </linearGradient>
+    <linearGradient id="grad-violet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="var(--c-violet-light)"/>
+      <stop offset="32%"  stop-color="var(--c-violet-bright)"/>
+      <stop offset="66%"  stop-color="var(--c-violet-core)"/>
+      <stop offset="100%" stop-color="var(--c-violet-deep)"/>
+    </linearGradient>
+    <!-- The universal bevel: lit above, shadowed below, nothing in between. -->
+    <linearGradient id="bevel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="var(--c-text-1)" stop-opacity=".44"/>
+      <stop offset="38%"  stop-color="var(--c-text-1)" stop-opacity="0"/>
+      <stop offset="60%"  stop-color="var(--c-ground)" stop-opacity="0"/>
+      <stop offset="100%" stop-color="var(--c-ground)" stop-opacity=".46"/>
+    </linearGradient>
+
+    <!-- ---- shapes ------------------------------------------------------ -->
+
+    <!-- COG — the common currency of the works -->
+    <path id="s-cog" d="M12 1.6a2 2 0 0 1 1.9 1.4l.3 1a8.6 8.6 0 0 1 2 .8l.9-.5a2 2 0 0 1 2.4.3l.9.9a2 2 0 0 1 .3 2.4l-.5.9c.35.62.62 1.3.8 2l1 .3a2 2 0 0 1 1.4 1.9v1.2a2 2 0 0 1-1.4 1.9l-1 .3a8.6 8.6 0 0 1-.8 2l.5.9a2 2 0 0 1-.3 2.4l-.9.9a2 2 0 0 1-2.4.3l-.9-.5a8.6 8.6 0 0 1-2 .8l-.3 1a2 2 0 0 1-1.9 1.4h-1.2a2 2 0 0 1-1.9-1.4l-.3-1a8.6 8.6 0 0 1-2-.8l-.9.5a2 2 0 0 1-2.4-.3l-.9-.9a2 2 0 0 1-.3-2.4l.5-.9a8.6 8.6 0 0 1-.8-2l-1-.3A2 2 0 0 1 .4 13.4v-1.2a2 2 0 0 1 1.4-1.9l1-.3c.18-.7.45-1.38.8-2l-.5-.9a2 2 0 0 1 .3-2.4l.9-.9a2 2 0 0 1 2.4-.3l.9.5c.62-.35 1.3-.62 2-.8l.3-1A2 2 0 0 1 11.8 1.6Zm.4 6.6a4.6 4.6 0 1 0 0 9.2 4.6 4.6 0 0 0 0-9.2Z"/>
+    <!-- AETHER SHARD — the arcane currency -->
+    <path id="s-shard" d="M12 1.2 19.2 9.4 12 22.8 4.8 9.4Z"/>
+    <!-- FOCUS — the regenerating action resource -->
+    <path id="s-focus" d="M13.9 1.2 4.2 13.6h5.7L9.1 22.8 19.8 9.8h-6.5Z"/>
+    <!-- DELVE — crossed hammer and pick. A single arched head over a vertical
+         haft reads as an umbrella at 18px no matter how it is drawn; the
+         crossed X with two heavy heads is unmistakable at any size. -->
+    <path id="s-delve" d="M6.1 4.6 7.9 3.4 18.9 19.4 17.1 20.6Z M16.1 3.4 17.9 4.6 6.9 20.6 5.1 19.4Z"/>
+    <path id="s-delve-head" d="M2.4 5.6 5.2 1.4 9.6 4.2 6.8 8.4Z M14.4 4.2 18.8 1.4 21.6 5.6 17.2 8.4Z"/>
+    <!-- SIGIL — a bound rune: a diamond ring with a cross-mark set in it -->
+    <path id="s-sigil" fill-rule="evenodd" d="M12 0.9 22.6 12 12 23.1 1.4 12Zm0 3.5L4.8 12l7.2 7.6 7.2-7.6Z"/>
+    <path id="s-sigil-rune" d="M10.9 7.1h2.2v9.8h-2.2Zm-3.1 3.1h8.4v1.9H7.8Z"/>
+    <!-- ASCEND — the rebirth crest: a warden seal with a chevron rising -->
+    <path id="s-ascend" fill-rule="evenodd" d="M12 1.1 21.6 4.5v8.1c0 5.5-4 9.2-9.6 10.7C6.4 21.8 2.4 18.1 2.4 12.6V4.5Zm0 2.5L4.7 6.2v6.4c0 4.1 2.9 6.9 7.3 8.2 4.4-1.3 7.3-4.1 7.3-8.2V6.2Z"/>
+    <path id="s-ascend-mark" d="M12 6.4 17.2 12h-2.8v2.3H9.6V12H6.8Zm-2.4 9.7h4.8v2.2H9.6Z"/>
+    <!-- CROWN — the warden seal -->
+    <path id="s-crown" d="M2.2 6.9 7 11.8l5-8.6 5 8.6 4.8-4.9-1.9 12.2H4.1Zm1.9 14.1h15.8v2.1H4.1Z"/>
+    <!-- MILESTONE — a diamond in a corner frame -->
+    <path id="s-milestone" d="M24 2.4 45.6 24 24 45.6 2.4 24Zm0 3.4L5.8 24 24 42.2 42.2 24Z M2 2h7.2v1.7H3.7V9.2H2Zm44 0v7.2h-1.7V3.7H38.8V2ZM2 46v-7.2h1.7v5.5H9.2V46Zm44 0h-7.2v-1.7h5.5V38.8H46Z"/>
+    <path id="s-milestone-core" d="M24 13.4 34.6 24 24 34.6 13.4 24Z"/>
+    <path id="s-milestone-stone" d="M24 18.2 29.8 24 24 29.8 18.2 24Z"/>
+
+    <!-- Nav marks -->
+    <path id="s-nav-home" d="M12 1.8 22.4 10.6V22.2h-6.8v-6a3.6 3.6 0 0 0-7.2 0v6H1.6V10.6Z"/>
+    <path id="s-nav-adept" fill-rule="evenodd" d="M12 1.4c4.9 0 8.2 3.3 8.2 8.2v5.2l-2.7 2.5v5.3h-3.8v-4.1h-3.4v4.1H6.5v-5.3l-2.7-2.5V9.6c0-4.9 3.3-8.2 8.2-8.2Zm-4.8 7.2v3.2h9.6V8.6Z"/>
+    <path id="s-nav-skills" d="M2.2 8.4h13.2c3 0 5.2 1.7 6.6 4.2H9.2c-3.9 0-6.6-1.5-7-4.2Zm6 5.4h7.2l-1.2 3.8H9.4Zm-3 4.2h13.6l1.4 3.8H3.8Z"/>
+    <path id="s-nav-relics" d="M6.4 2.8h11.2L22 9.2 12 21.8 2 9.2Zm.9 1.9L4.4 9.2h4.2l1.1-4.5Zm3.6 0-1.1 4.5h4.4l-1.1-4.5Zm4.4 0 1.1 4.5h4.2l-2.9-4.5ZM4.9 11.1l5 6.3-1.5-6.3Zm5.6 0 1.5 6.3 1.5-6.3Zm5.1 0-1.5 6.3 5-6.3Z"/>
+    <path id="s-nav-wardens" fill-rule="evenodd" d="M12 1.4c4.4 0 8 4.8 8 10.6S16.4 22.6 12 22.6 4 17.8 4 12 7.6 1.4 12 1.4Zm0 2.5c-2.9 0-5.5 3.7-5.5 8.1s2.6 8.1 5.5 8.1 5.5-3.7 5.5-8.1-2.6-8.1-5.5-8.1Zm0 3.2c1.9 1.8 3 3.6 3 5.4 0 2-1.4 3.5-3 3.5s-3-1.5-3-3.5c0-1.8 1.1-3.6 3-5.4Z"/>
+
+    <!-- Hero crest: a warden's blade between swept wings. Original mark.
+         The blade runs the full height of the box on purpose — wings wider
+         than the mark is tall turn the whole crest into a flying saucer. -->
+    <path id="s-crest-wing" d="M40.5 8.2c7.6-1.6 14.4-3.4 20.6-5.6-1.4 7.4-7.6 12-18.5 13.7-1.7.3-2.6-.5-2.6-2.1Zm0 10.4c6.2-1.2 11.8-2.7 16.8-4.5-1.3 6.2-6.4 10.1-14.4 11.5-1.6.3-2.4-.4-2.4-1.9Zm0 10c4.8-.9 9.1-2 13-3.3-1.1 5-5 8.2-11.1 9.3-1.3.2-1.9-.3-1.9-1.6Z"/>
+    <path id="s-crest-body" d="M36 0.6 39.9 9.4v22.4L36 43.4 32.1 31.8V9.4Z"/>
+    <path id="s-crest-bar" d="M24.6 10.2h22.8l-1.7 4.2H26.3Z"/>
+
+    <!-- ---- symbols ----------------------------------------------------- -->
+
+    <symbol id="i-cog" viewBox="0 0 24 24">
+      <use href="#s-cog" fill="url(#grad-gold)"/>
+      <use href="#s-cog" fill="url(#bevel)"/>
+    </symbol>
+    <symbol id="i-shard" viewBox="0 0 24 24">
+      <use href="#s-shard" fill="url(#grad-violet)"/>
+      <use href="#s-shard" fill="url(#bevel)"/>
+      <path d="M12 1.2 8.6 9.4 12 15.6Z" fill="var(--c-text-1)" fill-opacity=".26"/>
+    </symbol>
+    <symbol id="i-focus" viewBox="0 0 24 24">
+      <use href="#s-focus" fill="url(#grad-violet)"/>
+      <use href="#s-focus" fill="url(#bevel)"/>
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <circle cx="12" cy="12" r="8.6"/>
+      <path d="M12 6.8V12l3.5 2.2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-delve" viewBox="0 0 24 24">
+      <use href="#s-delve" fill="currentColor"/>
+      <use href="#s-delve-head" fill="currentColor"/>
+      <use href="#s-delve" fill="url(#bevel)"/>
+      <use href="#s-delve-head" fill="url(#bevel)"/>
+    </symbol>
+    <symbol id="i-sigil" viewBox="0 0 24 24">
+      <use href="#s-sigil" fill="currentColor"/>
+      <use href="#s-sigil-rune" fill="currentColor"/>
+      <use href="#s-sigil" fill="url(#bevel)"/>
+      <use href="#s-sigil-rune" fill="url(#bevel)"/>
+    </symbol>
+    <symbol id="i-ascend" viewBox="0 0 24 24">
+      <use href="#s-ascend" fill="currentColor"/>
+      <use href="#s-ascend-mark" fill="currentColor"/>
+      <use href="#s-ascend" fill="url(#bevel)"/>
+      <use href="#s-ascend-mark" fill="url(#bevel)"/>
+    </symbol>
+    <!-- INSIGHT — the orb of accumulated understanding: the third thing an
+         idle run pays out, beside cogs and shards. -->
+    <symbol id="i-insight" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9.2" fill="url(#grad-violet)"/>
+      <circle cx="12" cy="12" r="9.2" fill="url(#bevel)"/>
+      <path d="M12 4.6a7.4 7.4 0 0 0-5 12.9c-2.6-3.2-2.2-7.4.9-9.9a7 7 0 0 1 4.1-1.5Z"
+            fill="var(--c-violet-light)" fill-opacity=".55"/>
+      <circle cx="12" cy="12" r="3.1" fill="var(--c-violet-light)" fill-opacity=".9"/>
+      <circle cx="12" cy="12" r="9.2" fill="none" stroke="var(--c-gold-core)" stroke-width="1.3"/>
+    </symbol>
+    <symbol id="i-crown" viewBox="0 0 24 24">
+      <use href="#s-crown" fill="currentColor"/>
+      <use href="#s-crown" fill="url(#bevel)"/>
+    </symbol>
+    <symbol id="i-milestone" viewBox="0 0 48 48">
+      <use href="#s-milestone" fill="url(#grad-gold)"/>
+      <use href="#s-milestone-core" fill="url(#grad-gold)"/>
+      <use href="#s-milestone" fill="url(#bevel)"/>
+      <use href="#s-milestone-core" fill="url(#bevel)"/>
+      <use href="#s-milestone-stone" fill="url(#grad-violet)"/>
+      <path d="M24 20.4 27.6 24 24 27.6 20.4 24Z" fill="var(--c-violet-light)" fill-opacity=".75"/>
+    </symbol>
+
+    <symbol id="i-nav-home" viewBox="0 0 24 24">
+      <use href="#s-nav-home" fill="currentColor"/>
+      <use href="#s-nav-home" fill="url(#bevel)"/>
+    </symbol>
+    <symbol id="i-nav-adept" viewBox="0 0 24 24">
+      <use href="#s-nav-adept" fill="currentColor"/>
+      <use href="#s-nav-adept" fill="url(#bevel)"/>
+    </symbol>
+    <symbol id="i-nav-skills" viewBox="0 0 24 24">
+      <use href="#s-nav-skills" fill="currentColor"/>
+      <use href="#s-nav-skills" fill="url(#bevel)"/>
+    </symbol>
+    <symbol id="i-nav-relics" viewBox="0 0 24 24">
+      <use href="#s-nav-relics" fill="currentColor"/>
+      <use href="#s-nav-relics" fill="url(#bevel)"/>
+    </symbol>
+    <symbol id="i-nav-wardens" viewBox="0 0 24 24">
+      <use href="#s-nav-wardens" fill="currentColor"/>
+      <use href="#s-nav-wardens" fill="url(#bevel)"/>
+    </symbol>
+
+    <symbol id="i-crest" viewBox="0 0 72 44">
+      <use href="#s-crest-wing" fill="url(#grad-gold)"/>
+      <use href="#s-crest-wing" fill="url(#grad-gold)" transform="translate(72 0) scale(-1 1)"/>
+      <use href="#s-crest-body" fill="url(#grad-gold)"/>
+      <use href="#s-crest-bar"  fill="url(#grad-gold)"/>
+      <use href="#s-crest-wing" fill="url(#bevel)"/>
+      <use href="#s-crest-wing" fill="url(#bevel)" transform="translate(72 0) scale(-1 1)"/>
+      <use href="#s-crest-body" fill="url(#bevel)"/>
+      <use href="#s-crest-bar"  fill="url(#bevel)"/>
+      <path d="M36 16.6 41.6 23 36 29.4 30.4 23Z" fill="url(#grad-violet)"/>
+      <path d="M36 19.2 39 23 36 26.8 33 23Z" fill="var(--c-violet-light)" fill-opacity=".8"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="app">
+
+  <!-- ================= PINNED CURRENCY BAR =================
+       A sibling of the scroller, overlaid on the key art, so it holds
+       position while the panel stack scrolls beneath it. -->
+  <div class="topbar safe-top">
+    <div class="brand" aria-label="Emberveil">
+      <span class="brand__l1 t-metal-gold">Ember</span>
+      <span class="brand__l2 t-metal-silver">Veil</span>
+      <span class="brand__rule" aria-hidden="true"><i class="brand__diamond"></i></span>
+    </div>
+    <div class="chips">
+      <div class="chip">
+        <span class="chip__icon"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><use href="#i-cog"/></svg></span>
+        <span class="chip__value">12.45M</span>
+        <span class="chip__plus" aria-hidden="true">+</span>
+      </div>
+      <div class="chip">
+        <span class="chip__icon"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><use href="#i-shard"/></svg></span>
+        <span class="chip__value">1,250</span>
+        <span class="chip__plus" aria-hidden="true">+</span>
+      </div>
+      <div class="focus">
+        <div class="chip chip--focus">
+          <span class="chip__icon"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><use href="#i-focus"/></svg></span>
+          <span class="chip__value">120<span class="chip__frac">/120</span></span>
+        </div>
+        <p class="focus__state">
+          <svg viewBox="0 0 24 24" width="10" height="10" aria-hidden="true"><use href="#i-clock"/></svg>
+          Full
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen">
+
+    <!-- ================= HERO =================
+         Key art: "The Ember Gate". Rendered by
+         src/assets/art/hero/make-keyart.mjs — original work, generated from
+         the token palette, at exactly 2x the box it is drawn into. -->
+    <header class="hero" id="hero">
+      <img class="hero__art" id="heroArt"
+           src="src/assets/art/hero/ember-gate.png"
+           width="780" height="656" alt="" aria-hidden="true"
+           decoding="async" fetchpriority="high">
+      <canvas class="hero__motes" id="heroMotes" aria-hidden="true"></canvas>
+      <div class="hero__scrim" aria-hidden="true"></div>
+
+      <div class="hero__content">
+        <svg class="hero__crest" viewBox="0 0 72 44" aria-hidden="true"><use href="#i-crest"/></svg>
+        <p class="hero__eyebrow">Adept Level</p>
+        <p class="t-numeral hero__numeral" id="heroLevel">128</p>
+        <p class="t-rarity hero__rarity" id="heroRarity">Ascendant</p>
+        <div class="ornament-rule hero__rule" aria-hidden="true">
+          <span class="ornament-rule__diamond"></span>
+        </div>
+        <p class="hero__status" id="heroStatus">
+          Idle Yield Ready
+          <span class="dot-gold" aria-hidden="true"></span>
+        </p>
+      </div>
+    </header>
+
+    <!-- ================= PANEL STACK ================= -->
+    <main class="screen__body" id="screenBody">
+
+      <!-- Progress + offline yield -->
+      <section class="panel">
+        <p class="t-label">Progress to next level</p>
+
+        <div class="panel__head progress__head">
+          <p class="t-value-lg">128 <span class="progress__arrow">&rarr;</span> 129</p>
+          <p class="t-value-lg u-tnum">65.4%</p>
+        </div>
+
+        <div class="bar" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"
+             aria-label="Progress to next level">
+          <div class="bar__fill" style="--fill: 65.4%"></div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="stat-split">
+          <div class="stat">
+            <p class="t-label">Time offline</p>
+            <div class="stat__value-row">
+              <svg class="stat__glyph" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><use href="#i-clock"/></svg>
+              <p class="t-value-lg u-tnum" id="offlineClock">04:32:18</p>
+            </div>
+          </div>
+
+          <div class="divider--v"></div>
+
+          <div class="stat">
+            <p class="t-label">Yield earned</p>
+            <div class="stat__value-row yield">
+              <span class="yield__item">
+                <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><use href="#i-cog"/></svg>
+                <span class="t-value u-tnum">1.23M</span>
+              </span>
+              <span class="yield__item">
+                <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><use href="#i-shard"/></svg>
+                <span class="t-value u-tnum">320</span>
+              </span>
+              <span class="yield__item">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><use href="#i-insight"/></svg>
+                <span class="t-value u-tnum">8.7K</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Three action cards: gold / violet / gold -->
+      <section class="cards">
+        <button class="card" type="button">
+          <span class="card__head">
+            <svg class="card__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-delve"/></svg>
+            <span class="card__title">Delve</span>
+          </span>
+          <span class="card__sub">Cinder shale</span>
+          <span class="card__foot">
+            <span class="bar bar--sm"><span class="bar__fill" style="--fill: 78%"></span></span>
+            <span class="card__pct">78%</span>
+          </span>
+        </button>
+
+        <button class="card card--violet" type="button">
+          <span class="card__head">
+            <svg class="card__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sigil"/></svg>
+            <span class="card__title">Sigil</span>
+          </span>
+          <span class="card__sub">Binding aether</span>
+          <span class="card__foot">
+            <span class="bar bar--sm bar--violet"><span class="bar__fill" style="--fill: 92%"></span></span>
+            <span class="card__pct">92%</span>
+          </span>
+        </button>
+
+        <button class="card" type="button">
+          <span class="card__head">
+            <svg class="card__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-ascend"/></svg>
+            <span class="card__title">Ascend</span>
+          </span>
+          <span class="card__sub">Next rebirth</span>
+          <span class="card__foot">
+            <span class="bar bar--sm"><span class="bar__fill" style="--fill: 41%"></span></span>
+            <span class="card__pct">41%</span>
+          </span>
+        </button>
+      </section>
+
+      <!-- Milestone -->
+      <section class="panel milestone">
+        <svg class="emblem" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-milestone"/></svg>
+
+        <div class="milestone__body">
+          <p class="t-label u-gold milestone__kicker">Milestone reached</p>
+          <p class="t-value-lg milestone__name">Refine 10,000 Ore</p>
+          <div class="bar milestone__bar" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+               aria-valuemax="100" aria-label="Refine 10,000 Ore">
+            <div class="bar__fill" style="--fill: 100%"></div>
+          </div>
+          <p class="t-micro milestone__count">10,000 / 10,000</p>
+        </div>
+
+        <button class="btn-gold btn-gold--sm milestone__claim" type="button">Claim</button>
+      </section>
+
+      <!-- Secondary currencies -->
+      <section class="currency-row">
+        <div class="chip chip--wide">
+          <span class="chip__icon"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><use href="#i-shard"/></svg></span>
+          <span class="chip__value">8,945</span>
+          <span class="chip__name grow">Aether Shard</span>
+        </div>
+        <div class="chip chip--wide">
+          <span class="chip__icon"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><use href="#i-crown"/></svg></span>
+          <span class="chip__value">0</span>
+          <span class="chip__name grow">Warden Seals</span>
+        </div>
+        <button class="chip chip--add" type="button" aria-label="Acquire more">
+          <span class="chip__plus" aria-hidden="true">+</span>
+        </button>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= BOTTOM NAV ================= -->
+  <nav class="nav safe-bottom" id="nav" aria-label="Primary">
+    <button class="nav__item is-active" type="button" data-tab="home">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-home"/></svg>
+      <span class="nav__label">Home</span>
+    </button>
+    <button class="nav__item" type="button" data-tab="adept">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-adept"/></svg>
+      <span class="nav__label">Adept</span>
+    </button>
+    <button class="nav__item" type="button" data-tab="skills">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-skills"/></svg>
+      <span class="nav__label">Skills</span>
+    </button>
+    <button class="nav__item" type="button" data-tab="relics">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-relics"/></svg>
+      <span class="nav__label">Relics</span>
+    </button>
+    <button class="nav__item" type="button" data-tab="wardens">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-wardens"/></svg>
+      <span class="nav__label">Wardens</span>
+    </button>
+  </nav>
+
+</div>
+
+<script type="module" src="src/js/main.js"></script>
+</body>
+</html>

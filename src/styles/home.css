@@ -1,0 +1,331 @@
+/* =========================================================================
+   EMBERVEIL — HOME SCREEN LAYOUT
+   Composition only. Every colour, gap and size comes from tokens.css or the
+   derived tokens in primitives.css. The hero block lives in hero.css.
+
+   THE FIT
+   The whole home screen has to land inside 390x844 with no page scroll. The
+   budget is: nav 61, hero --hero-h, and whatever is left for the panel stack.
+   Every number below was measured in the browser at 390x844, not guessed. If
+   you add a row, re-measure — the screen is full.
+   ========================================================================= */
+
+:root {
+  /* 40% of 844 is the reference's hero proportion. Measured against the panel
+     stack this lands at 328 with 0px of overflow. */
+  --hero-h: 328px;
+}
+
+/* ---- Pinned currency bar ------------------------------------------------ */
+
+.topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-nav);
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding-inline: var(--s-3);
+  pointer-events: none; /* let the key art own the empty space between items */
+}
+.topbar > * { pointer-events: auto; }
+
+/* THE SCROLL SCRIM.
+
+   The topbar floats over the scrolling screen so the key art can run under
+   it edge to edge. That is right on the hero and wrong everywhere else: once
+   the art has scrolled away, panel text passes *behind* the chips and the
+   wordmark, and "No skill underway" reads through the Cogs chip.
+
+   So the bar earns a ground the moment it stops sitting on art. The scrim is
+   a pseudo-element rather than a background on .topbar itself because the
+   bar is `pointer-events: none` and must stay that way, and because it has
+   to bleed into the safe-area inset above the padding box. */
+.topbar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  bottom: -22px;
+  z-index: -1;
+  background: linear-gradient(180deg,
+    var(--c-ground) 0%,
+    var(--c-ground) 74%,
+    color-mix(in srgb, var(--c-ground) 72%, transparent) 90%,
+    transparent 100%);
+  opacity: 0;
+  transition: opacity var(--dur-fast, .16s) var(--ease-out, ease);
+}
+#app.is-scrolled .topbar::before { opacity: 1; }
+
+.chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.topbar .chip {
+  padding: 3px 3px 3px 6px;
+  gap: 5px;
+  min-height: 28px;
+}
+.topbar .chip__value { font-size: var(--fs-body); }
+.topbar .chip__plus  { width: 19px; height: 19px; font-size: var(--fs-body); }
+.topbar .chip__icon  { width: 17px; height: 17px; }
+
+.chip--focus { padding-right: var(--s-2); }
+.chip__frac {
+  color: var(--c-text-2);
+  font-weight: var(--fw-medium);
+}
+
+/* Focus chip plus its state line. The reference hangs a tiny clock glyph and
+   a one-word state under the energy chip; it is exactly the sort of small,
+   specific detail that separates a premium bar from a generic one. */
+.focus {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.focus__state {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+  line-height: 1;
+  padding-left: var(--ls-label);
+}
+.focus__state svg { flex: 0 0 auto; }
+
+/* ---- Wordmark -----------------------------------------------------------
+   Gold over silver, the two-line stack the reference uses, with a hairline
+   rule between them. Kept deliberately small at 390px so it never competes
+   with the giant numeral for the eye.
+   ------------------------------------------------------------------------ */
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 0.94;
+  font-family: var(--ff-display);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.brand__l1 {
+  font-size: 12px;
+  letter-spacing: 0.20em;
+  /* Tracking pushes the gold line wider than the silver one below it; the
+     negative margin pulls the two back onto a shared left edge. */
+  margin-right: -0.20em;
+}
+
+.brand__l2 {
+  font-size: 19px;
+  letter-spacing: 0.055em;
+  margin-top: 1px;
+}
+
+/* A hairline under the wordmark, interrupted by the same diamond the hero
+   rule uses. One ornament, used twice, is a house style; two different
+   ornaments is decoration. */
+.brand__rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 5px;
+  margin-top: 3px;
+}
+.brand__rule::before,
+.brand__rule::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--c-gold-deep));
+}
+.brand__rule::after { background: linear-gradient(270deg, transparent, var(--c-gold-deep)); }
+.brand__diamond {
+  flex: 0 0 auto;
+  width: 4px;
+  height: 4px;
+  margin-inline: 4px;
+  transform: rotate(45deg);
+  background: var(--grad-gold-metal);
+}
+
+/* ---- Progress panel ----------------------------------------------------- */
+
+.progress__head { margin-block: var(--s-1) var(--s-2); }
+
+.progress__arrow {
+  color: var(--c-text-2);
+  font-weight: var(--fw-regular);
+  padding-inline: 2px;
+}
+
+.stat__glyph { color: var(--c-text-2); flex: 0 0 auto; }
+
+/* The reference does NOT split this row down the middle: the clock takes
+   about a third and the yield takes the rest, because the yield carries
+   three currencies and the clock carries one string. Splitting it evenly
+   squeezes the third yield icon to zero width and it silently disappears —
+   which is exactly what happened the first time. */
+.stat-split > .stat:first-child { flex: 0 1 auto; }
+.stat-split > .stat:last-child  { flex: 1 1 auto; }
+
+.yield {
+  gap: var(--s-3);
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+.yield__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 auto;
+}
+/* Load-bearing: base.css gives every svg `max-width: 100%`, so an icon that
+   is a shrinkable flex item collapses the moment the row runs out of room. */
+.yield__item svg { flex: 0 0 auto; }
+.yield .t-value { font-size: var(--fs-value); }
+
+/* The vertical groove: 12 here, not 16 — the row needs the 8px back. */
+.stat-split .divider--v { margin-inline: var(--s-3); }
+
+/* ---- Milestone ---------------------------------------------------------- */
+
+.milestone {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.milestone__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.milestone__kicker { letter-spacing: 0.08em; }
+
+.milestone__name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.milestone__bar { margin-top: 2px; }
+
+.milestone__claim { flex: 0 0 auto; }
+
+/* ---- Secondary currency row --------------------------------------------- */
+
+.currency-row {
+  display: flex;
+  align-items: stretch;
+  gap: var(--s-2);
+}
+
+.chip--add {
+  flex: 0 0 auto;
+  width: 38px;
+  justify-content: center;
+  padding: 0;
+  border-radius: var(--r-card);
+}
+.chip--add .chip__plus {
+  width: 26px;
+  height: 26px;
+  font-size: var(--fs-value-lg);
+}
+
+/* Two names, two values and an add button share 390px. Measured at 390: the
+   longest label ("Aether Shard") needs 66px, so the chip is tuned to give it
+   68. If you add a longer currency name, re-measure — don't let it ellipse. */
+.currency-row .chip--wide {
+  gap: 5px;
+  padding-inline: 8px;
+}
+.currency-row .chip__value { font-size: var(--fs-body); }
+.currency-row .chip__icon  { width: 18px; height: 18px; }
+/* Belt and braces: an inline width attribute on the icon would otherwise
+   overflow the chip and push the name into an ellipsis. */
+.currency-row .chip__icon svg { width: 18px; height: 18px; }
+
+/* 10px floor. These were 8, which is below the reference's own small-label
+   size and was buying hierarchy by shrinking rather than by the scale. */
+.currency-row .chip__name {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.03em;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- Pixel pipeline proof ----------------------------------------------- */
+
+.pixelproof__row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-3);
+}
+.pixelproof .t-micro { line-height: var(--lh-snug); }
+
+/* ---- Placeholder screens for the not-yet-built tabs ---------------------- */
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+  text-align: center;
+  min-height: 320px;
+  padding: var(--s-7) var(--s-5);
+}
+.placeholder__icon { width: 40px; height: 40px; color: var(--c-gold-deep); }
+.placeholder__rule { max-width: 140px; }
+.placeholder__title {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-title);
+  letter-spacing: var(--ls-display);
+  text-transform: uppercase;
+  color: var(--c-gold-core);
+  padding-left: var(--ls-display);
+}
+
+/* =========================================================================
+   NARROW PHONES
+   Last in the file on purpose: these rules have the same specificity as the
+   ones they override, so cascade order is the only thing that makes them
+   win. Moved up the file and they silently stop applying.
+   ========================================================================= */
+
+/* SE-class phones, 360-374 wide. The wordmark and three live currency chips
+   do not all fit at full size, and the chips are the ones carrying numbers,
+   so the whole bar tightens rather than letting the last chip run off the
+   edge. Measured at 360: this recovers the 24px that were being clipped. */
+@media (max-width: 380px) {
+  .topbar { padding-inline: 6px; gap: 6px; }
+  .chips { gap: 4px; }
+  .topbar .chip { padding: 3px 3px 3px 4px; gap: 4px; }
+  .topbar .chip--focus { padding-right: 4px; }
+  .topbar .chip__value { font-size: var(--fs-label); }
+  .topbar .chip__plus { width: 17px; height: 17px; font-size: var(--fs-label); }
+  .topbar .chip__icon,
+  .topbar .chip__icon svg { width: 15px; height: 15px; }
+  .brand__l1 { font-size: 11px; }
+  .brand__l2 { font-size: 16px; }
+}

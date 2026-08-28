@@ -1,0 +1,485 @@
+/* =========================================================================
+   EMBERVEIL — BALANCE REPORT
+
+   The designer's document, not a game screen: it is read at a desk, it is
+   long, and it is nothing but numbers. So it borrows the cabinet — the same
+   ground, the same gold and violet, the same cut-groove dividers — and then
+   gets out of the way of the tables.
+
+   Consumes tokens.css ONLY. No raw hex, no bare gap px, no bare font-size.
+   Deliberately standalone otherwise (its own reset, its own face) because a
+   1080px document cannot live inside the 390x844 app frame in base.css.
+   ========================================================================= */
+
+@font-face {
+  font-family: "Cinzel";
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: block;
+  src: url("../assets/fonts/cinzel-latin-var.woff2") format("woff2");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body, h1, h2, h3, p, table, figure, ul, li { margin: 0; padding: 0; }
+ul { list-style: none; }
+svg { display: block; max-width: 100%; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--c-ground);
+  color: var(--c-text-1);
+  font-family: var(--ff-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  padding: var(--s-6) var(--gutter) var(--s-8);
+  /* A faint violet wash at the top, the same trick the hero scrim uses, so
+     the page has a light source instead of being a flat black sheet. */
+  background-image: radial-gradient(120% 42% at 50% 0%,
+    rgba(126, 52, 226, 0.13) 0%, rgba(68, 22, 158, 0.05) 45%, transparent 78%);
+  background-repeat: no-repeat;
+}
+
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+
+  /* Local component colours, every one DERIVED from a token rather than
+     typed. The flagged-row tint has to exist in two forms: a translucent one
+     that layers over the panel, and an opaque one, because the pinned first
+     column of a scrolling table paints over the cells sliding under it. */
+  --c-flag:       color-mix(in srgb, var(--c-gold-core) 7%, var(--c-surface));
+  --c-flag-wash:  color-mix(in srgb, var(--c-gold-core) 7%, transparent);
+  --c-pin-shadow: color-mix(in srgb, var(--c-ground) 55%, transparent);
+}
+
+/* =========================================================================
+   TYPE
+   ========================================================================= */
+
+.eyebrow {
+  font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-display);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+.title {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-display);
+  letter-spacing: var(--ls-display);
+  text-transform: uppercase;
+  line-height: var(--lh-tight);
+  background: var(--grad-gold-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.h2 {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-title);
+  letter-spacing: var(--ls-display);
+  text-transform: uppercase;
+  color: var(--c-gold-core);
+  line-height: var(--lh-snug);
+}
+
+.h3 {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-value-lg);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-1);
+  letter-spacing: var(--ls-tight);
+}
+
+.label {
+  font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+.lede { color: var(--c-text-2); max-width: 74ch; }
+.micro { font-size: var(--fs-micro); color: var(--c-text-2); }
+.num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+.gold { color: var(--c-gold-core); }
+.violet { color: var(--c-violet-light); }
+.white { color: var(--c-text-1); }
+.right { text-align: right; }
+.bold { font-weight: var(--fw-bold); color: var(--c-text-1); }
+
+/* =========================================================================
+   LAYOUT
+   ========================================================================= */
+
+.masthead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding-bottom: var(--s-5);
+}
+
+.rule {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin: var(--s-5) 0;
+}
+.rule::before, .rule::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--c-hairline-gold), transparent);
+}
+.rule__diamond {
+  flex: 0 0 auto;
+  width: 6px; height: 6px;
+  transform: rotate(45deg);
+  border: 1px solid var(--c-gold-core);
+}
+
+section { margin-top: var(--s-7); scroll-margin-top: var(--s-4); }
+.section__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-4); flex-wrap: wrap; }
+
+.panel {
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-panel);
+  padding: var(--s-5);
+  margin-top: var(--s-4);
+  overflow: hidden;
+}
+.panel--flush { padding: 0; }
+
+/* Two up on a phone, four up at desktop width. The previous 190px floor
+   collapsed to a single column at 390px and turned the masthead into four
+   stacked billboards, which is the opposite of the reference's dense rhythm. */
+.grid {
+  display: grid;
+  gap: var(--s-3);
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+}
+.cols2 { display: grid; gap: var(--s-4); grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+
+/* =========================================================================
+   STAT TILE
+   ========================================================================= */
+
+.tile {
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-card);
+  padding: var(--s-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+.tile__value {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: 30px;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  font-variant-numeric: tabular-nums;
+  background: var(--grad-gold-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.tile--violet .tile__value {
+  background: linear-gradient(180deg, var(--c-violet-light) 0%, var(--c-violet-core) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.tile__note { font-size: var(--fs-micro); color: var(--c-text-2); }
+
+/* =========================================================================
+   TABLES
+
+   This document is nine columns wide in places and it has to be readable on
+   a 390px phone. Three things make that work, and all three matter:
+
+     1. The rung name is PINNED to the left edge. Scrolling a wide table
+        sideways is useless if the label scrolls away with it — you end up
+        looking at a grid of anonymous numbers.
+     2. The right edge FADES while there is more table to the right, and the
+        fade goes away at the end. That is the only honest signal that the
+        table continues; a clipped column with a hard edge just reads as a
+        bug, which is exactly what it looked like before.
+     3. A "swipe" affordance appears in the header row of any table that
+        actually overflows, so the gesture is discoverable rather than
+        guessed at. Tables that fit say nothing.
+
+   Dividers stay cut grooves, never bright hairlines.
+   ========================================================================= */
+
+.tablewrap { position: relative; }
+.scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+/* The fade lives on the wrapper, not the scroller, so it stays pinned to the
+   right edge while the content moves underneath it. */
+.tablewrap::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: var(--s-8);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+  background: linear-gradient(90deg, transparent, var(--c-surface));
+}
+.tablewrap.is-overflowing:not(.is-at-end)::after { opacity: 1; }
+
+.swipe {
+  display: none;
+  justify-content: flex-end;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-gold-core);
+  white-space: nowrap;
+  padding-bottom: var(--s-2);
+}
+.swipe.is-on { display: flex; }
+.swipe.is-spent { color: var(--c-text-2); }
+
+table { border-collapse: separate; border-spacing: 0; width: 100%; font-variant-numeric: tabular-nums; }
+thead th {
+  text-align: left;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+  padding: var(--s-2) var(--s-3);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--c-groove);
+}
+tbody td {
+  padding: var(--s-2) var(--s-3);
+  border-bottom: 1px solid var(--c-groove);
+  color: var(--c-text-2);
+  white-space: nowrap;
+}
+tbody tr:last-child td, tbody tr:last-child th { border-bottom: 0; }
+tbody td.v { color: var(--c-text-1); font-weight: var(--fw-bold); }
+tbody td.n { text-align: right; }
+/* A prose column. Sentences have no business being nowrap — a glossary that
+   scrolls sideways is a glossary nobody reads. */
+tbody td.w { white-space: normal; min-width: 24ch; }
+tbody th {
+  text-align: left;
+  padding: var(--s-2) var(--s-3);
+  border-bottom: 1px solid var(--c-groove);
+  color: var(--c-text-1);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+}
+
+/* The pinned label column. Opaque fills only — anything translucent here
+   lets the scrolling numbers show through the label. */
+thead th:first-child,
+tbody th {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--c-surface);
+  padding-left: 0;
+}
+.is-overflowing thead th:first-child,
+.is-overflowing tbody th { box-shadow: var(--s-2) 0 var(--s-3) calc(-1 * var(--s-2)) var(--c-pin-shadow); }
+
+tr.is-flagged td { background: var(--c-flag-wash); }
+tr.is-flagged th { background: var(--c-flag); color: var(--c-gold-light); }
+
+/* =========================================================================
+   KEY / VALUE READOUT
+   For the handful of places that are one label and one number. A two-column
+   table would push the number off a phone; this wraps under it instead.
+   ========================================================================= */
+
+.kv { margin-top: var(--s-3); }
+.kv__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-4);
+  padding: var(--s-2) var(--s-2);
+  border-bottom: 1px solid var(--c-groove);
+}
+.kv__row:last-child { border-bottom: 0; }
+.kv__row.is-flagged { background: var(--c-flag-wash); border-radius: var(--r-sm); }
+.kv dt { color: var(--c-text-2); flex: 1 1 14ch; }
+.kv dd {
+  margin: 0;
+  color: var(--c-text-1);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+.kv__big { font-weight: var(--fw-bold); color: var(--c-gold-light); }
+
+/* =========================================================================
+   VERDICT PILLS
+   ========================================================================= */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 3px var(--s-3);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  border: 1px solid var(--c-hairline-gold);
+  color: var(--c-gold-light);
+  background: var(--c-chip-fill);
+  white-space: nowrap;
+}
+.pill--violet { border-color: rgba(179, 148, 216, 0.34); color: var(--c-violet-light); }
+.pill--fail { border-color: rgba(215, 167, 71, 0.5); color: var(--c-ground); background: var(--grad-gold-face); }
+
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c-gold-core); flex: 0 0 auto; }
+.dot--off { background: var(--c-groove); box-shadow: inset 0 0 0 1px var(--c-hairline); }
+
+/* Assertion rows.
+
+   Mobile-first: the measured value sits UNDER the assertion it belongs to.
+   An `auto` third column looked tidier on desktop and was a disaster at
+   390px — one long measurement ("Sunwood: richest=true, 3 rungs out-XP it")
+   squeezed the assertion name down to a single word per line. Only once
+   there is genuinely room does the value move out to a right-aligned
+   column, and even then it is capped so it can never do that again. */
+.checks { display: flex; flex-direction: column; }
+.check {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: var(--s-3);
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--c-groove);
+}
+.check:last-child { border-bottom: 0; }
+.check__mark { color: var(--c-gold-core); font-size: var(--fs-micro); line-height: var(--lh-body); }
+.check--fail .check__mark { color: var(--c-violet-light); }
+.check__name { color: var(--c-text-2); }
+.check--fail .check__name { color: var(--c-text-1); }
+.check__val {
+  grid-column: 2;
+  font-size: var(--fs-micro);
+  color: var(--c-gold-core);
+  font-variant-numeric: tabular-nums;
+  padding-top: var(--s-1);
+}
+.check--fail .check__val { color: var(--c-violet-light); }
+
+@media (min-width: 760px) {
+  .check { grid-template-columns: 14px minmax(0, 1fr) minmax(0, 24ch); }
+  .check__val { grid-column: 3; text-align: right; padding-top: 0; color: var(--c-text-2); }
+}
+
+/* =========================================================================
+   CHARTS
+   ========================================================================= */
+
+/* Charts are authored at roughly phone width (a ~460-unit viewBox) and capped
+   so they never scale up far on desktop. Text inside an SVG scales with the
+   viewBox, so a 1000-unit chart squeezed into a 342px panel rendered its 9px
+   labels at 3px — a texture, not a chart. Held near 1:1 the labels stay real
+   text at both ends of the range. */
+.chart { width: 100%; max-width: 560px; height: auto; margin: 0 auto; }
+.chart text { font-family: var(--ff-sans); font-size: 12px; fill: var(--c-text-2); }
+.chart .axis { stroke: var(--c-groove); stroke-width: 1; }
+.chart .gold { fill: var(--c-gold-core); }
+.chart .violet { fill: var(--c-violet-core); }
+.chart .line-gold { fill: none; stroke: var(--c-gold-core); stroke-width: 2; }
+.chart .line-violet { fill: none; stroke: var(--c-violet-core); stroke-width: 2; stroke-dasharray: 4 3; }
+.chart .tick { fill: var(--c-text-2); }
+.chart .t-gold { fill: var(--c-gold-core); }
+.chart .t-violet { fill: var(--c-violet-light); }
+
+.legend { display: flex; flex-wrap: wrap; gap: var(--s-4); margin-top: var(--s-3); }
+.legend__item { display: flex; align-items: center; gap: var(--s-2); font-size: var(--fs-micro); color: var(--c-text-2); }
+.swatch { width: 10px; height: 10px; border-radius: 2px; flex: 0 0 auto; }
+.swatch--gold { background: var(--grad-gold-bar); }
+.swatch--violet { background: var(--grad-violet-bar); }
+
+/* =========================================================================
+   CALLOUT — the design intent behind a table
+   ========================================================================= */
+
+.note {
+  border-left: 2px solid var(--c-gold-deep);
+  padding: var(--s-1) 0 var(--s-1) var(--s-4);
+  color: var(--c-text-2);
+  margin-top: var(--s-4);
+  max-width: 78ch;
+}
+.note strong { color: var(--c-text-1); font-weight: var(--fw-bold); }
+.note code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: var(--fs-micro);
+  color: var(--c-gold-light);
+}
+
+.formula {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: var(--fs-micro);
+  line-height: 1.7;
+  color: var(--c-gold-light);
+  background: var(--c-groove);
+  border-radius: var(--r-sm);
+  padding: var(--s-3) var(--s-4);
+  overflow-x: auto;
+  white-space: pre;
+  margin-top: var(--s-3);
+}
+
+/* =========================================================================
+   TABLE OF CONTENTS
+   ========================================================================= */
+
+.toc { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-4); }
+.toc a {
+  display: inline-block;
+  padding: 5px var(--s-3);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-pill);
+  background: var(--c-chip-fill);
+  color: var(--c-text-2);
+  text-decoration: none;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+}
+.toc a:hover { color: var(--c-gold-light); border-color: var(--c-hairline-gold); }
+
+footer {
+  margin-top: var(--s-8);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--c-groove);
+  color: var(--c-text-2);
+  font-size: var(--fs-micro);
+}
+
+@media (max-width: 640px) {
+  body { padding: var(--s-4) var(--s-3) var(--s-7); }
+  .panel { padding: var(--s-4); }
+  .tile__value { font-size: 24px; }
+}

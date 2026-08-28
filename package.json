@@ -1,0 +1,21 @@
+{
+  "name": "emberveil",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Emberveil \u2014 a 16-bit-flavoured idle RPG for mobile browsers. Melvor-class systems math, original art and world.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node tools/serve.mjs",
+    "start": "node tools/serve.mjs",
+    "shot": "node tools/shot.mjs",
+    "progress": "node tools/build-progress.mjs",
+    "sprites": "node tools/make-sprite.mjs",
+    "verify": "node tools/verify.mjs",
+    "walk": "node tools/walk.mjs"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

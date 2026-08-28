@@ -1,0 +1,10 @@
+# Capture output — 44MB of screenshots, regenerate with `npm run walk`
+progress/shots/
+
+# Third-party reference material: Final Fantasy VI screenshots and the client's
+# own UI reference image. Kept locally as the design bar; not ours to publish.
+reference/shots/
+
+.DS_Store
+node_modules/
+*.log

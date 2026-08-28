@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#050A10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Emberveil — an encounter in the Slagfen. 16-bit sprites in a 2026 cabinet.">
+<title>Emberveil — The Slagfen</title>
+
+<link rel="preload" href="src/assets/fonts/cinzel-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="src/styles/tokens.css">
+<link rel="stylesheet" href="src/styles/base.css">
+<link rel="stylesheet" href="src/styles/primitives.css">
+<link rel="stylesheet" href="src/styles/battle.css">
+</head>
+<body>
+
+<!-- ===================================================================
+     ICON SPRITE — original marks on a 24x24 grid, crisp vector at device
+     resolution. §7: no pixel art in the chrome. A pixel-art nav icon next
+     to a high-DPI gold bevel looks like a bug, not a style.
+     =================================================================== -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+    <linearGradient id="grad-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="var(--c-gold-light)"/>
+      <stop offset="52%"  stop-color="var(--c-gold-core)"/>
+      <stop offset="100%" stop-color="var(--c-gold-deep)"/>
+    </linearGradient>
+    <linearGradient id="grad-violet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="var(--c-violet-light)"/>
+      <stop offset="55%"  stop-color="var(--c-violet-core)"/>
+      <stop offset="100%" stop-color="var(--c-violet-deep)"/>
+    </linearGradient>
+
+    <symbol id="i-cog" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9.5" fill="url(#grad-gold)"/>
+      <circle cx="12" cy="12" r="9.5" fill="none" stroke="#050A10" stroke-opacity=".55"/>
+      <circle cx="12" cy="12" r="6" fill="none" stroke="#050A10" stroke-opacity=".45" stroke-width="1.4"/>
+      <circle cx="12" cy="12" r="2.4" fill="#050A10" fill-opacity=".5"/>
+    </symbol>
+    <symbol id="i-shard" viewBox="0 0 24 24">
+      <path d="M12 1.5 19 9.5 12 22.5 5 9.5Z" fill="url(#grad-violet)"/>
+      <path d="M12 1.5 19 9.5 12 22.5 5 9.5Z" fill="none" stroke="#050A10" stroke-opacity=".5"/>
+      <path d="M12 1.5 12 22.5M5 9.5 19 9.5" stroke="#050A10" stroke-opacity=".35"/>
+      <path d="M12 1.5 8.6 9.5 12 16Z" fill="#FFFFFF" fill-opacity=".28"/>
+    </symbol>
+    <symbol id="i-focus" viewBox="0 0 24 24">
+      <path d="M13.6 1.5 4.5 13.4h5.6L9.2 22.5 19.5 10h-6.3Z" fill="url(#grad-violet)"/>
+      <path d="M13.6 1.5 4.5 13.4h5.6L9.2 22.5 19.5 10h-6.3Z" fill="none" stroke="#050A10" stroke-opacity=".45"/>
+    </symbol>
+    <symbol id="i-xp" viewBox="0 0 24 24">
+      <path d="M12 1.8 15 9h7l-5.6 4.6 2.2 7.6L12 16.9 5.4 21.2l2.2-7.6L2 9h7Z" fill="url(#grad-gold)"/>
+    </symbol>
+
+    <!-- Standing orders -->
+    <symbol id="i-strike" viewBox="0 0 24 24">
+      <path d="M20.6 2.2 10.4 12.4l1.6 1.6L22.2 3.8Z" fill="currentColor"/>
+      <path d="M9.2 13.6 5.4 17.4l1.4 1.4-2 2 1.4 1.4 2-2 1.4 1.4 3.8-3.8Z" fill="currentColor" fill-opacity=".78"/>
+    </symbol>
+    <symbol id="i-sigil" viewBox="0 0 24 24">
+      <path d="M12 1.8 21 11h-5v4.4h-8V11H3Z" fill="currentColor"/>
+      <path d="M8 17.6h8v4.6H8Z" fill="currentColor" fill-opacity=".68"/>
+    </symbol>
+    <symbol id="i-guard" viewBox="0 0 24 24">
+      <path d="M12 1.6 21 4.7v7.6c0 5.2-3.7 8.6-9 10.1-5.3-1.5-9-4.9-9-10.1V4.7Z"
+            fill="none" stroke="currentColor" stroke-width="1.9"/>
+      <path d="M12 6.4 17 11.8l-5 5.4-5-5.4Z" fill="currentColor" fill-opacity=".8"/>
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24">
+      <path d="M15.4 2.6 6 12l9.4 9.4 2-2L10 12l7.4-7.4Z" fill="currentColor"/>
+    </symbol>
+
+    <!-- Bottom nav -->
+    <symbol id="i-nav-home" viewBox="0 0 24 24">
+      <path d="M12 2.2 22 11h-3v10.5h-5.4v-6.2h-3.2v6.2H5V11H2Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-nav-adept" viewBox="0 0 24 24">
+      <path d="M12 1.6c4.9 0 8 3.1 8 8v4.8l-3 2.6v4.6h-4.2v-4.2h-1.6v4.2H7v-4.6l-3-2.6V9.6c0-4.9 3.1-8 8-8Z"
+            fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M7.4 8.8h9.2v3.2H7.4Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-nav-skills" viewBox="0 0 24 24">
+      <path d="M2.5 9.2h13.2c2.6 0 4 1.3 5.8 3.4H8.4c-3.4 0-5.2-1.4-5.9-3.4Z" fill="currentColor"/>
+      <path d="M6.5 14.2h9.4l1.8 7.2H4.6Z" fill="currentColor" fill-opacity=".72"/>
+      <path d="M9.6 2.6h4.2v5.2H9.6Z" fill="currentColor" fill-opacity=".55"/>
+    </symbol>
+    <symbol id="i-nav-relics" viewBox="0 0 24 24">
+      <path d="M6.2 3.4h11.6L22 9.4 12 21.6 2 9.4Z" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M2 9.4h20M6.2 3.4 9 9.4l3 12.2M17.8 3.4 15 9.4" fill="none"
+            stroke="currentColor" stroke-width="1.2" stroke-opacity=".6"/>
+    </symbol>
+    <symbol id="i-nav-wardens" viewBox="0 0 24 24">
+      <ellipse cx="12" cy="12" rx="7.4" ry="10.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <ellipse cx="12" cy="12" rx="2.9" ry="5.6" fill="currentColor"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="app">
+
+  <!-- ================= PINNED CURRENCY BAR ================= -->
+  <div class="topbar safe-top">
+    <a class="backlink grow" href="index.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chevron"/></svg>
+      Skills
+    </a>
+    <div class="chip">
+      <span class="chip__icon"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-cog"/></svg></span>
+      <span class="chip__value" id="cogs">12.45M</span>
+    </div>
+    <div class="chip">
+      <span class="chip__icon"><svg viewBox="0 0 24 24" width="15" height="15"><use href="#i-shard"/></svg></span>
+      <span class="chip__value" id="shards">1,250</span>
+    </div>
+  </div>
+
+  <div class="screen">
+
+    <!-- ================= ENCOUNTER HEADER ================= -->
+    <header class="encounter-head">
+      <div class="encounter-head__row">
+        <div>
+          <h1 class="encounter-head__place">The Slagfen</h1>
+          <p class="encounter-head__region">Emberveil Basin &middot; Depth II</p>
+        </div>
+        <div class="encounter-head__wave">
+          <span class="t-label">Wave</span>
+          <span class="t-value-lg u-tnum" id="wave">3 / 5</span>
+        </div>
+      </div>
+      <div class="ornament-rule encounter-head__rule">
+        <span class="ornament-rule__diamond"></span>
+      </div>
+    </header>
+
+    <!-- ================= THE CABINET =================
+         3px of beveled gold, a 1px dark cut at its inner edge, and exactly
+         384 CSS px of screen inside it: 192 x 2, integer, no remainder. -->
+    <div class="cabinet">
+      <div class="cabinet__screen">
+        <canvas id="stage" width="192" height="168" aria-label="Encounter in the Slagfen"></canvas>
+      </div>
+    </div>
+
+    <p class="cabinet-note">
+      <span>192 &times; 168</span>
+      <span class="cabinet-note__dot"></span>
+      <span>Scale <b>&times;<span id="scaleOut">2</span></b></span>
+      <span class="cabinet-note__dot"></span>
+      <span>Nearest neighbour</span>
+    </p>
+
+    <p class="boot-error" id="bootError" hidden></p>
+
+    <main class="screen__body screen__body--battle">
+
+      <!-- Standing order — what the party does when a gauge fills. -->
+      <section class="orders" role="group" aria-label="Standing order">
+        <button class="order is-active" type="button" data-order="strike">
+          <svg class="order__glyph" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-strike"/></svg>
+          Strike
+        </button>
+        <button class="order" type="button" data-order="sigil">
+          <svg class="order__glyph" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sigil"/></svg>
+          Sigil
+        </button>
+        <button class="order" type="button" data-order="guard">
+          <svg class="order__glyph" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-guard"/></svg>
+          Guard
+        </button>
+      </section>
+
+      <!-- Spoils: the idle economy, on Melvor's curve. -->
+      <section class="panel">
+        <div class="spoils__head">
+          <div>
+            <p class="t-label">Warfare</p>
+            <div class="spoils__skill">
+              <span class="spoils__level" id="skillLevel">34</span>
+              <span class="t-value u-tnum" id="skillNext">34 &rarr; 35</span>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <p class="t-label">Order interval</p>
+            <p class="t-value-lg u-tnum"><span id="interval">2.00s</span></p>
+          </div>
+        </div>
+
+        <div class="spoils__bars">
+          <div class="spoils__meta">
+            <span class="t-label">Skill XP</span>
+            <span class="t-value u-tnum" id="skillPct">0.0%</span>
+          </div>
+          <span class="bar"><span class="bar__fill" id="skillBar" style="--fill:0%"></span></span>
+
+          <div class="spoils__meta">
+            <span class="t-label">Mastery pool</span>
+            <span class="t-value u-tnum" id="poolPct">62.0%</span>
+          </div>
+          <span class="bar bar--violet"><span class="bar__fill" id="poolBar" style="--fill:62%"></span></span>
+        </div>
+
+        <hr class="divider">
+
+        <p class="t-label">Spoils this run</p>
+        <div class="gains" style="margin-top:8px">
+          <span class="gains__item">
+            <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><use href="#i-xp"/></svg>
+            <span class="gains__value" id="gainXp">0</span>
+            <span class="gains__unit">XP</span>
+          </span>
+          <span class="gains__item">
+            <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><use href="#i-cog"/></svg>
+            <span class="gains__value" id="gainCogs">0</span>
+            <span class="gains__unit">Cogs</span>
+          </span>
+          <span class="gains__item">
+            <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><use href="#i-shard"/></svg>
+            <span class="gains__value" id="gainShards">0</span>
+            <span class="gains__unit">Shards</span>
+          </span>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= BOTTOM NAV ================= -->
+  <nav class="nav safe-bottom" aria-label="Primary">
+    <a class="nav__item" href="index.html">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-home"/></svg>
+      <span class="nav__label">Home</span>
+    </a>
+    <button class="nav__item" type="button">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-adept"/></svg>
+      <span class="nav__label">Adept</span>
+    </button>
+    <button class="nav__item is-active" type="button">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-skills"/></svg>
+      <span class="nav__label">Skills</span>
+    </button>
+    <a class="nav__item" href="atelier.html">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-relics"/></svg>
+      <span class="nav__label">Atelier</span>
+    </a>
+    <button class="nav__item" type="button">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-wardens"/></svg>
+      <span class="nav__label">Wardens</span>
+    </button>
+  </nav>
+
+</div>
+
+<script type="module" src="src/js/screens/battle.js"></script>
+</body>
+</html>

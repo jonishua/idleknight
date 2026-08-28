@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="color-scheme" content="dark">
+<!-- theme-color is set from --c-ground at boot; tokens.css stays the single
+     source of truth for every colour on this screen, chrome included. -->
+<meta name="theme-color">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Emberveil — the Warden Codex: bound spirits, their resonance bonuses, and the Rite of Binding.">
+<title>Emberveil — Warden Codex</title>
+
+<link rel="preload" href="src/assets/fonts/cinzel-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="src/styles/tokens.css">
+<link rel="stylesheet" href="src/styles/base.css">
+<link rel="stylesheet" href="src/styles/primitives.css">
+<link rel="stylesheet" href="src/styles/wardens.css">
+</head>
+<body>
+
+<!-- ===================================================================
+     ICON SPRITE — original marks on a 24x24 grid, inheriting the token
+     gold and violet through CSS custom properties inside the gradients.
+     Chrome only. Nothing here is pixel art; nothing pixel-art is here.
+     =================================================================== -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+    <linearGradient id="grad-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="var(--c-gold-light)"/>
+      <stop offset="52%"  stop-color="var(--c-gold-core)"/>
+      <stop offset="100%" stop-color="var(--c-gold-deep)"/>
+    </linearGradient>
+    <linearGradient id="grad-violet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="var(--c-violet-light)"/>
+      <stop offset="55%"  stop-color="var(--c-violet-core)"/>
+      <stop offset="100%" stop-color="var(--c-violet-deep)"/>
+    </linearGradient>
+
+    <!-- Cogs — the base currency -->
+    <symbol id="i-cog" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9.5" fill="url(#grad-gold)"/>
+      <circle cx="12" cy="12" r="9.5" fill="none" stroke="var(--c-ground)" stroke-opacity=".55"/>
+      <circle cx="12" cy="12" r="6" fill="none" stroke="var(--c-ground)" stroke-opacity=".45" stroke-width="1.4"/>
+      <circle cx="12" cy="12" r="2.4" fill="var(--c-ground)" fill-opacity=".5"/>
+    </symbol>
+
+    <!-- Aether Shard — the arcane currency -->
+    <symbol id="i-shard" viewBox="0 0 24 24">
+      <path d="M12 1.5 19 9.5 12 22.5 5 9.5Z" fill="url(#grad-violet)"/>
+      <path d="M12 1.5 19 9.5 12 22.5 5 9.5Z" fill="none" stroke="var(--c-ground)" stroke-opacity=".5"/>
+      <path d="M12 1.5 12 22.5M5 9.5 19 9.5" stroke="var(--c-ground)" stroke-opacity=".35"/>
+      <path d="M12 1.5 8.6 9.5 12 16Z" fill="var(--c-text-1)" fill-opacity=".28"/>
+    </symbol>
+
+    <!-- Warden Seal — the token spent on the Rite -->
+    <symbol id="i-seal" viewBox="0 0 24 24">
+      <path d="M12 1.4 22.6 12 12 22.6 1.4 12Z" fill="none" stroke="url(#grad-gold)" stroke-width="1.5"/>
+      <path d="M12 6.6 17.4 12 12 17.4 6.6 12Z" fill="url(#grad-gold)"/>
+      <path d="M12 1.4 12 4M12 20 12 22.6M1.4 12 4 12M20 12 22.6 12"
+            stroke="url(#grad-gold)" stroke-width="1.2"/>
+    </symbol>
+
+    <!-- Codex Resonance — the shared pool -->
+    <symbol id="i-resonance" viewBox="0 0 24 24">
+      <path d="M12 2.4 21.6 12 12 21.6 2.4 12Z" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M12 7.2 16.8 12 12 16.8 7.2 12Z" fill="none" stroke="currentColor" stroke-opacity=".62"/>
+      <path d="M12 10.4 13.6 12 12 13.6 10.4 12Z" fill="currentColor"/>
+    </symbol>
+
+    <!-- Sealed sigil — an unbound Warden's mark -->
+    <symbol id="i-sealed" viewBox="0 0 24 24">
+      <path d="M12 2.4 21.6 12 12 21.6 2.4 12Z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M6.4 12h11.2" stroke="currentColor" stroke-width="1.5"/>
+    </symbol>
+
+    <!-- Bound sigil — a claimed Warden's mark -->
+    <symbol id="i-bound" viewBox="0 0 24 24">
+      <path d="M12 2.4 21.6 12 12 21.6 2.4 12Z" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <path d="M6 6 18 18M18 6 6 18"/>
+    </symbol>
+
+    <!-- Bottom navigation -->
+    <symbol id="i-nav-home" viewBox="0 0 24 24">
+      <path d="M12 2.2 22 11h-3v10.5h-5.4v-6.2h-3.2v6.2H5V11H2Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-nav-adept" viewBox="0 0 24 24">
+      <path d="M12 1.6c4.9 0 8 3.1 8 8v4.8l-3 2.6v4.6h-4.2v-4.2h-1.6v4.2H7v-4.6l-3-2.6V9.6c0-4.9 3.1-8 8-8Z"
+            fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M7.4 8.8h9.2v3.2H7.4Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-nav-skills" viewBox="0 0 24 24">
+      <path d="M2.5 9.2h13.2c2.6 0 4 1.3 5.8 3.4H8.4c-3.4 0-5.2-1.4-5.9-3.4Z" fill="currentColor"/>
+      <path d="M6.5 14.2h9.4l1.8 7.2H4.6Z" fill="currentColor" fill-opacity=".72"/>
+      <path d="M9.6 2.6h4.2v5.2H9.6Z" fill="currentColor" fill-opacity=".55"/>
+    </symbol>
+    <symbol id="i-nav-relics" viewBox="0 0 24 24">
+      <path d="M6.2 3.4h11.6L22 9.4 12 21.6 2 9.4Z" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M2 9.4h20M6.2 3.4 9 9.4l3 12.2M17.8 3.4 15 9.4" fill="none"
+            stroke="currentColor" stroke-width="1.2" stroke-opacity=".6"/>
+    </symbol>
+    <symbol id="i-nav-wardens" viewBox="0 0 24 24">
+      <ellipse cx="12" cy="12" rx="7.4" ry="10.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <ellipse cx="12" cy="12" rx="2.9" ry="5.6" fill="currentColor"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="app">
+
+  <!-- ================= PINNED CURRENCY BAR ================= -->
+  <div class="topbar safe-top">
+    <div class="brand" aria-label="Emberveil">
+      <span class="brand__l1">Ember</span><span class="brand__l2">Veil</span>
+    </div>
+    <div class="chips">
+      <div class="chip">
+        <span class="chip__icon"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#i-cog"/></svg></span>
+        <span class="chip__value" id="cCogs">4.18M</span>
+      </div>
+      <div class="chip">
+        <span class="chip__icon"><svg viewBox="0 0 24 24" width="15" height="15"><use href="#i-shard"/></svg></span>
+        <span class="chip__value" id="cShards">8,945</span>
+      </div>
+      <div class="chip">
+        <span class="chip__icon"><svg viewBox="0 0 24 24" width="15" height="15"><use href="#i-seal"/></svg></span>
+        <span class="chip__value" id="cSeals">3</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SCROLLER ================= -->
+  <div class="screen" id="screen">
+    <main class="screen__body wc">
+
+      <!-- Codex header: the one enormous number, and the shared pool -->
+      <section class="panel codex">
+        <div class="codex__count">
+          <p class="t-label">Wardens Bound</p>
+          <p class="codex__numeral">
+            <span class="t-numeral" id="hBound">12</span><span class="codex__of" id="hTotal">/24</span>
+          </p>
+        </div>
+
+        <div class="divider--v"></div>
+
+        <div class="codex__pool">
+          <div class="panel__head">
+            <p class="t-label">Codex Resonance</p>
+            <p class="t-value u-tnum" id="hPoolPct">62%</p>
+          </div>
+          <div class="bar codex__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+               aria-valuenow="62" aria-label="Codex resonance pool">
+            <div class="bar__fill" id="hPoolFill" style="--fill: 62%"></div>
+          </div>
+          <p class="t-micro codex__figures" id="hPoolFigures">372,400 / 600,000</p>
+          <ul class="ckpts" id="hCkpts"></ul>
+        </div>
+      </section>
+
+      <!-- Filter -->
+      <div class="seg" id="seg" role="tablist" aria-label="Filter the codex">
+        <button class="seg__item is-active" type="button" role="tab" data-filter="all"    aria-selected="true">All <span class="seg__n">24</span></button>
+        <button class="seg__item"           type="button" role="tab" data-filter="bound"  aria-selected="false">Bound <span class="seg__n">12</span></button>
+        <button class="seg__item"           type="button" role="tab" data-filter="sealed" aria-selected="false">Sealed <span class="seg__n">12</span></button>
+      </div>
+
+      <!-- The collection -->
+      <ul class="wgrid" id="grid" aria-label="Warden codex"></ul>
+
+    </main>
+  </div>
+
+  <!-- ================= PINNED PRIMARY ACTION ================= -->
+  <section class="rite-bar" id="riteBar">
+    <div class="rite-bar__body">
+      <p class="t-label u-gold rite-bar__kicker">Rite of Binding</p>
+      <p class="rite-bar__cost" id="riteCost"></p>
+      <div class="pity">
+        <span class="pity__track"><span class="pity__fill" id="pityFill" style="--fill: 60%"></span></span>
+        <span class="t-micro pity__label" id="pityLabel">Sovereign guaranteed in 8</span>
+      </div>
+    </div>
+    <button class="btn-gold btn-gold--sm rite-bar__go" type="button" id="riteGo">Summon</button>
+  </section>
+
+  <!-- ================= BOTTOM NAV ================= -->
+  <nav class="nav safe-bottom" id="nav" aria-label="Primary">
+    <button class="nav__item" type="button" data-tab="home">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-home"/></svg>
+      <span class="nav__label">Home</span>
+    </button>
+    <button class="nav__item" type="button" data-tab="adept">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-adept"/></svg>
+      <span class="nav__label">Adept</span>
+    </button>
+    <button class="nav__item" type="button" data-tab="skills">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-skills"/></svg>
+      <span class="nav__label">Skills</span>
+    </button>
+    <button class="nav__item" type="button" data-tab="relics">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-relics"/></svg>
+      <span class="nav__label">Relics</span>
+    </button>
+    <button class="nav__item is-active" type="button" data-tab="wardens" aria-current="page">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-wardens"/></svg>
+      <span class="nav__label">Wardens</span>
+    </button>
+  </nav>
+
+  <!-- ================= DETAIL SHEET ================= -->
+  <div class="sheet" id="sheet" hidden>
+    <div class="sheet__scrim" id="sheetScrim"></div>
+    <section class="sheet__panel" id="sheetPanel" role="dialog" aria-modal="true" aria-labelledby="sheetName"></section>
+  </div>
+
+  <!-- ================= THE RITE ================= -->
+  <div class="summon" id="summon" hidden aria-live="polite"></div>
+
+</div>
+
+<script type="module" src="src/js/screens/wardens.js"></script>
+</body>
+</html>

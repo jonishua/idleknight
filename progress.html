@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Emberveil — Build Progress</title>
+
+<!-- The progress page eats our own design system: same tokens, same primitives. -->
+<link rel="stylesheet" href="src/styles/tokens.css">
+<link rel="stylesheet" href="src/styles/primitives.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--c-ground);
+    color: var(--c-text-1);
+    font-family: var(--ff-sans);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, p, ul, ol, li, figure { margin: 0; padding: 0; }
+  ul, ol { list-style: none; }
+  a { color: inherit; }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: var(--fs-micro);
+    color: var(--c-text-2);
+  }
+
+  .wrap { max-width: 1080px; margin-inline: auto; padding: var(--s-7) var(--s-5) var(--s-8); }
+
+  /* ---- page header ---- */
+  .head { display: flex; align-items: flex-end; justify-content: space-between;
+          gap: var(--s-5); flex-wrap: wrap; margin-bottom: var(--s-6); }
+  .head__title {
+    font-family: var(--ff-display); font-weight: 900; font-size: 26px;
+    letter-spacing: var(--ls-display); text-transform: uppercase;
+    background: var(--grad-gold-text); -webkit-background-clip: text;
+    background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+  }
+  .head__sub { color: var(--c-text-2); font-size: var(--fs-label);
+               letter-spacing: var(--ls-label); text-transform: uppercase; margin-top: var(--s-2); }
+
+  /* ---- summary tiles ---- */
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+             gap: var(--s-3); margin-bottom: var(--s-6); }
+  .tile { background: var(--c-surface); border: 1px solid var(--c-hairline);
+          border-radius: var(--r-panel); padding: var(--s-4); }
+  .tile__label { font-size: var(--fs-label); letter-spacing: var(--ls-label);
+                 text-transform: uppercase; color: var(--c-text-2); }
+  .tile__value { font-family: var(--ff-display); font-weight: 900; font-size: 34px;
+                 line-height: 1.1; margin-top: var(--s-2);
+                 background: var(--grad-gold-text); -webkit-background-clip: text;
+                 background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+                 font-variant-numeric: tabular-nums; }
+
+  /* ---- piece card ---- */
+  .pieces { display: flex; flex-direction: column; gap: var(--s-4); }
+  .piece { padding: var(--s-5); }
+  .piece__head { display: flex; align-items: flex-start; justify-content: space-between;
+                 gap: var(--s-4); }
+  .piece__name { font-family: var(--ff-display); font-weight: var(--fw-display);
+                 font-size: var(--fs-title); letter-spacing: 0.06em;
+                 text-transform: uppercase; color: var(--c-gold-core); }
+  .piece__meta { color: var(--c-text-2); font-size: var(--fs-micro); margin-top: var(--s-1); }
+  .piece__score { display: flex; align-items: baseline; gap: var(--s-2); }
+  .piece__num { font-family: var(--ff-display); font-weight: 900; font-size: 46px;
+                line-height: 1; font-variant-numeric: tabular-nums; }
+
+  .is-high { background: var(--grad-gold-text); -webkit-background-clip: text;
+             background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+  .is-mid  { color: var(--c-gold-core); }
+  .is-low  { color: var(--c-violet-light); }
+  .is-none { color: var(--c-text-2); }
+
+  .delta { font-size: var(--fs-label); font-weight: var(--fw-bold);
+           font-variant-numeric: tabular-nums; }
+  .delta.is-up   { color: var(--c-gold-core); }
+  .delta.is-down { color: var(--c-violet-light); }
+
+  .verdict { margin-top: var(--s-3); font-size: var(--fs-label);
+             letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--c-text-2); }
+  .verdict--win { color: var(--c-gold-light); }
+
+  .spark { width: 240px; height: 56px; margin-top: var(--s-4); display: block; }
+
+  /* ---- biggest gap ---- */
+  .gap { margin-top: var(--s-4); padding: var(--s-3) var(--s-4);
+         background: var(--c-groove); border-radius: var(--r-card);
+         border-left: 2px solid var(--c-violet-core); }
+  .gap--current { border-left-color: var(--c-gold-core); }
+  .gap__label { font-size: var(--fs-micro); letter-spacing: var(--ls-label);
+                text-transform: uppercase; color: var(--c-text-2); }
+  .gap__text { margin-top: var(--s-1); color: var(--c-text-1); }
+
+  /* ---- rounds ---- */
+  .history { margin-top: var(--s-4); }
+  .history > summary { cursor: pointer; font-size: var(--fs-label);
+                       letter-spacing: var(--ls-label); text-transform: uppercase;
+                       color: var(--c-text-2); padding: var(--s-2) 0; }
+  .rounds { display: flex; flex-direction: column; gap: var(--s-4); margin-top: var(--s-2); }
+  .round { padding-top: var(--s-4); border-top: 1px solid var(--c-groove); }
+  .round__head { display: flex; align-items: baseline; gap: var(--s-3);
+                 flex-wrap: wrap; margin-bottom: var(--s-2); }
+  .round__n { font-size: var(--fs-label); letter-spacing: var(--ls-label);
+              text-transform: uppercase; color: var(--c-text-2); }
+  .round__score { font-weight: var(--fw-bold); font-size: var(--fs-value-lg);
+                  font-variant-numeric: tabular-nums; }
+  .round__time { margin-left: auto; font-size: var(--fs-micro); color: var(--c-text-2); }
+
+  .bar__fill--violet { background: var(--grad-violet-bar); }
+
+  .badge { font-size: var(--fs-micro); letter-spacing: var(--ls-label);
+           text-transform: uppercase; padding: 2px var(--s-2); border-radius: var(--r-pill);
+           border: 1px solid var(--c-hairline); color: var(--c-text-2); }
+  .badge--win { color: var(--c-gold-light); border-color: var(--c-hairline-gold); }
+
+  .evidence { margin-top: var(--s-3); display: flex; flex-direction: column; gap: var(--s-2); }
+  .evidence li { position: relative; padding-left: var(--s-4);
+                 color: var(--c-text-2); font-size: var(--fs-body); }
+  .evidence li::before { content: ""; position: absolute; left: 0; top: 8px;
+                         width: 5px; height: 5px; transform: rotate(45deg);
+                         border: 1px solid var(--c-gold-core); }
+
+  /* ---- screenshots ---- */
+  .shots { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-4); }
+  .shot { display: block; text-decoration: none; }
+  .shot img { width: 156px; height: auto; border-radius: var(--r-card);
+              border: 1px solid var(--c-hairline); display: block; background: var(--c-ground); }
+  .shot__cap { display: block; margin-top: var(--s-1); font-size: var(--fs-micro);
+               color: var(--c-text-2); max-width: 156px; overflow: hidden;
+               text-overflow: ellipsis; white-space: nowrap; }
+  .loose { margin-top: var(--s-4); }
+
+  /* ---- empty / problems ---- */
+  .empty { text-align: center; padding: var(--s-8) var(--s-5); }
+  .empty__title { font-family: var(--ff-display); font-weight: var(--fw-display);
+                  font-size: var(--fs-title); letter-spacing: var(--ls-display);
+                  text-transform: uppercase; color: var(--c-gold-core); }
+  .empty pre { margin-top: var(--s-4); text-align: left; overflow-x: auto;
+               background: var(--c-groove); padding: var(--s-4);
+               border-radius: var(--r-card); color: var(--c-text-2);
+               font-size: var(--fs-micro); line-height: 1.6; }
+  .problems { margin-top: var(--s-6); border-left: 2px solid var(--c-violet-core); }
+
+  .foot { margin-top: var(--s-7); color: var(--c-text-2); font-size: var(--fs-micro);
+          display: flex; gap: var(--s-4); flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="sparkline" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#B08539"/><stop offset="100%" stop-color="#F8DCA2"/>
+  </linearGradient>
+  <linearGradient id="sparkfill" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#D7A747" stop-opacity=".26"/>
+    <stop offset="100%" stop-color="#D7A747" stop-opacity="0"/>
+  </linearGradient>
+</defs></svg>
+
+<div class="wrap">
+
+  <header class="head">
+    <div>
+      <h1 class="head__title">Emberveil</h1>
+      <p class="head__sub">Build progress &middot; blind-comparison scoreboard</p>
+    </div>
+    <p class="head__sub">Generated Aug 28, 07:49</p>
+  </header>
+
+  <section class="summary">
+    <div class="tile">
+      <p class="tile__label">Pieces tracked</p>
+      <p class="tile__value">6</p>
+    </div>
+    <div class="tile">
+      <p class="tile__label">Verdicts</p>
+      <p class="tile__value">8</p>
+    </div>
+    <div class="tile">
+      <p class="tile__label">Average score</p>
+      <p class="tile__value">74</p>
+    </div>
+    <div class="tile">
+      <p class="tile__label">Pieces winning</p>
+      <p class="tile__value">1<span style="font-size:18px">/6</span></p>
+    </div>
+  </section>
+
+  
+    <div class="pieces">
+  <section class="piece panel">
+    <header class="piece__head">
+      <div class="piece__id">
+        <h2 class="piece__name">Home Hero</h2>
+        <p class="piece__meta">1 round &middot;
+          <code>home-hero</code></p>
+      </div>
+
+      <div class="piece__score">
+        <span class="piece__num is-low">62</span>
+        
+      </div>
+    </header>
+
+    <p class="verdict">Still losing the blind comparison.</p>
+
+    
+
+    
+      <div class="gap gap--current">
+        <span class="gap__label">Current biggest gap</span>
+        <p class="gap__text">Replace src/assets/art/hero/ember-gate.png with key art that has an actual light source and rendered form. Measured against reference/shots/ui-bar.png, our art (hero band, excluding the centre text column) has p99 luma 83.2 and only 0.66% of pixels above luma 100; the reference is p99 195.7 with 9.20% above 100 — 14x more lit pixels. The character region scores 1.43 mean adjacent-pixel luma delta vs the reference&#39;s 6.67 (4.7x less surface detail) and tops out at luma 113, i.e. there is not one specular highlight on it. Target, and verify with the same script: art p99 luma &gt;= 180, &gt;7% of pixels above luma 100, character-region detail delta &gt;= 5.0, and the figure enlarged to fill roughly the right 40% of the band with readable armour/cloth planes and a hard rim light at 230+. Everything else on this screen is already close; this one asset is what loses the A/B.</p>
+      </div>
+
+    <details class="history" open>
+      <summary>Round history</summary>
+      <ol class="rounds">
+  <li class="round">
+    <div class="round__head">
+      <span class="round__n">Round 1</span>
+      <span class="round__score is-low">62</span>
+      <span class="badge">Lost blind pick</span>
+      <span class="round__time">Aug 27, 03:51</span>
+    </div>
+
+    <div class="bar" aria-hidden="true">
+      <div class="bar__fill bar__fill--violet"
+           style="--fill:62%"></div>
+    </div>
+
+    
+
+    
+      <ul class="evidence">
+        <li>HOW INSPECTED: npm run dev (server already up on 5174); npm run shot -- http://localhost:5174/ progress/shots/home-hero-r1-critic.png -&gt; real 780x1688 @DPR2 PNG. Opened it beside reference/shots/ui-bar.png (1008x1792). Built crops at progress/shots/home-hero-r1-critic-ab.png. All colour claims below are sampled pixels via PIL, not eyeballed. npm run verify = 20/20 including no-raw-hex.
+
+BLIND A/B: not close. Cropped both hero bands, stripped nothing else, asked which is the shipped product. The right one, instantly. Ours reads as a dark placeholder: a faceless smooth-shaded mannequin in a cloak (no face, no hands, no armour plates, a stick for a weapon), a flat gold-brown blocky castle silhouette, a smooth featureless tube-arch sweeping across the top-right and muddying the area behind the currency chips, and a flat purple sky. The reference has five depth planes with aerial perspective, a moonlit sky, an embroidered tattered cape, and fully rendered plate with a violet visor glow. Numbers back the eye: character region unique-colour density 3.44% vs 6.43%, adjacent-pixel luma delta 1.43 vs 6.67, max luma 113 vs 255. The raw asset itself is the problem, not the scrim: ember-gate.png alone is mean 27.4 / p99 110.3 / 1.32% above 100.
+
+WHAT HOLDS (credit where due): Trap 1 is clean — every secondary label computes to rgb(196,200,202)=#C4C8CA at opacity 1, no fading anywhere; hierarchy is carried by size + letter-spacing (11px/1.1px labels, 57.2px numeral). Layout rhythm, panel radii, 12/16/20 gaps and the chamfered CLAIM plate are near 1:1 with the bar. Zero scroll confirmed: documentElement scrollHeight 844 == clientHeight 844, scrollWidth 390 == clientWidth 390. Strings are clean — rendered innerText grepped for the RuneScape metal ladder / skill / item names and for FFVI proper nouns: zero hits in shipped copy (the only &#39;rune&#39; matches are an SVG path id and a comment).
+
+MEASURED FAILURES BEYOND THE ART:
+1. Trap 3 (empty track == panel) is broken, and the sign is inverted vs the reference. At the main bar row y=818: our empty track is #13181C (L23.0) while the panel immediately beside it at the same row is #181C20 (L27.3) — the track is 4.3 DARKER, i.e. a well. In the reference at its bar row y=904 the track fill is L~23.0 against a panel of L~19.0 — 3-4 LIGHTER. Root cause: .panel uses --grad-panel, a vertical gradient (#13171B at top, measured drifting to #1B1F24 by y=899), while --c-track is pinned to the panel&#39;s TOP value, so it only matches at the very top of a panel and goes dark everywhere else.
+2. The track rim is half-strength and has no bevel. Reference cross-section through the empty track: top edge L62.2/58.2 (#3C3F40), bottom edge L52.7 — a lit top lip and a shaded bottom, a real well. Ours: top L32.3 and bottom L32.3 (#1D2125) — symmetric and dim. tokens.css ALREADY defines --c-track-rim #3C4042 (L63.3) and --c-track-rim-lo #33373A (L52.8), correctly measured, but .bar in primitives.css uses &#39;box-shadow: inset 0 0 0 1px var(--c-hairline)&#39; (rgba white .045) instead. Those two tokens are wired only in skill.css, so the flagship screen shipped the worse version of the shared primitive it supposedly owns.
+3. Divider contrast is ~2.3x too weak. Ours at y=852: #1D2227 (L33.1) on a panel of L28.3 = 1.17x. Reference at y=948: #313431 (L50.8) on a panel of L18.0 = 2.7x, continuous across the full panel width (verified at x=80..900). Cause is the same class of bug: .divider uses --c-groove-cut, which primitives.css defines as color-mix(--c-groove 52%, --c-ground), halving the correctly-measured --c-groove #33383D. skill.css overrides --c-groove-cut back to full --c-groove; home does not. NOTE FOR THE RECORD: reference/ui-bar.md&#39;s &#39;correction 2&#39; (dividers darker than the panel) is contradicted by the actual PNG — the divider is measurably brighter. tokens.css already documents this; the builder was right to follow the pixels. The defect is the magnitude, not the direction.
+4. Icons are flat glyphs, not rendered objects. The bar&#39;s marks are little modelled things — a coin with a rim, a faceted gem, a steel helm, a gold chevron with shading, a violet portal ring. Ours are single-fill silhouettes with one bevel pass: the coin is a cog, the nav &#39;ADEPT&#39; helm reads as a capsule with a slot, &#39;SKILLS&#39; reads as a stack of plates, &#39;WARDENS&#39; as an almond. Palette slip too: our WARDEN SEALS crown renders white where the reference&#39;s crown is gold — a neutral used where an accent belongs.
+5. Type floor is below the reference&#39;s stated scale. The doc puts small labels at ~11-13px; &#39;AETHER SHARD&#39; and &#39;WARDEN SEALS&#39; compute to 8px and the nav labels to 9px. Some of the hierarchy is being bought by shrinking rather than by the scale.
+6. Composition dead space: the bottom third of our hero band is near-black with &#39;IDLE YIELD READY&#39; floating in a void (band mean luma 27.8 vs the reference&#39;s 45.1), because the scrim crushes art that had no light in it to begin with. The reference keeps readable art right down to the panel edge.
+7. hero.css:141 uses a drop-shadow filter on the crest, against the doc&#39;s explicit &#39;no drop shadows, no gratuitous glow&#39;. Minor, but it is the one place the rule is broken on this screen.
+
+VERDICT: the cabinet is genuinely good — an 85 on its own. The painting inside it is a 35, and the painting is the top 40% of the screen and the whole of a store-listing screenshot. Placed next to reference/shots/ui-bar.png in an App Store listing, ours looks like the unfinished one at a glance.</li>
+      </ul>
+
+    <div class="shots">
+      <a class="shot" href="progress/shots/home-hero-r1-critic-ab.png" target="_blank" rel="noopener">
+        <img src="progress/shots/home-hero-r1-critic-ab.png" alt="home-hero-r1-critic-ab.png" loading="lazy">
+        <span class="shot__cap">home-hero-r1-critic-ab.png</span>
+      </a>
+      <a class="shot" href="progress/shots/home-hero-r1-critic.png" target="_blank" rel="noopener">
+        <img src="progress/shots/home-hero-r1-critic.png" alt="home-hero-r1-critic.png" loading="lazy">
+        <span class="shot__cap">home-hero-r1-critic.png</span>
+      </a>
+      <a class="shot" href="progress/shots/home-hero-r1.png" target="_blank" rel="noopener">
+        <img src="progress/shots/home-hero-r1.png" alt="home-hero-r1.png" loading="lazy">
+        <span class="shot__cap">home-hero-r1.png</span>
+      </a></div>
+  </li></ol>
+    </details>
+
+    
+  </section>
+  <section class="piece panel">
+    <header class="piece__head">
+      <div class="piece__id">
+        <h2 class="piece__name">Skill Loop</h2>
+        <p class="piece__meta">2 rounds &middot;
+          <code>skill-loop</code></p>
+      </div>
+
+      <div class="piece__score">
+        <span class="piece__num is-mid">84</span>
+        <span class="delta is-up">+10</span>
+      </div>
+    </header>
+
+    <p class="verdict">Still losing the blind comparison.</p>
+
+    
+  <svg class="spark" viewBox="0 0 240 56" role="img" aria-label="Score trend across rounds">
+    <line x1="6" y1="6.0" x2="234" y2="6.0"
+          stroke="rgba(255,255,255,.07)" stroke-dasharray="3 4"/>
+    <path d="M6.0,17.4 L234.0,13.0 L234.0,50 L6.0,50 Z" fill="url(#sparkfill)"/>
+    <path d="M6.0,17.4 L234.0,13.0" fill="none" stroke="url(#sparkline)" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="6.0" cy="17.4" r="3"
+             fill="#D7A747"
+             stroke="#050A10" stroke-width="1.5"><title>Round 1: 74</title></circle><circle cx="234.0" cy="13.0" r="3"
+             fill="#D7A747"
+             stroke="#050A10" stroke-width="1.5"><title>Round 2: 84</title></circle>
+  </svg>
+
+    
+      <div class="gap gap--current">
+        <span class="gap__label">Current biggest gap</span>
+        <p class="gap__text">Make the gold and violet fills brighten ALONG THEIR LENGTH, not just across their thickness. Right now --grad-gold-metal in primitives.css is 180deg only, so .bar__fill has a dead-flat body: measured on the list&#39;s 98.3% Sunforging XP bar at y=881, luma reads 164.0 163.9 164.0 163.9 164.0 163.2 164.0 163.0 162.2 163.9 164.0 163.2 164.0 163.9 164.0 across 375px (188 CSS px) — total variation under 2 luma — and then jumps to the 242 cap. The reference does the opposite at EVERY bar size: its 65.4% XP bar runs 142 -&gt; 148 -&gt; 157 -&gt; 164 -&gt; 172 -&gt; 177 -&gt; 186 -&gt; 200 -&gt; 214 before its 247 cap; its small 78% QUEST bar runs 137.5 -&gt; 198.2; its 92% UPGRADE violet runs 77.7 -&gt; 97.3. End/start is ~1.45-1.50x for gold and ~1.25x for violet, always measured across the bar&#39;s own fill, so the sheen stretches as the fill grows. Add a 90deg component to the fill background (keep the 180deg cross-section, which is already correct) taking gold from ~L135 at the fill&#39;s left to ~L205 at its leading edge and violet from ~L72 to ~L92. This also fixes the second half of the problem for free: our cap is 242 over a body of 164 = 1.48x, which is why it reads as a glowing bead bolted onto the end — the reference&#39;s cap is 247 over a pre-cap 214 = 1.15x, a crest on a climb. Ramp the body to 205 and the existing 242 cap becomes 1.18x and stops looking like a sprite. Ten bars carry that bead in the list view today, which turns one effect into wallpaper.</p>
+      </div>
+
+    <details class="history" open>
+      <summary>Round history</summary>
+      <ol class="rounds">
+  <li class="round">
+    <div class="round__head">
+      <span class="round__n">Round 1</span>
+      <span class="round__score is-mid">74</span>
+      <span class="badge">Lost blind pick</span>
+      <span class="round__time">Aug 26, 22:30</span>
+    </div>
+
+    <div class="bar" aria-hidden="true">
+      <div class="bar__fill"
+           style="--fill:74%"></div>
+    </div>
+
+    
+      <div class="gap">
+        <span class="gap__label">Biggest gap</span>
+        <p class="gap__text">Invert the chrome contrast. Every seam and bar edge on this screen is DARKER than its panel; in reference/shots/ui-bar.png every one is BRIGHTER. Measured: our horizontal and vertical dividers are #0A0F14 (luma 14.3) on a #13171B panel (luma 22.4); the reference&#39;s divider at y=948 is #2E332F (luma 49.6) on a panel of luma ~20 — 2.5x the panel, not 0.6x. Our empty-track outline is #1D2124 (1.45x panel); the reference&#39;s is #393C3D / #313435 (2.6x panel). And our gold fill ends in one antialiased pixel (168 -&gt; 124 -&gt; 22.4 track) where the reference&#39;s fill cap peaks at #FFF1B4 (luma 239, brighter than its own 186 body) and bleeds a 35px warm bloom into the track (114, 89, 75, 67, 57, 53, 48 ... 24). Fix all three together: raise --c-track&#39;s stroke to ~2.5x panel luma, replace --c-groove with a light hairline of the same value, and give every bar a hot cap plus a trailing glow. Then delete the &#39;dividers are DARKER than their panel&#39; HARD RULE from tokens.css — it is transcribed from ui-bar.md, the PNG contradicts it, and the PNG wins. Until this lands the panels read as one flat slab and the bars read as painted rectangles instead of lit metal, which is the entire reason the blind A/B is not close.</p>
+      </div>
+
+    
+      <ul class="evidence">
+        <li>CRITIC PASS. Judged from pixels, not source: ran `node tools/serve.mjs`, opened http://localhost:5174/skills.html at 390x844 (DPR 2, 780x1688 PNGs) and let it run untouched. Captured t=0, 6.5s, 7.5s, 8.5s, 9.5s, 20s, 62s, plus ?view=list and ?demo=levelup at 2.2/3.2/4.2s. All colour claims below are programmatic pixel samples from the PNGs, not eyeballing.</li><li>IT IS ALIVE, AND THE LOOP IS CAUSAL. 62s unattended: 27 actions, 890 XP, timer 00:01:02, skill 46 -&gt; 47, mastery 34 -&gt; 35 -&gt; 36, stored ingots 212 -&gt; 241, Coalstone 806 -&gt; 756. Crossing the 50% pool checkpoint visibly rewrote the interval line from &#39;2.40s of 3.00s - 20%&#39; to &#39;2.20s of 3.00s - 20% -0.2s&#39; and moved the HELD/NEXT rows from 25%/50% to 50%/95%. A checkpoint changing the action interval in front of you is the hardest thing on the brief and it is done.</li><li>MATH IS EXACT, 12/12 ROWS, ZERO DRIFT. Diffed src/js/engine/xp.js against reference/melvor-math.md. Cumulative AND per-step, L1/10/20/30/40/50/60/70/80/90/92/99: 0, 1154/185, 4470/497, 13363/1332, 37224/3576, 101333/9612, 273742/25856, 737627/69576, 1986068/187260, 5346332/504037, 6517253/614422, 13034431/1228825. Every delta 0. doublingRatio(10)=1.9946, (30)=1.9955, (66)=1.9997 — matches the doc&#39;s &#39;1.995 by 10, exactly 2.000 by 66&#39;.</li><li>THE DISPLAY IS BOUND TO THAT MATH, NOT FAKED. Screen at t=62 reads &#39;774 / 7,887 XP&#39; for 47-&gt;48; deltaXp(48) computes to exactly 7887. &#39;TOTAL XP 75.9K&#39; = xpAt(47) 75,127 + 774 = 75,901. Checkpoints follow the Melvor pattern without copying content (50% = an interval cut, mirroring Mining&#39;s -0.2s; 95% = mastery XP everywhere, mirroring Firemaking) on a 4.50M base cap = 500,000 x 9 recipes, which is the published rule.</li><li>DIVIDER POLARITY IS INVERTED vs the adjudicating PNG. Column scan x=100: our panel 22.4 luma, divider rows y=558-559 at #0A0F14 = 14.3. Vertical rule at x=272-273 identical. Reference column x=500: panel 19-22 luma, divider y=948-949 at #2E332F/#272B2D = 49.6/42.3. tokens.css encodes the wrong polarity as trap 2 of a &#39;HARD RULE&#39; block, so this error is now load-bearing for every future piece.</li><li>OUR GOLD IS MATTE WHERE THE REFERENCE&#39;S IS LIT. Bar heights match (ours 18px@2x = 9 CSS, ref 26px@2.585x = 10 CSS) and our top highlight is fine (222.6 vs 229.3), but our fill bottoms out at #BA8E3C luma 145 against the reference&#39;s #D5A440 luma 167, and we have no leading-cap hot spot and no bloom at all. Row scan across our cap: 168, 168, 124, then 22.4. The reference: 239, 227, 114, 89, 75, 67, 57, 53, 48, 46, 42, 38 ... 24 over ~35px.</li><li>TWO THUMB-TEST FAILURES AGAINST THE PROJECT&#39;S OWN TOKEN. tokens.css declares --tap-min: 44px. Measured in-page: .runbtn (the play/pause — the single most important control on an idle screen) is 38x38, and .backbtn is 87x30. Everything else passes: .rrow recipe rows 356x79, .nav__item 72x47, and document scrollWidth == innerWidth == 390 so there is no horizontal scroll.</li><li>THE 12/16/20 RHYTHM IS DECLARED BUT NOT OBEYED. tokens.css ships --s-1..--s-8 as 4/8/12/16/20/24/32/40 and says &#39;nothing is off-grid&#39;. Computed styles inside #viewRoot use gap 7px (.skillhead__eyebrow), gap 6px (.skillhead__status), gap/margin 5px and 6px (.lvlrow), and margin 10px (.divider). The optical letter-spacing compensations (2.34px, 3.74px) are legitimate; the 5/6/7px gaps are not.</li><li>THE PLAQUES CLIP LIVE TEXT WITH NO SCRIM. On the level-up shot the gold plaque sits over the pool panel and cuts the HELD and NEXT rows mid-row, leaving the words &#39;HELD&#39; and &#39;NEXT&#39; truncated at its left edge and &#39;95%&#39; reduced to &#39;%&#39; at its right, while the violet checkpoint bullets for those same rows still poke out beside it. The mastery plaque does the same. It reads as a card dropped on a live panel rather than a moment the panel makes room for.</li><li>NO GOLD METAL EXISTS ANYWHERE ON THIS SCREEN. The reference&#39;s signature component is the CLAIM plate: chamfered, gold-gradient-filled, inner bevel, the one high-saturation object in its panel. Our screen has zero filled-gold surfaces. The play/pause is a flat dark rounded square with a grey glyph, and the level-up plaque — the emotional peak of the whole loop — is a dark box with a 1px gold outline. Chamfers and gold hairlines are present; pressed metal is not.</li><li>ICONS ARE FLAT GLYPHS AGAINST RENDERED OBJECTS. The five discipline marks, the pause glyph and the checkpoint diamonds are single-colour SVG wireframes. The reference&#39;s coin, gem, energy orb, sword, shield and crown are all beveled, specular, 3D-ish renders. Our coin and shard chips are the closest and still read a tier below. In the list view this is the loudest &#39;not shipped&#39; tell.</li><li>THE POOL BAR READS AS BROKEN, NOT SEGMENTED. Checkpoint ticks are cut through the violet fill as hard dark notches, so at 56.2% the Emberdelving row in the list looks like four disconnected violet blocks rather than one bar. The reference&#39;s 92% UPGRADE bar is one continuous lozenge. This is the &#39;depth without noise&#39; rule going the wrong way.</li><li>THE POOL NUMBER NEVER MOVES, SO THE CHECKPOINT HAS NO NUMERIC WITNESS. &#39;2.25M / 4.50M&#39; is identical at t=0 and t=62 even though the 50% pip flipped from hollow to filled and the interval changed. There is no pool percentage figure anywhere, so the one number that would prove the crossing is absent from a screen whose entire job is making the loop legible.</li><li>WHAT IS ALREADY GOOD AND SHOULD NOT BE TOUCHED: the two-axis colour discipline (gold = level/XP/interval/yield, violet = mastery/pool/checkpoints) holds without a single leak across both views; labels sit at --c-text-2 and are genuinely light rather than dimmed, with hierarchy carried by size and letter-spacing exactly as the reference does it; figures are tabular throughout; the whole loop fits above the fold at 390x844 with the pool panel bottom at y=779 against a 784 fold; percentages floor rather than round; and `npm run verify` passes 20/20 including no-raw-hex.</li><li>BLIND A/B: I stripped labels and asked which is the shipped commercial product. The reference, and not narrowly. Composition, type and information design are close enough that ours does not embarrass itself — but every surface in ours is matte and every seam is invisible, so it reads as a very accomplished design-system implementation OF the reference rather than the reference. The systems half of this piece is arguably shippable today; the chrome half is a high-fidelity mockup.</li>
+      </ul>
+
+    <div class="shots">
+      <a class="shot" href="progress/shots/skill-loop-r1-critic-active.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r1-critic-active.png" alt="skill-loop-r1-critic-active.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r1-critic-active.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r1-critic-levelup.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r1-critic-levelup.png" alt="skill-loop-r1-critic-levelup.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r1-critic-levelup.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r1-critic-list.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r1-critic-list.png" alt="skill-loop-r1-critic-list.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r1-critic-list.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r1-levelup.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r1-levelup.png" alt="skill-loop-r1-levelup.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r1-levelup.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r1-list.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r1-list.png" alt="skill-loop-r1-list.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r1-list.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r1-recipes.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r1-recipes.png" alt="skill-loop-r1-recipes.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r1-recipes.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r1.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r1.png" alt="skill-loop-r1.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r1.png</span>
+      </a></div>
+  </li>
+  <li class="round">
+    <div class="round__head">
+      <span class="round__n">Round 2</span>
+      <span class="round__score is-mid">84</span>
+      <span class="badge">Lost blind pick</span>
+      <span class="round__time">Aug 26, 23:25</span>
+    </div>
+
+    <div class="bar" aria-hidden="true">
+      <div class="bar__fill"
+           style="--fill:84%"></div>
+    </div>
+
+    
+
+    
+      <ul class="evidence">
+        <li>CRITIC PASS, JUDGED FROM PIXELS. Server already up on :5174. Captured 390x844 at DPR 2 (780x1688 PNGs) via tools/shot.mjs: ?view=list, default at t=3s, default at t=62s, ?demo=levelup at t=3.4s. Separately drove a headless page over CDP and snapshotted main.innerText every 9s for 63s untouched. Every colour number below is a programmatic sample from a PNG via tools/pixel/png.mjs, never eyeballed. Shots and A/B composites in progress/shots/skill-loop-r2-critic-*.png.</li><li>THE LOOP IS ALIVE AND THE NUMBERS ARE COUPLED. 63s unattended: skill 46 -&gt; 47 landed between 0s and 9s (7,029/7,144 -&gt; 16/7,887), mastery 34 -&gt; 35 with it. At ~27s the pool crossed 49.99% -&gt; 50.00% at raw 2,250,007 against a 2,250,000 threshold, and FOUR readouts moved off that one crossing in the same frame: XP/HOUR 49,439 -&gt; 53,934, the interval line &#39;2.40s of 3.00s - 20%&#39; -&gt; &#39;2.20s of 3.00s - 20% -0.2s&#39;, HELD 25% -&gt; 50%, and the effect text -&gt; &#39;-0.2s Sunforging interval&#39;. Inputs drained (Verge Ore 1,284 -&gt; 1,206, Coalstone 806 -&gt; 754) while output accrued 212 -&gt; 242. That is a real engine driving a real screen, not a scripted animation.</li><li>MATH IS EXACT, 22/22 ROWS, ZERO DRIFT, ALL THE WAY TO 120. Ran src/js/engine/xp.js against every row in reference/melvor-math.md, cumulative AND per-step: L1..L10, 20, 30, 40, 50, 60, 70, 80, 90, 92, 99, 110, 120. Every single delta 0, including 13,034,431 / 1,228,825 at 99 and 104,273,167 / 9,830,430 at 120. doublingRatio 10/30/66/92 = 1.9946 / 1.9955 / 1.9997 / 2.0000, matching the doc&#39;s &#39;1.995 by 10, exactly 2.000 by 66&#39;. The screen is bound to that table and not to constants: it showed &#39;774 / 7,887 XP&#39; and deltaXp(48) computes to 7887; &#39;TOTAL XP 75.9K&#39; = xpAt(47) 75,127 + 774 = 75,901. CHECKPOINTS = [0.10, 0.25, 0.50, 0.95] and POOL_DEPOSIT_RATE = 0.25 both match the published rules.</li><li>ROUND 1&#39;S NAMED GAP IS GENUINELY CLOSED, AND I RE-MEASURED IT RATHER THAN TAKING THE BUILD RECORD&#39;S WORD. Track cross-section, ours vs reference, same units: top rim 63.3 vs 62.4, bottom rim 54.4 vs 52.8, interior 23.2 vs 23.2 — that is a match to within a luma point on all three bands. Fill cross-section: ours 222.6 -&gt; 145.4 with a lift back to 172.7 on the last two rows; the reference 213.1 -&gt; 144.7 with a lift to 155.6, 166.8. The lit bottom edge is real and correct. Cap and bloom: ours peaks 242 and decays 81.9, 78.9, 75.4, 70.4, 66.6, 61.7 ... 23.2; the reference peaks 246.7 and decays 197, 125, 109, 85, 74, 63 ... 25. Seams are lit now, not cut. This is the round-1 critique executed at the pixel level.</li><li>BUT THE FIX STOPPED AT THE CROSS-SECTION AND NEVER REACHED THE LENGTH. --grad-gold-metal is `linear-gradient(180deg, ...)` at primitives.css:51 — thickness only. There is no 90deg component anywhere in the bar stack. Sampled along a long fill (list Sunforging XP, 98.3%, y=881, x=240..615): 164.0, 163.9, 164.0, 163.9, 164.0, 163.2, 164.0, 163.0, 162.2, 163.9, 164.0, 163.2, 164.0, 163.9, 164.0. The reference&#39;s equivalent long fill (y=907, x=70..590): 152.3, 141.8, 147.8, 156.8, 154.9, 163.9, 167.0, 170.4, 172.4, 177.3, 182.0, 186.1, 200.2, 214.4. Its small bars do the same thing at small size (QUEST 137.5 -&gt; 198.2, UPGRADE violet 77.7 -&gt; 97.3). Ours is a painted rectangle with a bead; the reference is a lit surface.</li><li>BLIND A/B, LABELS STRIPPED — THE REFERENCE STILL READS AS THE SHIPPED PRODUCT, AND THE TELL IS MATERIAL, NOT LAYOUT. Cropped three matched bands at equal CSS scale (progress/shots/skill-loop-r2-critic-ab-*.png). Panel band: ours is close enough that I had to measure rather than look — same groove polarity, same track rims, same white/secondary split. Bar band: the reference&#39;s little QUEST/UPGRADE bars visibly climb toward their ends; ours sit flat with a bright dot. Nav band: the reference&#39;s five icons are modelled objects — a gold shield with a beveled crest and a rim glow, a steel helm with speculars, a faceted diamond with internal facet lines, a violet portal with a glowing eye — four or more values each. Ours are two-value silhouettes: a plain house, a plain skull, a plain diamond, an oval. Only the active anvil carries gold. That band alone gives the blind test away.</li><li>THE TOP 186 CSS PX IS THE EMPTIEST REGION ON THE SCREEN. The title block itself is a faithful reproduction of the reference&#39;s — emblem, letter-spaced gold serif label, giant gradient numeral, violet rarity word, thin rule interrupted by a diamond ornament, status line with a gold dot — and the ornament is a genuine micro-detail win. But it sits on a flat violet radial (centre sampled #1A0E41, luma 20.2 at the crown, falling to the #050A10 ground by y=360) carrying one 12 CSS px sprite, where the reference fills the same proportion of screen with painted art at luma 55-120. The list view repeats it at the other end: ~65 CSS px of dead ground between the last skill row and the nav.</li><li>THE LEVEL-UP MOMENT IS REAL BUT BADLY STAGED. The plate is the best piece of metal in the project — chamfered, framed, a proper face gradient with a lit bottom edge and near-black engraved serif. It lands at 87% down the screen, on top of the mastery pool panel, where its scrim leaves the pool figures half-legible behind it (&#39;2.25...&#39; ghosted at the plate&#39;s top edge). It celebrates a level-up while occluding the two live readouts a player is watching, and it is nowhere near the level numeral that just changed.</li><li>THUMB TEST AND HYGIENE ALL PASS, INDEPENDENTLY MEASURED. Live at 390x844: #runBtn 44x44, #backBtn 85.5x44, .rrow 356x79.4, .srow 356x96, .nav__item 71.6x47 — every interactive element at or above the project&#39;s own --tap-min: 44px, and round 1&#39;s two failures are gone. document.scrollWidth == innerWidth == 390, no horizontal scroll. Off-grid audit over every element under main: 9 hits total, and they are 44px of header safe padding plus 5px/7px chip padding on .rrow__req — nothing structural. `npm run verify`: 20 passed, 0 failed, including &#39;no raw hex outside tokens.css&#39;.</li><li>TYPOGRAPHY IS ON SPEC, THOUGH SET LARGER THAN THE REFERENCE. Every uppercase label is 11px at 0.1em in #C4C8CA at full strength — the doc&#39;s own numbers, and nothing is muted to illegibility. Measured optically against the reference: our &#39;SKILL PROGRESS&#39; has a 16px cap height at DPR 2 (8.0 CSS px); the reference&#39;s &#39;PROGRESS TO NEXT LEVEL&#39; has a 16px cap at DPR 2.585 (6.19 CSS px). Ours is 29% physically larger, so our panels are airier and less dense than the reference&#39;s, but per-character tracking normalised to cap height is actually TIGHTER than the reference&#39;s (0.66 vs 0.76). This is a density choice, not a craft error, and I am not calling it the gap.</li><li>WHAT I DID NOT TEST: real-device safe areas. base.css defines .safe-top/.safe-bottom off env(), but headless emulation reports 0 insets, so &#39;nothing under the safe areas&#39; is unproven on hardware — the nav labels currently sit 16.5 CSS px off the bottom edge, which would land inside an iPhone home-indicator strip if the inset does not apply. Worth one check on a real handset before this piece is called done.</li>
+      </ul>
+
+    <div class="shots">
+      <a class="shot" href="progress/shots/skill-loop-r2-critic-ab-bars.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r2-critic-ab-bars.png" alt="skill-loop-r2-critic-ab-bars.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r2-critic-ab-bars.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r2-critic-ab-nav.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r2-critic-ab-nav.png" alt="skill-loop-r2-critic-ab-nav.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r2-critic-ab-nav.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r2-critic-ab-panel.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r2-critic-ab-panel.png" alt="skill-loop-r2-critic-ab-panel.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r2-critic-ab-panel.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r2-critic-active.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r2-critic-active.png" alt="skill-loop-r2-critic-active.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r2-critic-active.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r2-critic-levelup.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r2-critic-levelup.png" alt="skill-loop-r2-critic-levelup.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r2-critic-levelup.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r2-critic-list.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r2-critic-list.png" alt="skill-loop-r2-critic-list.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r2-critic-list.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r2-levelup.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r2-levelup.png" alt="skill-loop-r2-levelup.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r2-levelup.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r2-list.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r2-list.png" alt="skill-loop-r2-list.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r2-list.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r2-recipes.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r2-recipes.png" alt="skill-loop-r2-recipes.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r2-recipes.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r2-stopped.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r2-stopped.png" alt="skill-loop-r2-stopped.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r2-stopped.png</span>
+      </a>
+      <a class="shot" href="progress/shots/skill-loop-r2.png" target="_blank" rel="noopener">
+        <img src="progress/shots/skill-loop-r2.png" alt="skill-loop-r2.png" loading="lazy">
+        <span class="shot__cap">skill-loop-r2.png</span>
+      </a></div>
+  </li></ol>
+    </details>
+
+    
+  </section>
+  <section class="piece panel">
+    <header class="piece__head">
+      <div class="piece__id">
+        <h2 class="piece__name">Battle Atelier</h2>
+        <p class="piece__meta">1 round &middot;
+          <code>battle-atelier</code></p>
+      </div>
+
+      <div class="piece__score">
+        <span class="piece__num is-mid">78</span>
+        
+      </div>
+    </header>
+
+    <p class="verdict">Still losing the blind comparison.</p>
+
+    
+
+    
+      <div class="gap gap--current">
+        <span class="gap__label">Current biggest gap</span>
+        <p class="gap__text">Shade the LARGEST mass of every sprite, not the smallest. Measured: FFVI&#39;s own monster in reference/shots/ffvi-battle-native-a.png puts a 10-value ramp on its biggest colour mass (1534px) and a 3-value ramp on its second (1175px). Our slagmaw.png inverts this -- its 2nd, 3rd and 4th largest masses (501px #100810, 474px #181820, 324px) carry ramp depths of 1, 1 and 2, so 29% of the sprite is painted in single flat values. tessin-idle.png is worse: its single largest region (73px of 223, a third of the whole sprite) is one flat #081018, which is why the mage reads on screen as a purple domino rather than a robed figure. The colour budget is not the constraint -- these sprites average 14 of an allowed 16 colours, but spend them on local colour (a hue per garment) instead of on value ramps. Re-author every hero and monster so each material carries 3-4 values from one consistent light direction, weighting ramp depth toward pixel area, and the sprite half will match the engineering half.</p>
+      </div>
+
+    <details class="history" open>
+      <summary>Round history</summary>
+      <ol class="rounds">
+  <li class="round">
+    <div class="round__head">
+      <span class="round__n">Round 1</span>
+      <span class="round__score is-mid">78</span>
+      <span class="badge">Lost blind pick</span>
+      <span class="round__time">Aug 26, 22:44</span>
+    </div>
+
+    <div class="bar" aria-hidden="true">
+      <div class="bar__fill"
+           style="--fill:78%"></div>
+    </div>
+
+    
+
+    
+      <ul class="evidence">
+        <li>CRITIC VERDICT, judged from pixels. Replaces the builder self-assessment that previously occupied this file (which scored itself 74). Inspected: battle.html and atelier.html at 390x844 via tools/shot.mjs at DPR 2 and DPR 3; live DOM geometry over CDP in a real Chrome; all 33 atelier PNGs decoded with an independently written zlib/PNG decoder rather than the project&#39;s own audit tool; blind A/B against reference/shots/ffvi-battle-native-a.png at matched 768x672.</li><li>THE PIECE&#39;S STATED PURPOSE IS ACHIEVED. The named failure -- a blurry or fractionally-scaled sprite -- does not occur. Canvas intrinsic 192x168 renders at exactly 384x336 CSS, scale 2.0000. At 400% browser zoom the scale becomes exactly 8. image-rendering: pixelated resolves last in all four stylesheets, so the crisp-edges ordering bug named in the brief is genuinely fixed.</li><li>I TESTED A BLUR HYPOTHESIS AND IT FAILED -- reporting it because it is the one thing that could have been an automatic loss. The stage sits at a fractional CSS offset: .cabinet is at top 135.5, so the canvas lands at top 143.5, which is 430.5 device px on a DPR-3 phone. I captured at DPR 3 and analysed the stage region for resampling. Result: 121 unique colours, ZERO with a channel that is not a multiple of 8, and 0.0% odd-length pixel runs in both axes. Chrome snaps the composited layer to the device grid, so nothing blurs. The half-pixel offset is a latent risk worth removing, not a live defect.</li><li>PALETTE ENGINEERING IS FLAWLESS AND SHOULD NOT BE TOUCHED. Decoded every one of the 33 atelier PNGs: 0 pixels off the 5-bit grid across the entire library. Every sprite is at or under 16 colours (slagmaw 15, heroes 11-14, items 3-7). Dither runs 0.0-3.1%, comfortably single-digit. ATB capsule is exactly 40x7 and heroes are exactly 16x24 idle / 24x32 attack, as specced. Only two assets exceed 16 colours -- scenes/slagfen.png at 29 and ui/window-band.png at 17 -- and both are backgrounds/chrome rather than sprites, which is legitimate under SNES subpalette rules.</li><li>THE CHROME BEATS THE BAR ON ITS OWN METRIC. Hue histogram of battle.html with the pixel stage excluded: only FOUR families above 0.15%, gold 7.72%, violet 1.04%, and the rest the cool near-black ground. reference/shots/ui-bar.png itself carries EIGHT families, gold 5.53%, violet 1.06%. We put 40% more gold on screen than the reference and fan across half as many hues. The gold serif title, the diamond-interrupted rule, the chamfered STRIKE plate and the currency chips are all reference-grade.</li><li>WHERE IT LOSES, BLIND: THE SPRITES. See progress/shots/battle-atelier-r1-critic-party-ours.png against -party-ffvi.png, identical crops at identical scale. FFVI&#39;s four heroes each hold a silhouette -- dark outline, interior folds, highlights on hair, tight elliptical contact shadows. Ours are a clump of flat colour blocks: the mage is a flat purple rectangle with one lighter stripe, the fourth hero is a featureless brown blob on two stick legs, and the cast shadows are oversized black smears that merge into one another.</li><li>FORMATION BUG, AND THE CODE KNOWS IT SHOULD NOT HAPPEN. src/js/screens/battle.js:71 comments &#39;party in a single file staggered down-right so nobody occludes anybody&#39;. PARTY_SLOTS at line 74 steps x by 7 and y by 12 for sprites that are 16x24 -- that is 56% horizontal and 50% vertical overlap on every adjacent pair, and 71% horizontal during a 24x32 attack frame. The visible result is a gold shield prop sitting squarely over the next hero&#39;s head in every frame I captured. The comment and the numbers contradict each other.</li><li>DAMAGE NUMERALS COLLIDE, REPRODUCIBLY. Captured five frames across one encounter at 1.2s/3.0s/5.2s/7.4s/9.6s. When two numerals land on the same target they stack with insufficient separation and overlap illegibly -- &#39;293&#39; drawn through &#39;370&#39; in two separate frames. Single numerals (311, 168) are clean, so the defect is specifically the multi-hit vertical stagger.</li><li>BACKGROUND CRAFT TRAILS THE SPRITES. The horizon in slagfen.png is a strict alternating checker in a dead-straight line that reads as a tiling artifact rather than as dithered transition, the sky is a flat mauve gradient with sparse horizontal dashes standing in for clouds, and the skyline is flat black rectangles with yellow dots. FFVI&#39;s equivalent has genuine dithered cloud form, a value gradient into haze, and organically mottled ground with rocks of varied size.</li><li>NAMING IS CLEAN -- NO AUTOMATIC LOSS. Grepped src, tools and all root HTML for ~30 FFVI character, esper and place nouns. Zero hits in shipped strings; the only matches were substrings of &#39;unlocked&#39;/&#39;Locked&#39;. All monster, hero, item and location names are invented.</li><li>REQUIRED FILES PRESERVED, WITH ONE INCONSISTENCY. src/assets/sprites/cog.png and aether-shard.png both decode as valid PNGs. However both are round-0 scaffold art and both are OFF the 5-bit grid (152 and 118 off-grid pixels respectively), so the two sprites actually visible in the shipped Skills tab violate the discipline the atelier page exists to certify.</li><li>THE ATELIER PAGE SLIGHTLY OVERCLAIMS. Its stat row reads &#39;0 PX OFF-GRID / 15 COLOURS MAX / 3.7% DITHER MAX&#39;. The first is exactly true and verified independently. &#39;15 colours max&#39; holds only if scenes and ui assets are excluded from the set the page says covers &#39;every sprite in Emberveil&#39; -- slagfen.png is 29 and window-band.png is 17.</li><li>BLIND A/B RESULT: split. Shown the two stage crops with labels stripped, the FFVI capture is identifiable as the shipped product in about a second, and the tell is interior modelling -- its forms turn in light and ours are flat fills with outlines. Run the same test on the CHROME alone against ui-bar.png and ours wins. This piece is an excellent cabinet around art that is not yet finished, which is the exact inverse of the failure the brief was written to prevent.</li><li>CONTENT DEPTH, seconding the builder&#39;s own admission: three monsters, one scene, one region, a hardcoded two-enemy pair on a five-wave loop, and a finished 64x56 gloamstag that appears nowhere but the gallery. Real, but secondary to the modelling gap above -- more sprites at the current craft level would not close the distance to the bar.</li>
+      </ul>
+
+    <div class="shots">
+      <a class="shot" href="progress/shots/battle-atelier-r1-atelier.png" target="_blank" rel="noopener">
+        <img src="progress/shots/battle-atelier-r1-atelier.png" alt="battle-atelier-r1-atelier.png" loading="lazy">
+        <span class="shot__cap">battle-atelier-r1-atelier.png</span>
+      </a>
+      <a class="shot" href="progress/shots/battle-atelier-r1-critic-atelier.png" target="_blank" rel="noopener">
+        <img src="progress/shots/battle-atelier-r1-critic-atelier.png" alt="battle-atelier-r1-critic-atelier.png" loading="lazy">
+        <span class="shot__cap">battle-atelier-r1-critic-atelier.png</span>
+      </a>
+      <a class="shot" href="progress/shots/battle-atelier-r1-critic-battle.png" target="_blank" rel="noopener">
+        <img src="progress/shots/battle-atelier-r1-critic-battle.png" alt="battle-atelier-r1-critic-battle.png" loading="lazy">
+        <span class="shot__cap">battle-atelier-r1-critic-battle.png</span>
+      </a>
+      <a class="shot" href="progress/shots/battle-atelier-r1-critic-party-ffvi.png" target="_blank" rel="noopener">
+        <img src="progress/shots/battle-atelier-r1-critic-party-ffvi.png" alt="battle-atelier-r1-critic-party-ffvi.png" loading="lazy">
+        <span class="shot__cap">battle-atelier-r1-critic-party-ffvi.png</span>
+      </a>
+      <a class="shot" href="progress/shots/battle-atelier-r1-critic-party-ours.png" target="_blank" rel="noopener">
+        <img src="progress/shots/battle-atelier-r1-critic-party-ours.png" alt="battle-atelier-r1-critic-party-ours.png" loading="lazy">
+        <span class="shot__cap">battle-atelier-r1-critic-party-ours.png</span>
+      </a>
+      <a class="shot" href="progress/shots/battle-atelier-r1-critic-stage.png" target="_blank" rel="noopener">
+        <img src="progress/shots/battle-atelier-r1-critic-stage.png" alt="battle-atelier-r1-critic-stage.png" loading="lazy">
+        <span class="shot__cap">battle-atelier-r1-critic-stage.png</span>
+      </a>
+      <a class="shot" href="progress/shots/battle-atelier-r1.png" target="_blank" rel="noopener">
+        <img src="progress/shots/battle-atelier-r1.png" alt="battle-atelier-r1.png" loading="lazy">
+        <span class="shot__cap">battle-atelier-r1.png</span>
+      </a></div>
+  </li></ol>
+    </details>
+
+    
+  </section>
+  <section class="piece panel">
+    <header class="piece__head">
+      <div class="piece__id">
+        <h2 class="piece__name">Engine Economy</h2>
+        <p class="piece__meta">1 round &middot;
+          <code>engine-economy</code></p>
+      </div>
+
+      <div class="piece__score">
+        <span class="piece__num is-high">91</span>
+        
+      </div>
+    </header>
+
+    <p class="verdict verdict--win">Currently winning the blind comparison.</p>
+
+    
+
+    
+      <div class="gap gap--current">
+        <span class="gap__label">Current biggest gap</span>
+        <p class="gap__text">Move section 1 (Verification) to the BOTTOM of balance.html and open instead with section 10&#39;s designed arc plus the XP and faucet charts. Right now 124 raw pass-rows occupy the first 27% of a 64,436px page, so the first chart sits ~23,000px down — about 27 phone-screens of scrolling through a test log before any design reasoning appears. Collapse the assertion list behind a single &#39;124/124 — show the log&#39; disclosure and lead with the curves.</p>
+      </div>
+
+    <details class="history" open>
+      <summary>Round history</summary>
+      <ol class="rounds">
+  <li class="round">
+    <div class="round__head">
+      <span class="round__n">Round 1</span>
+      <span class="round__score is-high">91</span>
+      <span class="badge badge--win">Won blind pick</span>
+      <span class="round__time">Aug 26, 22:42</span>
+    </div>
+
+    <div class="bar" aria-hidden="true">
+      <div class="bar__fill"
+           style="--fill:91%"></div>
+    </div>
+
+    
+
+    
+      <ul class="evidence">
+        <li>MATH — VERIFIED INDEPENDENTLY, NOT TRUSTED. I re-implemented xpAt() from the reference prose in my own script and diffed all 121 entries against src/js/engine/xp.js: 0 differences. All 22 published cumulative thresholds and all 22 per-level deltas reproduce exactly (L50=101,333 / L92=6,517,253 / L99=13,034,431 / L120=104,273,167), plus the 8 intermediate pacing checkpoints (L25=7,842 ... L95=8,771,558). Doubling ratio 1.9946 @L10 -&gt; 1.999701 @L66 -&gt; 1.999969 @L92. The 1-&gt;92 == 92-&gt;99 identity is approximate in reality (6,517,253 vs 6,517,178, delta -75, 1.2e-5 relative) and they assert it with a 0.001 tolerance — correct, not fudged. XP table entries are all integers and max value is well inside 2^53 despite the Float64Array backing.
+
+SELFTEST IS NOT RIGGED. Critical check: I edited one digit in reference/melvor-math.md (13,034,431 -&gt; 13,034,999) and re-ran. Result: &#39;123 passed, 1 failed&#39;. The tables are genuinely parsed out of the markdown at test time, so the assertions are coupled to the document, not to a transcribed fixture.
+
+DETERMINISM — VERIFIED IN MY OWN HARNESS, outside their test runner. 2h streams under seed 0xC0FFEE hashed to dc1dbd88b4cf1a75 across two runs: byte-identical. Fast event-jump advance() produced the identical hash to naive tick-by-tick. Uneven 377-tick chunking reached the identical final state (the one diff my first pass flagged was my own test&#39;s timestamp argument, not engine state).
+
+OFFLINE REPLAY — 24h naive live ticking (1,728,000 ticks) equals offlineReplay(24h) exactly; equals 24 separate 1h advances exactly; equals serialise-at-tick-12345-then-resume exactly. Three days away replays exactly 24h. Perf: 1.728M ticks in 26ms (~68,000 ticks/ms) — the &#39;under a second on a phone&#39; requirement is met with ~40x headroom.
+
+EDGE CASES I PROBED THAT THEIR SUITE DOES NOT. Artisan running out of inputs mid-replay stops with reason &#39;out-of-materials&#39; at tick 360, and fast==naive across that discontinuity. Offline combat death: deaths=1, reason &#39;death&#39;, and fast==naive across the death too. Clock moved backwards (device time change) yields 0 ticks, not a negative or absurd replay. Zero elapsed yields 0. levelAt(-5) and levelAt(NaN) both clamp to 1. Nothing broke.
+
+CONTENT — CLEAN. My own grep (not their scanner) across src/data/ for the RuneScape metal ladder, RS skill names, RS item/place names, and ~60 FFVI proper nouns returned zero hits in shipped strings; the only matches were code comments citing the reference doc and generic stat words (hp/attack). DB validates at boot and refuses to load on a dangling item id or an unobtainable item.
+
+ECONOMY IS ACTUALLY DESIGNED. Three gather skills port the reference&#39;s woodcutting/mining/fishing curves exactly (Boughcraft XP 10/15/22/30/40/60/80/100/180 at 3/4/5/6/8/10/12/20/15s — the published table, renamed), which is what &#39;take the MATH, never the content&#39; asked for. The invented layers are real design: Sigilwork values climb a clean ~3.7x/step geometric ladder; every skill carries exactly one deliberate value inversion that is never the top rung (Sunwood at 400 Cogs is rung 8 of 9), preserving the reference&#39;s &#39;make the player choose XP or GP&#39; read. Kilnwork has genuine multi-input depth (Ninefold Ingot consumes aetherite-core x2 + warden-alloy + ember-void x3). Faucet spans 2,384 -&gt; 11.81B Cogs/hr (1.5e7). Best non-combat loop (Sigilwork) is throttled to 3.4% by Aether Shard income, which only drops from tier-5+ combat — so the two halves of the endgame are deliberately interlocked rather than independent, and combat/craft lands at 99.09x.
+
+I TRIED TO BREAK THE SINKS AND FAILED. My hypothesis was the classic idle failure: sinks priced for mid-game while the endgame faucet outruns them. Measured: clasps 93.71M + waystations 862M + tools 5.4M + relics 9.43B + ascension rites 64.4B = ~75B of sink against 14.99B/hr endgame income, i.e. ~5 hours. The terminal sinks genuinely scale with the terminal faucet. Hypothesis wrong; economy is sunk end to end.
+
+WHERE IT IS WEAK (all in the report page, none in the numbers). (1) Structure: section 1 is 27% of the document and 124 flat pass-rows precede the first chart at ~23,000px. Section 6 is another 26.7%. (2) The .formula blocks are overflow-x:auto with white-space:pre but get NO swipe hint and NO fade gradient — unlike .tablewrap, which gets both — so on 390px the MXP formula clips mid-token at &#39;(UnlockedActions * TotalMasteryInSkill / (RecipeCo&#39; with nothing signalling it scrolls. That is the single most important line in section 3, hidden. Screenshot: progress/shots/engine-economy-r1-formula-clip.png. (3) The XP chart&#39;s &#39;92 — halfway&#39; and &#39;99&#39; annotations visually collide. (4) The wide tables push XP/s and Cogs/hr off-viewport behind &#39;swipe for the rest of the row&#39;.
+
+CHARTS DO EXIST (I initially miscounted from a slice): four real SVGs — the log-scaled XP curve with 50/92/99/120 markers, the throughput-vs-reduction hyperbola, a 658px log-scaled faucet bar ladder colour-split gold=craft / violet=combat, and the clasp cost curve. The faucet ladder does answer the brief&#39;s &#39;hour one vs endgame at a glance&#39;.</li>
+      </ul>
+
+    <div class="shots">
+      <a class="shot" href="progress/shots/engine-economy-r1-formula-clip.png" target="_blank" rel="noopener">
+        <img src="progress/shots/engine-economy-r1-formula-clip.png" alt="engine-economy-r1-formula-clip.png" loading="lazy">
+        <span class="shot__cap">engine-economy-r1-formula-clip.png</span>
+      </a>
+      <a class="shot" href="progress/shots/engine-economy-r1-xpcurve.png" target="_blank" rel="noopener">
+        <img src="progress/shots/engine-economy-r1-xpcurve.png" alt="engine-economy-r1-xpcurve.png" loading="lazy">
+        <span class="shot__cap">engine-economy-r1-xpcurve.png</span>
+      </a>
+      <a class="shot" href="progress/shots/engine-economy-r1.png" target="_blank" rel="noopener">
+        <img src="progress/shots/engine-economy-r1.png" alt="engine-economy-r1.png" loading="lazy">
+        <span class="shot__cap">engine-economy-r1.png</span>
+      </a></div>
+  </li></ol>
+    </details>
+
+    
+  </section>
+  <section class="piece panel">
+    <header class="piece__head">
+      <div class="piece__id">
+        <h2 class="piece__name">Wardens Codex</h2>
+        <p class="piece__meta">2 rounds &middot;
+          <code>wardens-codex</code></p>
+      </div>
+
+      <div class="piece__score">
+        <span class="piece__num is-mid">76</span>
+        <span class="delta is-up">+8</span>
+      </div>
+    </header>
+
+    <p class="verdict">Still losing the blind comparison.</p>
+
+    
+  <svg class="spark" viewBox="0 0 240 56" role="img" aria-label="Score trend across rounds">
+    <line x1="6" y1="6.0" x2="234" y2="6.0"
+          stroke="rgba(255,255,255,.07)" stroke-dasharray="3 4"/>
+    <path d="M6.0,20.1 L234.0,16.6 L234.0,50 L6.0,50 Z" fill="url(#sparkfill)"/>
+    <path d="M6.0,20.1 L234.0,16.6" fill="none" stroke="url(#sparkline)" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="6.0" cy="20.1" r="3"
+             fill="#D7A747"
+             stroke="#050A10" stroke-width="1.5"><title>Round 1: 68</title></circle><circle cx="234.0" cy="16.6" r="3"
+             fill="#D7A747"
+             stroke="#050A10" stroke-width="1.5"><title>Round 2: 76</title></circle>
+  </svg>
+
+    
+      <div class="gap gap--current">
+        <span class="gap__label">Current biggest gap</span>
+        <p class="gap__text">Re-author all 24 warden sprites at 48x48 with a 10-12 colour budget, and drop every display scale to an integer multiple of that new master: grid art box 96px (x2, it fits the existing 98px plaque), sheet portrait 96px (x2 inside the 108px frame), Rite portrait 192px (x4, unchanged pixel size, four times the pixel count). Right now every warden is authored at 24x24 -- a QUARTER the area of the SMALLEST monster class in this repo&#39;s own art bible (reference/ffvi-art.md S1: small monster 32x32-48x48, medium ~88x64, boss 96x96-128x160) -- while the wardens are the game&#39;s boss-tier collectibles. There is no headroom left on that canvas: 15 of the 24 sprites already have a bounding box exactly 24px wide, i.e. they are touching both edges, and the set averages 8.0 unique colours against the doc&#39;s own measured 10-12 for a real FFVI sprite. Every downstream failure is a symptom: the Rite magnifies a thumbnail x8 into a 192px lavender blob, the sealed grid is twelve unreadable abstract shapes, and Sulmara&#39;s eyes have to be two 3x3 gold bricks because there is no room to draw an eye.</p>
+      </div>
+
+    <details class="history" open>
+      <summary>Round history</summary>
+      <ol class="rounds">
+  <li class="round">
+    <div class="round__head">
+      <span class="round__n">Round 1</span>
+      <span class="round__score is-mid">68</span>
+      <span class="badge">Lost blind pick</span>
+      <span class="round__time">Aug 26, 22:22</span>
+    </div>
+
+    <div class="bar" aria-hidden="true">
+      <div class="bar__fill"
+           style="--fill:68%"></div>
+    </div>
+
+    
+      <div class="gap">
+        <span class="gap__label">Biggest gap</span>
+        <p class="gap__text">Re-palette all 24 warden sprites onto the two-accent axis: every creature&#39;s lit pixels must land in violet (hue 240-300) or gold (hue 30-60), with element/affinity carried by VALUE and SILHOUETTE instead of hue. Right now the set paints in six hue families -- green (100-110deg: Halvane, Kellow, Verrow, Nettlejack), teal (180-200deg: Lorquin, Orrolek), blue (210-240deg: Corvidge, Quillow, Nimreth), magenta (300deg: Pellune, Sulmara, Tallow, Mirevail), orange/red (0-20deg: Baskarel, Ashquill, Cindren, Kethrivane) and brown -- and 19 of 24 sprites are more than 25% off-axis. That is the brief&#39;s stated automatic loss, and it is invisible to the current audit because the builder&#39;s palette check sampled computed CSS only, which cannot see a PNG.</p>
+      </div>
+
+    
+      <ul class="evidence">
+        <li>CRITIC VERDICT. Replaces the builder self-assessment that previously occupied this file (which scored itself 78 and claimed &#39;only two hue families are painted&#39;). Judged from pixels: five screenshots captured at 390x844 @2x over CDP, in progress/shots/wardens-codex-r1-critic-*.png.</li><li>PALETTE -- THE AUTOMATIC LOSS. Decoded all 24 bound sprite PNGs and binned every lit pixel by hue. Distinct 10deg hue families across the set: 0,10,20,30,40,50,100,110,180,190,200,210,220,230,240,250,260,270,280,300,340. Only Vharnys/Ythra (264deg) and Delvarn/Dunmoss (30deg) are on-axis. Halvane, Kellow, Verrow sit at a dominant 107deg -- literally green.</li><li>The &#39;Bound&#39; filter is the proof shot (wardens-codex-r1-critic-grid-bound.png): all 12 owned wardens on screen at once render as a violet crown, a mauve stag, a violet hood, a pink moth, an orange boar, a BROWN HAMBURGER (Tessivar -- still reads as a burger despite the builder claiming it was re-authored into &#39;an orb crossed by a notched brass gear band&#39;), a grey scarecrow, an orange bird, a teal mask, an orange flame, and two GREEN FROGS. That is a gacha rainbow, which is the exact failure mode the brief names.</li><li>Whole-screen hue histogram vs the bar: ours carries 1.38% magenta (300-315deg) and 1.15% orange (0-30deg) above the 0.2% threshold; reference/shots/ui-bar.png carries ZERO magenta and 0.20% orange. Ours also runs 2.64% gold against the bar&#39;s 6.60% -- the reference puts 2.5x more gold on screen than we do.</li><li>THE SUMMON MOMENT IS THE WORST CASUALTY. The Rite resolves to Halvane, a bright green goose, centred inside a gold-and-violet ritual seal. The one moment the piece is allowed to become an event, and the payoff shares no hue with the cabinet it sits in. It also leaves roughly 200px of dead vertical space between the rarity word and the diamond rule, which reads as an unfinished layout rather than as breathing room.</li><li>TAP TARGETS FAIL, INCLUDING THE PRIMARY CTA. Measured live: the SUMMON button is 114x36 and the three filter tabs are 117x30. The brief requires &gt;=44px. The single most important control on the screen misses the mobile minimum by 8px.</li><li>THE MANDATED GATE IS VACUOUS FOR THIS PIECE. `npm run verify` reports 20/20 including &#39;no raw hex outside tokens.css&#39;, but tools/verify.mjs line ~75 iterates a hardcoded list of exactly three files (base.css, primitives.css, home.css). It never opens src/styles/wardens.css or wardens.html, which between them contain 13 raw hex literals (#000 x6, #050A10, #FFFFFF). The check passes without ever inspecting the piece it is supposed to be gating.</li><li>WHAT GENUINELY HOLDS -- the chrome is close to reference and should not be touched. Measured against the bar&#39;s three named traps: page ground luminance 9.1 vs panel 22.4 (the reference&#39;s #050A10/#13171B shift, correct); sealed-card names sit at luminance 199.3, which is exactly the reference&#39;s #C4C8CA secondary, so locked cards are distinguished by value and structure and NOT faded into illegibility; the empty progress track is the panel value, not a darker well.</li><li>GRID MECHANICS ARE CLEAN. 3 columns x 114px on 12px row and column gaps, scrollWidth 390 == clientWidth 390 so zero horizontal drift, all 24 sprites at natural 24x24 rendered at exactly 3x with image-rendering:pixelated, zero fractional scales. Cells are 117px tall, comfortably over 44.</li><li>THE DETAIL SHEET IS THE BEST SCREEN IN THE PROJECT and nearly ships as-is: two diamond-interrupted rules, an octagonal chamfered gold portrait frame, gold serif name, letter-spaced violet ASCENDANT with five violet pips, a chamfered beveled ASCEND plate, and checkpoint rungs with diamond bullets. Both of the reference&#39;s signature ornaments -- the chamfered gold button and the diamond divider -- get their second real use exactly as the brief asked.</li><li>MATH IS EXACT, NOT APPROXIMATE. Ran our xp.js against the published table in reference/melvor-math.md at 12 checkpoints (L=1,2,10,20,30,40,50,60,70,80,90,99): zero drift, including 13,034,431 at 99. xp(L+7)/xp(L) converges to 2.000 by level 70. The sheet&#39;s live figures are internally consistent too -- Vharnys at bond 62 shows 356,072/368,599 and 64.0%, and the 34,795 ascension cost equals xpAt(63)-xpAt(62) exactly, honouring the stated &#39;1:1 from the pool&#39; rule.</li><li>NAMING IS CLEAN -- NO AUTOMATIC LOSS. Grepped all src and root HTML for ~60 FFVI esper, character and place nouns. The only hits are inside src/js/engine/selftest.js lines 186-192, which is the project&#39;s own banned-word guard list rather than shipped content. All 24 warden names are invented.</li><li>BLIND A/B: laid the grid beside reference/shots/ui-bar.png with labels stripped. The reference is identifiable as the shipped product in under a second, and the tell is content, not chrome -- it holds two accents across a busy screen while ours fans across the wheel. Run the same test on the DETAIL SHEET alone and it is close to a tie. The chrome already clears the bar; the art asset layer is what loses.</li>
+      </ul>
+
+    <div class="shots">
+      <a class="shot" href="progress/shots/wardens-codex-r1-critic-grid-bound.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r1-critic-grid-bound.png" alt="wardens-codex-r1-critic-grid-bound.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r1-critic-grid-bound.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r1-critic-grid-scrolled.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r1-critic-grid-scrolled.png" alt="wardens-codex-r1-critic-grid-scrolled.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r1-critic-grid-scrolled.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r1-critic-grid-top.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r1-critic-grid-top.png" alt="wardens-codex-r1-critic-grid-top.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r1-critic-grid-top.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r1-critic-sheet.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r1-critic-sheet.png" alt="wardens-codex-r1-critic-sheet.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r1-critic-sheet.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r1-critic-summon.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r1-critic-summon.png" alt="wardens-codex-r1-critic-summon.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r1-critic-summon.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r1-rite.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r1-rite.png" alt="wardens-codex-r1-rite.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r1-rite.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r1-sealed.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r1-sealed.png" alt="wardens-codex-r1-sealed.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r1-sealed.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r1-sheet.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r1-sheet.png" alt="wardens-codex-r1-sheet.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r1-sheet.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r1.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r1.png" alt="wardens-codex-r1.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r1.png</span>
+      </a></div>
+  </li>
+  <li class="round">
+    <div class="round__head">
+      <span class="round__n">Round 2</span>
+      <span class="round__score is-mid">76</span>
+      <span class="badge">Lost blind pick</span>
+      <span class="round__time">Aug 26, 19:00</span>
+    </div>
+
+    <div class="bar" aria-hidden="true">
+      <div class="bar__fill"
+           style="--fill:76%"></div>
+    </div>
+
+    
+
+    
+      <ul class="evidence">
+        <li>CRITIC VERDICT, judged from pixels. Replaces the builder self-assessment that scored itself 82. Six screenshots captured at 390x844 @2x over CDP, in progress/shots/wardens-codex-r2-critic-*.png, plus live DOM measurement over CDP and independent PNG decoding of all 24 shipped sprites.</li><li>R1&#39;s AUTOMATIC LOSS IS GENUINELY CLOSED -- verified my own way, not by trusting the builder&#39;s audit. Decoded all 24 bound PNGs off disk and binned every lit pixel (alpha&gt;=128, L&gt;=0.10) by hue: 0 off-axis pixels out of 5,599. Every sprite&#39;s mean hue is inside gold 28-60deg or violet 238-296deg; the only sprite that reads &#39;??&#39; is Tessivar at a mean of 74deg, and that is a bimodal gold+violet average, not a stray. r1 spanned 21 distinct 10deg bins across six hue families including literal green at 107deg. Whole-screen census of the BOUND grid confirms it: 0.00% off-axis across 7 bins.</li><li>BUT THE ACCENT RATIO IS INVERTED AGAINST THE REFERENCE, AND THAT IS THE NEW PALETTE TELL. Same saturated+lit census run on reference/shots/ui-bar.png: gold 5.64%, violet 1.69% -- the bar is a GOLD screen with violet as a spot accent, 3.3:1 gold-to-violet. Our ALL grid is violet 13.76%, gold 4.19% -- 3.3:1 the other way, eight times the reference&#39;s violet load. Twenty-four violet portrait wells tiled down the page is what does it. A purple-dominant collection screen is the gacha cliche; gold-dominant is the premium tell. Not a loss on its own, but it is the reason the grid still reads generic at a glance.</li><li>THE BLIND A/B IS DECISIVE AND THE TELL IS THE ART LAYER, NOT THE CHROME. Composite in progress/shots/wardens-codex-r2-critic-ab.png: our BOUND grid, the reference, our Rite, labels stripped. The reference is identifiable in under a second. The specific tell: in the reference NOT ONE ICON ON SCREEN IS FLAT -- the QUEST sword has a blade highlight and a shadowed fuller, the PRESTIGE shield has a raised boss and a beveled rim, the coin has a rim and an inner face, the milestone diamond is a double line with mitred corners, the nav helmet is a modeled 3D object. In ours the SUMMON plate is a genuine match for CLAIM, and then every other gold and violet object is a single flat fill: the nav glyphs are solid one-colour house/oval/anvil/diamond silhouettes, the currency chip icons are flat rings, the rarity pips are flat 4px squares. The reference&#39;s smallest icon -- the 8.7K orb, roughly 40px -- carries more rendered depth than our 192px Rite portrait.</li><li>THE SUMMON MOMENT IS STILL NOT AN EVENT. progress/shots/wardens-codex-r2-critic-rite.png. Nimreth at x8 is a lumpy lavender-and-white mass with no face, no anatomy and a 3-step ramp; it reads as a crumpled mitten. The &#39;ritual seal&#39; resolves to two near-white hairline circles at 1px, clipped by both screen edges, which read as render artifacts rather than ornament. Measured the layout live: .summon__domain bottom sits at y=539 and the closing rule top at y=632, so 93px of dead ground still pools in one pocket under the identity block (better than r1&#39;s ~200px, not solved). The brief allows this one screen to become an event; it is currently a static portrait on black.</li><li>THE SEALED GRID IS THE PROOF SHOT FOR THE CANVAS PROBLEM. progress/shots/wardens-codex-r2-critic-grid-sealed.png: twelve locked wardens read as a comma, a jagged crown, a triangle, a wide V, a lumpy mountain, a bird-ish thing, a blob, an X, a heart, a cat, a bat and a circle. The states themselves are correctly built -- but there is nothing to withhold when the silhouette never resolved in the first place.</li><li>SPRITE FORENSICS, THE NUMBERS BEHIND THE INSTRUCTION. Per-sprite unique colours: mean 8.0, min 6 (ossuline), max 10 -- against reference/ffvi-art.md S3&#39;s measured 10-12 for a real FFVI sprite. Opaque coverage mean 48.9%, up to 65% (ythra). Bounding boxes: 15 of 24 measure exactly 24px wide, i.e. edge-to-edge with zero margin. Display chain: one 24x24 master rendered at x3 (72px grid), x4 (96px sheet) and x8 (192px Rite). FFVI never magnifies -- it authors at the display size. Eight-times magnification of a thumbnail is why the money shot is a blob.</li><li>WHAT GENUINELY HOLDS -- DO NOT TOUCH THE CHROME. Measured live at 390x844: grid is 3 columns of 114x117 on 12px row AND column gaps; document and inner .screen scroller both report scrollWidth 390 == clientWidth 390, zero horizontal drift; every sprite renders at exactly x3.000 from natural 24x24 with image-rendering:pixelated, and no filter or opacity ever touches one (the locked state is a separate PNG, which is the right call); ZERO controls under 44px across grid, sheet and Rite -- r1&#39;s 114x36 SUMMON and 117x30 tabs are fixed; sealed card names measure rgb(196,200,202), which is the reference&#39;s #C4C8CA secondary to the digit, so locked cards are not faded into illegibility; body ground is rgb(3,10,18) against the reference&#39;s #050A10.</li><li>RARITY-BY-VALUE IS BUILT CORRECTLY AND IS THE BEST STRUCTURAL IDEA IN THE PIECE. The portrait well is a five-rung OKLab lightness ladder -- L 0.172 / 0.202 / 0.257 / 0.322 / 0.404 for 1-5 pips bound -- and each sealed tier sits exactly one rung under its bound twin (0.160 / 0.183 / 0.228 / 0.279 / 0.343). That is the reference&#39;s &#39;depth by value shift, no glow spam&#39; rule executed properly, and it is why a 24-cell grid does not collapse into flat mush despite the violet dominance.</li><li>THE DETAIL SHEET REMAINS THE STRONGEST SCREEN IN THE PROJECT. progress/shots/wardens-codex-r2-critic-sheet.png: diamond-interrupted rules top and mid, an octagonal chamfered gold portrait frame, gold serif VHARNYS, letter-spaced violet ASCENDANT with five pips, a chamfered beveled ASCEND plate, checkpoint rungs on gold and violet diamond bullets. Both of the reference&#39;s signature ornaments get their second real use exactly as the brief asked. Only two nits: the flavour line is excellent and the sheet&#39;s own portrait is still the 24px master at x4.</li><li>MATH IS EXACT. Cross-checked warden-data.js XP_TABLE against reference/melvor-math.md at every published checkpoint: 1,154 at 10; 4,470 at 20; 13,363 at 30; 101,333 at 50; 737,627 at 70; 5,346,332 at 90; 13,034,431 at 99 -- zero drift, and xp(77)/xp(70) converges to 2.000. The live sheet is internally consistent too: Vharnys at bond 62 shows 356,072/368,599 = 64.0%, and the 34,795 ascension cost equals xpAt(63)-xpAt(62) exactly, honouring the stated 1:1-from-the-pool rule. One copy inconsistency: the sheet footnote reads &#39;-10% checkpoint&#39; while the r2 notes describe a 25% checkpoint discount.</li><li>NAMING IS CLEAN -- NO AUTOMATIC LOSS. Grepped wardens.html, warden-data.js, wardens.js, wardens.css and make-wardens.mjs against ~45 FFVI character, esper and place nouns. Every apparent hit is the English word &#39;shadow&#39; inside a comment about shading. All 24 warden names are invented.</li><li>RAW HEX IS CLEAN IN OWNED FILES, BUT THE MANDATED GATE STILL CANNOT SEE THEM. `npm run verify` reports 20/20 including &#39;no raw hex outside tokens.css&#39;, yet tools/verify.mjs line ~74 still iterates a hardcoded list of exactly three files (base.css, primitives.css, home.css) and never opens src/styles/wardens.css or wardens.html. I ran the check myself against all four shipped warden files with comments stripped: zero hex literals in any of them. So r1&#39;s 13 leaks are genuinely gone -- but the gate that is supposed to prove it remains blind to this entire piece, and that blind spot will silently pass the next piece too.</li>
+      </ul>
+
+    <div class="shots">
+      <a class="shot" href="progress/shots/wardens-codex-r2-bound.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r2-bound.png" alt="wardens-codex-r2-bound.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r2-bound.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r2-critic-ab.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r2-critic-ab.png" alt="wardens-codex-r2-critic-ab.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r2-critic-ab.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r2-critic-grid-bound.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r2-critic-grid-bound.png" alt="wardens-codex-r2-critic-grid-bound.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r2-critic-grid-bound.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r2-critic-grid-sealed.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r2-critic-grid-sealed.png" alt="wardens-codex-r2-critic-grid-sealed.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r2-critic-grid-sealed.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r2-critic-grid-top.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r2-critic-grid-top.png" alt="wardens-codex-r2-critic-grid-top.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r2-critic-grid-top.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r2-critic-rite.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r2-critic-rite.png" alt="wardens-codex-r2-critic-rite.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r2-critic-rite.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r2-critic-sheet.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r2-critic-sheet.png" alt="wardens-codex-r2-critic-sheet.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r2-critic-sheet.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r2-rite-sovereign.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r2-rite-sovereign.png" alt="wardens-codex-r2-rite-sovereign.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r2-rite-sovereign.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r2-rite.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r2-rite.png" alt="wardens-codex-r2-rite.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r2-rite.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r2-sealed.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r2-sealed.png" alt="wardens-codex-r2-sealed.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r2-sealed.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r2-sheet-sealed.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r2-sheet-sealed.png" alt="wardens-codex-r2-sheet-sealed.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r2-sheet-sealed.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r2-sheet.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r2-sheet.png" alt="wardens-codex-r2-sheet.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r2-sheet.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r2-sprites.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r2-sprites.png" alt="wardens-codex-r2-sprites.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r2-sprites.png</span>
+      </a>
+      <a class="shot" href="progress/shots/wardens-codex-r2.png" target="_blank" rel="noopener">
+        <img src="progress/shots/wardens-codex-r2.png" alt="wardens-codex-r2.png" loading="lazy">
+        <span class="shot__cap">wardens-codex-r2.png</span>
+      </a></div>
+  </li></ol>
+    </details>
+
+    
+  </section>
+  <section class="piece panel">
+    <header class="piece__head">
+      <div class="piece__id">
+        <h2 class="piece__name">Scaffold</h2>
+        <p class="piece__meta">1 round &middot;
+          <code>scaffold</code></p>
+      </div>
+
+      <div class="piece__score">
+        <span class="piece__num is-low">55</span>
+        
+      </div>
+    </header>
+
+    <p class="verdict">Still losing the blind comparison.</p>
+
+    
+
+    
+      <div class="gap gap--current">
+        <span class="gap__label">Current biggest gap</span>
+        <p class="gap__text">The hero has no art. The reference gives ~40% of the screen to full-bleed painterly art with a scrim; ours is a CSS gradient plus a vector skyline, so the top third reads empty and the giant numeral floats on nothing. Everything else is chrome that art has to sit inside.</p>
+      </div>
+
+    <details class="history" open>
+      <summary>Round history</summary>
+      <ol class="rounds">
+  <li class="round">
+    <div class="round__head">
+      <span class="round__n">Round 0</span>
+      <span class="round__score is-low">55</span>
+      <span class="badge">Lost blind pick</span>
+      <span class="round__time">Aug 26, 17:55</span>
+    </div>
+
+    <div class="bar" aria-hidden="true">
+      <div class="bar__fill bar__fill--violet"
+           style="--fill:55%"></div>
+    </div>
+
+    
+
+    
+      <ul class="evidence">
+        <li>BASELINE, NOT A CRITIC VERDICT: this is the scaffold agent&#39;s own assessment of its own output, recorded at round 0 so the progress page has real data. It has not been through a blind comparison.</li><li>Palette verified against reference/shots/ui-bar.png by sampling pixels, not by eye: ground #050A10, panel #13171B, gold fill sampled #DBAB4B vs token #D7A747, violet sampled #6E37B9 vs token #763CC3.</li><li>Confirmed the reference&#39;s third correction directly: the empty progress track samples #14181C, identical to the panel fill. The track is not a darker well.</li><li>Home screen fits 390x844 with no scroll: hero 300px, four panels, 60px nav.</li><li>Chrome primitives are in place and consumed by the home screen: panel, groove divider, gold and violet progress bars, chamfered gold button with inner bevel, currency chips, action cards, diamond ornament rule, bottom nav with the warm active background.</li><li>Pixel-art pipeline is proven end to end: original 16x16 PNGs authored by tools/make-sprite.mjs, scaled x3 by CSS with image-rendering: pixelated, integer factors only. Visible on the Skills tab.</li><li>Gaps beyond the hero: no real pixel-art content anywhere in the chrome, the gold crest is vector rather than rendered metal, and four of five nav tabs are honest placeholders.</li>
+      </ul>
+
+    <div class="shots">
+      <a class="shot" href="progress/shots/scaffold-r0.png" target="_blank" rel="noopener">
+        <img src="progress/shots/scaffold-r0.png" alt="scaffold-r0.png" loading="lazy">
+        <span class="shot__cap">scaffold-r0.png</span>
+      </a></div>
+  </li></ol>
+    </details>
+
+    
+  </section></div>
+
+  
+
+  <footer class="foot">
+    <span>Regenerate: <code>npm run progress</code></span>
+    <span>Screenshot: <code>npm run shot -- &lt;url&gt; &lt;out.png&gt;</code></span>
+    <span>App: <code>npm run dev</code></span>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,1313 @@
+/* =========================================================================
+   EMBERVEIL — SKILL SCREEN
+
+   Composition only. Every colour, gap and size comes from tokens.css; where
+   a translucency is needed it is mixed FROM a token rather than written as a
+   new literal, so the palette stays two accents wide. No raw hex in here.
+
+   The three traps this screen is most likely to fail, and how it doesn't:
+
+   1. Dense numeric content wants to fade its labels. It must not. Every
+      label here is --c-text-2 (#C4C8CA) at full strength; hierarchy is
+      carried by SIZE and LETTER-SPACING. Nothing on this screen is dimmed
+      to make something else look important.
+   2. Structure inside a panel is expressed with a LIT hairline seam
+      (--c-groove, ~2.25x the panel's luma) plus a faint dark companion under
+      it, never with a nested box. The action panel holds four sections and
+      has no inner boxes at all. Round 1 used a DARK groove here, from the
+      prose in ui-bar.md; the PNG contradicts it and the PNG wins. See the
+      measurements at the head of tokens.css.
+   3. The empty part of every bar is the panel colour, but its RIM is not —
+      a shallow well read by a bright ring, lit harder on top than bottom.
+   4. Every fill ends in a cap hotter than its own body and throws a warm
+      bloom ~12px into the track ahead of it. Without that a bar is a
+      painted rectangle; with it, it is lit metal. This is the difference
+      the round-1 critique was actually pointing at.
+
+   Axis discipline: GOLD is progression (skill level, XP, action interval,
+   yields) and VIOLET is mastery (recipe mastery, the pool, its checkpoints).
+   A reader should be able to tell which axis a number belongs to from ten
+   feet away without reading it.
+   ========================================================================= */
+
+/* =========================================================================
+   0. CHROME POLARITY
+
+   primitives.css derives two values from --c-groove back when --c-groove
+   was the dark cut. It is now the lit seam, so both are re-pointed at
+   --c-panel-deep — the same old number under an honest name. When
+   primitives.css absorbs this, delete the block.
+   ========================================================================= */
+
+:root {
+  --c-surface-lo: color-mix(in srgb, var(--c-surface) 64%, var(--c-panel-deep));
+  --c-groove-cut: var(--c-groove);
+}
+
+/* The panel reads as a surface from its value shift off the ground; the rim
+   is what tells you where it ends. Measured on the reference's progress
+   panel: left edge L75.4, bottom L58.3, top L43.8, against a panel of L19.5
+   and a ground of L7.4. Ours is a single CSS pixel where the reference's is
+   a sub-pixel pair, so it sits at the calm end of that range. */
+.panel { border-color: var(--c-panel-edge); }
+
+/* A seam is a raised bevel: one lit pixel with one shaded pixel beneath.
+   Measured x=500 y=948: #2E332F L49.6 over an L19.5 panel, then a dip to
+   L18.0 in the row beneath it. */
+.divider {
+  background: var(--c-groove);
+  box-shadow: 0 1px 0 0 var(--c-groove-shadow);
+}
+.divider--v { box-shadow: 1px 0 0 0 var(--c-groove-shadow); }
+
+/* Row seams in the flush list panels get the same treatment. */
+.rrow-wrap + .rrow-wrap,
+.srow-wrap + .srow-wrap,
+.recipes ul { box-shadow: inset 0 1px 0 0 var(--c-groove-shadow); }
+
+/* =========================================================================
+   0b. BARS — the well, the cap and the bloom
+
+   Anatomy, top to bottom, all four measured off reference/shots/ui-bar.png:
+     rim      a bright ring round the empty well, top edge (L62) hotter than
+              bottom (L53), on a fill that stays at the panel value (L23)
+     fill     four-stop metal with a lit top bevel and a shaded under-edge
+     run-up   the fill brightens over its last 18px into the cap, ending
+              at L227 — the same value the reference reaches behind its own
+     cap      2px hotter than anything else in the bar (L242 vs that 227)
+     bloom    a warm spill thrown forward into the track, tight core then a
+              long shallow tail, dying at ~12px
+   ========================================================================= */
+
+/* overflow is VISIBLE, against the primitive's default. In the reference the
+   cap's halo escapes its bar — there is warm light 6px above and below the
+   track at the leading edge, not a glow trimmed to a horizontal slit. The
+   fill carries its own pill radius, so nothing overflows geometrically; only
+   the light does, which is the point. */
+.bar {
+  background: var(--c-track);
+  overflow: visible;
+  box-shadow:
+    inset 0  1px 0 0 var(--c-track-rim),
+    inset 0 -1px 0 0 var(--c-track-rim-lo),
+    inset 0  0   0 1px var(--c-track-rim-lo);
+}
+
+.bar__fill {
+  position: relative;
+  box-shadow:
+    inset 0  1px 0 0 var(--c-bevel-lit),
+    /* A LIT bottom edge, not a shadowed one. Round 1 put --c-gold-under here
+       and the fill died into the track. The reference's does the opposite:
+       down the XP bar at x=300 the body falls 213 -> 144.7 and then lifts
+       again to 155.6, 166.8 in its last two rows. That is reflected light off
+       the bottom of a rounded metal surface, and it is why the reference's
+       bars look turned rather than drawn. */
+    inset 0 -1px 0 0 color-mix(in srgb, var(--c-gold-light) 42%, var(--c-gold-deep));
+}
+
+/* The bloom. A narrow source pinned to the leading edge and nothing else, so
+   the light radiates from a point rather than from a rectangle: that is what
+   makes the halo round at the cap and keeps it from smearing back along the
+   whole fill. Two stops, because the measured falloff is not one curve — a
+   tight bright core, then a long shallow tail out to --bar-bloom. */
+.bar__fill::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: var(--bar-cap-w);
+  border-radius: var(--r-pill);
+  box-shadow:
+    0 0 6px 2px var(--c-gold-bloom),
+    3px 0 var(--bar-bloom) 3px var(--c-gold-bloom-far);
+}
+
+/* Cap AND run-up, deliberately ONE element.
+   Built as two pseudos they drift: the run-up's hottest pixels sit under the
+   cap, so what you actually see behind a 242 cap is whatever the ramp had
+   reached two pixels earlier — measured at 201, against the reference's 227
+   behind its 240. A 26-value step reads as a white tick stuck on the end of
+   a gold bar. Fused, the step is fixed by the gradient's own stops and
+   cannot desync from the ramp feeding it.
+
+   The mask, not a gradient to `transparent`: fading a colour to transparent
+   interpolates toward transparent BLACK and drags the ramp down. Masking
+   interpolates alpha alone, so the hue is carried at full value all the way. */
+.bar__fill::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: var(--bar-runup);
+  max-width: 100%;
+  border-radius: inherit;
+  background: linear-gradient(270deg,
+    var(--c-gold-cap)       0,
+    var(--c-gold-cap)       var(--bar-cap-w),
+    var(--c-gold-cap-warm)  calc(var(--bar-cap-w) + 1px),
+    var(--c-gold-cap-warm)  100%);
+  -webkit-mask-image: linear-gradient(270deg,
+    var(--c-text-1) 0, var(--c-text-1) calc(var(--bar-cap-w) + 1px), transparent 100%);
+          mask-image: linear-gradient(270deg,
+    var(--c-text-1) 0, var(--c-text-1) calc(var(--bar-cap-w) + 1px), transparent 100%);
+}
+
+.bar--violet .bar__fill {
+  box-shadow:
+    inset 0  1px 0 0 var(--c-bevel-lit),
+    inset 0 -1px 0 0 color-mix(in srgb, var(--c-violet-light) 45%, var(--c-violet-deep));
+}
+.bar--violet .bar__fill::before {
+  box-shadow:
+    0 0 6px 2px var(--c-violet-bloom),
+    3px 0 var(--bar-bloom) 3px var(--c-violet-bloom-far);
+}
+.bar--violet .bar__fill::after {
+  background: linear-gradient(270deg,
+    var(--c-violet-cap)      0,
+    var(--c-violet-cap)      var(--bar-cap-w),
+    var(--c-violet-cap-warm) calc(var(--bar-cap-w) + 1px),
+    var(--c-violet-cap-warm) 100%);
+}
+
+/* An 8px bar has no room for an 18px run-up and a 2px cap without the cap
+   becoming the bar, so the small variant scales both down. */
+.bar--sm .bar__fill {
+  --bar-cap-w: 1px;
+  --bar-runup: 11px;
+}
+
+/* A bar at zero is empty, not a smear of hot metal at its left edge. The
+   class is set by setFill() rather than sniffed out of the style attribute,
+   which would depend on how the browser chose to serialise it. */
+.bar__fill.is-empty { box-shadow: none; }
+.bar__fill.is-empty::before,
+.bar__fill.is-empty::after { display: none; }
+
+/* =========================================================================
+   0c. PRESSED METAL
+   The reference's signature object is the CLAIM plate. Measured down its
+   middle at x=760: a dark outline, a 3px gold frame peaking at #FFE297,
+   a dark seam at #8C733B, an inner bevel highlight at #FFEAA4, then a face
+   running #E0B95E -> #A47831, closed by a lit bottom edge at #F1CE80.
+   Four bands and a gradient — that is the whole trick.
+   ========================================================================= */
+
+.plate {
+  --chamfer-local: var(--chamfer);
+  --chamfer-inner: calc(var(--chamfer-local) - 2px);
+  position: relative;
+  isolation: isolate;
+  background: var(--grad-gold-metal);
+  clip-path: polygon(
+    var(--chamfer-local) 0, calc(100% - var(--chamfer-local)) 0,
+    100% var(--chamfer-local), 100% calc(100% - var(--chamfer-local)),
+    calc(100% - var(--chamfer-local)) 100%, var(--chamfer-local) 100%,
+    0 calc(100% - var(--chamfer-local)), 0 var(--chamfer-local));
+}
+
+/* The face, inset by the frame, carrying the seam and both bevel lines. */
+.plate::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  background: var(--grad-gold-face);
+  box-shadow:
+    inset 0 0  0 1px var(--c-gold-seam),
+    inset 0 2px 0 0  var(--c-gold-light),
+    inset 0 -2px 0 0 var(--c-gold-cap-warm);
+  clip-path: polygon(
+    var(--chamfer-inner) 0, calc(100% - var(--chamfer-inner)) 0,
+    100% var(--chamfer-inner), 100% calc(100% - var(--chamfer-inner)),
+    calc(100% - var(--chamfer-inner)) 100%, var(--chamfer-inner) 100%,
+    0 calc(100% - var(--chamfer-inner)), 0 var(--chamfer-inner));
+}
+
+.plate--violet { background: var(--grad-violet-metal); }
+.plate--violet::before {
+  background: linear-gradient(180deg,
+    var(--c-violet-bright) 0%, var(--c-violet-core) 52%, var(--c-violet-deep) 100%);
+  box-shadow:
+    inset 0 0  0 1px var(--c-violet-seam),
+    inset 0 2px 0 0  var(--c-violet-light),
+    inset 0 -2px 0 0 var(--c-violet-cap-warm);
+}
+
+/* =========================================================================
+   0. SCREEN-LOCAL RESET
+   Four of the five nav items are anchors back to the shell, so they arrive
+   with the user-agent underline the element reset does not clear. An
+   underlined nav label is instantly cheap-looking at 2x.
+   ========================================================================= */
+
+.nav__item,
+.nav__item:visited { text-decoration: none; color: var(--c-text-2); }
+.nav__item.is-active { color: var(--c-text-cream); }
+
+/* =========================================================================
+   1. TOP BAR — pinned, overlaid on the head band
+   ========================================================================= */
+
+.topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-nav);
+  justify-content: space-between;
+  padding-inline: var(--s-3);
+  pointer-events: none; /* let the head band own the space between items */
+}
+.topbar > * { pointer-events: auto; }
+
+/* The bar floats over the head band, which means it also floats over whatever
+   scrolls up underneath it — and a recipe title sliding through a currency
+   chip is the single ugliest thing this screen can do. A scrim fades in the
+   moment the screen leaves the top and fades out again at rest, so the band
+   keeps its clean violet wash and scrolled content still passes behind
+   something solid. */
+.topbar::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: calc(var(--topbar-h) + var(--s-4));
+  z-index: -1;
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    var(--c-ground) 0%,
+    var(--c-ground) 62%,
+    color-mix(in srgb, var(--c-ground) 0%, transparent) 100%);
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+#app.is-scrolled .topbar::before { opacity: 1; }
+
+.chips { display: flex; align-items: center; gap: var(--s-2); }
+.topbar .chip { padding: var(--s-1) var(--s-2); gap: var(--s-1); min-height: 28px; }
+.topbar .chip__value { font-size: var(--fs-body); }
+.topbar .chip__icon { width: 17px; height: 17px; }
+
+.backbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  min-height: var(--tap-min);
+  padding: 0 var(--s-3) 0 var(--s-2);
+  background: var(--c-chip-fill);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-pill);
+  color: var(--c-text-2);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+}
+.backbtn svg { color: var(--c-gold-core); flex: 0 0 auto; }
+
+.screen-title {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-value-lg);
+  letter-spacing: var(--ls-display);
+  text-transform: uppercase;
+  line-height: 1;
+  background: var(--grad-gold-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+[data-view="detail"] .screen-title { display: none; }
+[data-view="list"]   .backbtn      { display: none; }
+
+/* =========================================================================
+   2. HEAD BAND
+   One enormous number anchors the screen, exactly as the reference does.
+   Depth comes from a value shift and a faint watermark of the skill's own
+   mark — no drop shadows, no glassmorphism, no glow.
+   ========================================================================= */
+
+.skillhead {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--topbar-h) var(--gutter) var(--s-2);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* A cool violet wash, the same trick the home hero uses. */
+.skillhead::before {
+  content: "";
+  position: absolute;
+  inset: -60% -25% auto -25%;
+  height: 220%;
+  z-index: -2;
+  background: radial-gradient(
+    ellipse at 50% 26%,
+    color-mix(in srgb, var(--c-violet-deep) 36%, transparent) 0%,
+    transparent 64%);
+}
+
+/* The discipline's own mark, ghosted behind its level.
+
+   The mask is RADIAL, not linear. A linear fade leaves the left and right
+   edges of the glyph hard, and a 150px hard-edged shape behind the numeral
+   does not read as an ornament — it reads as a rendering fault. Fading from
+   the centre outward in every direction is the only version that dissolves
+   into the band instead of sitting on top of it. */
+.skillhead__wm {
+  position: absolute;
+  top: 52px;
+  left: 50%;
+  width: 168px;
+  height: 168px;
+  transform: translateX(-50%);
+  /* Opacity on the whole glyph, NOT a translucent currentColor. The mark now
+     carries baked-in neutral bevel facets so it reads as an object in the
+     list; those are literal white and black and would ignore a translucent
+     currentColor entirely, printing a hard-edged 40%-white shape behind the
+     numeral. Fading the element fades every facet with it. */
+  color: var(--c-gold-core);
+  opacity: 0.085;
+  z-index: -1;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 40%, black 0%, transparent 58%);
+  mask-image: radial-gradient(ellipse at 50% 40%, black 0%, transparent 58%);
+}
+
+.skillhead__body { position: relative; z-index: 0; }
+
+.skillhead__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-body);
+  letter-spacing: var(--ls-display);
+  text-transform: uppercase;
+  color: var(--c-gold-core);
+  line-height: var(--lh-tight);
+  /* The trailing letter's tracking would otherwise pull the pair half a
+     track off the centreline. */
+  padding-left: var(--ls-display);
+}
+
+/* The discipline's mark at label scale, beside its name. Sized explicitly:
+   an <svg> with no width collapses to its 300x150 intrinsic box and eats a
+   third of the band. */
+.skillhead__mark {
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+  color: var(--c-gold-core);
+}
+
+.skillhead__numeral {
+  margin-top: 3px;
+  /* A faint warm bloom sells the metal without adding a drop shadow. */
+  filter: drop-shadow(0 2px 10px color-mix(in srgb, var(--c-gold-deep) 30%, transparent));
+  transition: filter var(--dur-slow) var(--ease-out);
+}
+
+.skillhead__rule {
+  max-width: 172px;
+  margin: var(--s-1) auto 0;
+}
+
+/* The reference's status line: a small gold dot, then the live figures, then
+   a tiny clock glyph before the elapsed time. Both micro-details are lifted
+   straight from the bar — they are the cheapest premium tells there are. */
+.skillhead__status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  margin-top: var(--s-2);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-1);
+  white-space: nowrap;
+}
+.skillhead__clock {
+  flex: 0 0 auto;
+  margin-left: 2px;
+  color: var(--c-gold-deep);
+}
+
+.skillhead--list {
+  padding-bottom: var(--s-4);
+}
+.skillhead--list .skillhead__status { margin-top: var(--s-3); }
+
+/* The level-up moment: one slow gilt sweep and a brief deepening of the
+   numeral's bloom. No scale, no bounce — this cabinet is cast metal. */
+.skillhead::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    104deg,
+    transparent 38%,
+    color-mix(in srgb, var(--c-gold-light) 15%, transparent) 50%,
+    transparent 62%);
+}
+.skillhead.is-levelup::after { animation: gilt 900ms var(--ease-out); }
+/* Brightness, not a bigger drop-shadow. The numeral is a gradient clipped to
+   text, and a wide blur on that rasterises the whole line box first, so the
+   "bloom" arrives as a visible rectangle behind the digits. Brightening the
+   gradient itself adds no area and cannot box. */
+.skillhead.is-levelup .skillhead__numeral {
+  filter: drop-shadow(0 2px 10px color-mix(in srgb, var(--c-gold-deep) 30%, transparent))
+          brightness(1.16) saturate(1.06);
+}
+@keyframes gilt {
+  from { opacity: 1; transform: translateX(-55%); }
+  to   { opacity: 0; transform: translateX(55%); }
+}
+
+/* =========================================================================
+   3. SHARED ROWS
+   ========================================================================= */
+
+/* "46 -> 47" on the left, the raw counter on the right. */
+.lvlrow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-1);
+  margin-block: var(--s-1) var(--s-2);
+}
+.lvlrow__arrow {
+  color: var(--c-text-2);
+  font-size: var(--fs-body);
+  padding-inline: 1px;
+}
+
+/* "MASTERY 34 -> 35" — the level pair riding inside a section label, so the
+   violet panel needs no second row for it. */
+.head-lv {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  margin-left: var(--s-1);
+  letter-spacing: var(--ls-normal);
+  text-transform: none;
+}
+.head-lv b {
+  font-size: var(--fs-value);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-1);
+  font-variant-numeric: tabular-nums;
+}
+.head-lv i { font-style: normal; color: var(--c-text-2); }
+
+/* Grooves inside a dense panel need less air than the reference's default. */
+.panel .divider { margin-block: var(--s-2); }
+.stat-split .divider--v { margin-inline: var(--s-4); }
+.stat-split--3 .divider--v { margin-inline: var(--s-3); }
+.stat-split--3 .t-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================================================================
+   4. THE ACTION PANEL — the loop, made visible
+   ========================================================================= */
+
+.act__head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+.act__icon { flex: 0 0 auto; display: block; }
+
+.act__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.act__kicker {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-gold-core);
+}
+/* The one thing that moves while you are not touching anything. */
+.act__kicker .dot-gold { animation: breathe 2.4s var(--ease-in-out) infinite; }
+.act.is-paused .act__kicker .dot-gold,
+.act.is-halted .act__kicker .dot-gold { animation: none; opacity: .4; }
+@keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+
+/* Cinzel caps run wide: at 390 the longest recipe name ("Stormcast
+   Filament") needs 172px of the 246 this column gets at 17px. Re-measure
+   before adding a longer one rather than letting it ellipse. */
+.act__name {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-value-lg);
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  color: var(--c-text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The single most important control on an idle screen, so it is a real
+   plate and a real thumb target: 44px, the project's own --tap-min, which
+   round 1 declared and then built at 38.
+
+   Running, it is a machined dark face inside a lit bevel — quiet, but
+   unmistakably a physical control. Stopped, it fills with gold and becomes
+   the one high-saturation object in the panel, exactly the job the
+   reference's CLAIM plate does. */
+.runbtn {
+  --chamfer-local: 8px;
+  --chamfer-inner: calc(var(--chamfer-local) - 2px);
+  flex: 0 0 auto;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, var(--c-groove) 0%, var(--c-panel-deep) 100%);
+  color: var(--c-gold-core);
+  transition: filter var(--dur-fast) var(--ease-out);
+}
+.runbtn::before {
+  background: linear-gradient(180deg,
+    var(--c-surface-warm) 0%, var(--c-panel-deep) 100%);
+  box-shadow:
+    inset 0 0  0 1px var(--c-groove-shadow),
+    inset 0 1px 0 0  color-mix(in srgb, var(--c-groove) 70%, transparent);
+}
+.runbtn > svg { position: relative; }
+
+.runbtn.is-stopped { color: var(--c-ground); }
+.runbtn.is-stopped::before {
+  background: var(--grad-gold-face);
+  box-shadow:
+    inset 0 0  0 1px var(--c-gold-seam),
+    inset 0 2px 0 0  var(--c-gold-light),
+    inset 0 -2px 0 0 var(--c-gold-cap-warm);
+}
+.runbtn:active { filter: brightness(0.9); }
+
+/* The countdown. A second, smaller display numeral — the gold gradient says
+   it belongs to the progression axis, and tabular figures stop it dancing. */
+.act__timer {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  margin-block: var(--s-2) var(--s-1);
+}
+.act__remain {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: 26px;
+  line-height: 1;
+  letter-spacing: var(--ls-tight);
+  font-variant-numeric: tabular-nums;
+  background: var(--grad-gold-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.act__unit {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  color: var(--c-gold-deep);
+}
+
+/* The live bar is driven straight from the tick counter, so it must not
+   carry the settling transition the other bars use. */
+.bar--live .bar__fill { transition: none; }
+
+.act.is-halted .bar--live .bar__fill { filter: saturate(.2) brightness(.62); }
+.act.is-halted .act__kicker { color: var(--c-gold-light); }
+.act.is-paused .act__kicker { color: var(--c-text-2); }
+
+/* ---- consumes / yields, split by a vertical groove ---------------------- */
+
+.act__flow { margin-top: var(--s-2); }
+
+.stacks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  margin-top: var(--s-2);
+}
+.stack {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  min-width: 0;
+}
+.stack .pixel { flex: 0 0 auto; }
+.stack__qty {
+  flex: 0 0 auto;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  color: var(--c-gold-core);
+  font-variant-numeric: tabular-nums;
+}
+.stack__name {
+  min-width: 0;
+  font-size: var(--fs-micro);
+  color: var(--c-text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stack__stock {
+  margin-left: auto;
+  padding-left: var(--s-1);
+  flex: 0 0 auto;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-medium);
+  color: var(--c-text-1);
+}
+.stack--none { font-size: var(--fs-micro); color: var(--c-text-2); }
+
+/* The number that ticks up. It flashes to gold on the frame an action lands
+   and settles back over a third of a second — the whole "reward" animation. */
+.act__stored {
+  margin-top: var(--s-2);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+.act__stored b {
+  margin-right: 4px;
+  font-size: var(--fs-value-lg);
+  letter-spacing: var(--ls-tight);
+  color: var(--c-text-1);
+  transition: color var(--dur-slow) var(--ease-out);
+}
+.act__stored b.is-bump {
+  color: var(--c-gold-light);
+  transition-duration: 60ms;
+}
+
+/* ---- mastery ------------------------------------------------------------ */
+
+.milestone-line {
+  margin-top: var(--s-2);
+  font-size: var(--fs-micro);
+  line-height: var(--lh-snug);
+  color: var(--c-text-2);
+}
+/* The rate this recipe pays is a fact about the violet axis, so it reads in
+   violet; the milestone it is heading toward stays label-grey. */
+.milestone-line .u-tnum {
+  font-weight: var(--fw-bold);
+  color: var(--c-violet-light);
+}
+.bar.is-levelup .bar__fill { filter: brightness(1.55) saturate(1.1); }
+.bar .bar__fill { transition: width var(--dur-slow) var(--ease-out), filter var(--dur-slow) var(--ease-out); }
+
+/* =========================================================================
+   5. MASTERY POOL — live checkpoints
+   The checkpoints are cut THROUGH the bar as dark grooves, the same way the
+   panels are divided. A checkpoint that is currently held fills its diamond;
+   one that is not shows only its outline. They are thresholds, not unlocks:
+   spend the pool back down and the diamond empties again.
+   ========================================================================= */
+
+.poolbar {
+  position: relative;
+  display: block;
+  margin-top: var(--s-2);
+}
+/* The same component inside a list row: no leading margin, and it takes the
+   flexible column between the axis label and the percentage. */
+.poolbar--inline {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-top: 0;
+}
+/* A graduation, not a cut.
+   Round 1 drew these as 2px of page-ground straight through the bar, which
+   severed the violet into disconnected blocks — at 56% the list row read as
+   four broken pieces rather than one lozenge. They are now lit hairlines in
+   the seam colour, inset from both rims so the bar's own top and bottom
+   edges run unbroken through every mark. Same language as a panel seam,
+   because that is what they are: structure inside a surface. */
+.poolbar__notch {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: var(--at);
+  width: 1px;
+  /* One value that lightens on BOTH grounds: a scratch on the violet metal
+     where the pool has reached, a lit graduation on the empty track where it
+     has not. Violet because these are mastery-axis marks. */
+  background: color-mix(in srgb, var(--c-violet-light) 62%, transparent);
+}
+/* At the small size the bar is 8px tall, so a 2px inset would leave 4px of
+   mark; 1px keeps the graduation readable without touching the rims. */
+.poolbar--inline .poolbar__notch { top: 1px; bottom: 1px; }
+
+/* The pool's raw figure. The numerator is white because it is the number
+   that moves; the cap and the rate are the frame around it. */
+.poolfig {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-1);
+  margin-top: var(--s-2);
+  font-size: var(--fs-micro);
+  color: var(--c-text-2);
+}
+.poolfig b {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-1);
+  letter-spacing: var(--ls-tight);
+}
+.poolfig__rate {
+  margin-left: auto;
+  font-weight: var(--fw-bold);
+  color: var(--c-violet-light);
+}
+
+.cps {
+  position: relative;
+  height: 22px;
+  margin-top: var(--s-1);
+}
+.cp {
+  position: absolute;
+  left: var(--at);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+/* A cut stone, not a wireframe. Unheld it is an empty setting with a lit
+   rim; held, it fills with violet metal and takes a specular top-left facet
+   — the same two-band treatment every other lit thing on this screen gets.
+   The reference's ornaments are rendered objects; a 1px outline square is
+   the loudest "not shipped" tell there is. */
+.cp__dia {
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg);
+  border: 1px solid color-mix(in srgb, var(--c-violet-light) 46%, transparent);
+  background: color-mix(in srgb, var(--c-violet-deep) 22%, transparent);
+  transition: background var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out),
+              box-shadow var(--dur-base) var(--ease-out);
+}
+.cp__pct {
+  font-size: 9px;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.06em;
+  color: var(--c-text-2);
+}
+/* Rotated 45deg, so a 135deg gradient runs corner-to-corner down the stone
+   and the inset highlight lands on its upper-left facet. */
+.cp.is-held .cp__dia {
+  background: linear-gradient(135deg,
+    var(--c-violet-cap) 0%, var(--c-violet-core) 46%, var(--c-violet-deep) 100%);
+  border-color: color-mix(in srgb, var(--c-violet-cap) 70%, transparent);
+  box-shadow: inset 1px 1px 0 0 color-mix(in srgb, var(--c-violet-cap) 60%, transparent);
+}
+.cp.is-held .cp__pct { color: var(--c-violet-light); }
+
+/* Crossing a checkpoint: one expanding ring, once. */
+.cp.is-lit .cp__dia { animation: cp-lit 1200ms var(--ease-out); }
+@keyframes cp-lit {
+  from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--c-violet-bright) 72%, transparent); }
+  to   { box-shadow: 0 0 0 10px color-mix(in srgb, var(--c-violet-bright) 0%, transparent); }
+}
+
+.cpline {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-1);
+  padding-left: var(--s-4);
+  font-size: var(--fs-micro);
+  line-height: 1.42;
+  color: var(--c-text-2);
+}
+.cpline + .cpline { margin-top: var(--s-1); }
+
+/* The two lines are a modifier ledger, not prose: tag, figure, effect. The
+   checkpoint's own name gets a whole line to itself on the plaque when it
+   fires, which is where the flavour actually lands. */
+.cpline__tag {
+  flex: 0 0 30px;
+  font-style: normal;
+  font-size: var(--fs-nav);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+.cpline__at {
+  flex: 0 0 auto;
+  min-width: 26px;
+  font-weight: var(--fw-bold);
+  color: var(--c-text-1);
+}
+.cpline--next .cpline__at { color: var(--c-text-2); }
+.cpline__txt {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cpline::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 4px;
+  width: 7px;
+  height: 7px;
+  transform: rotate(45deg);
+  border: 1px solid color-mix(in srgb, var(--c-violet-light) 46%, transparent);
+  background: color-mix(in srgb, var(--c-violet-deep) 24%, transparent);
+}
+.cpline--held { color: var(--c-text-1); }
+.cpline--held::before {
+  background: linear-gradient(135deg,
+    var(--c-violet-cap) 0%, var(--c-violet-core) 48%, var(--c-violet-deep) 100%);
+  border-color: color-mix(in srgb, var(--c-violet-cap) 68%, transparent);
+}
+.cpline--held.is-empty { color: var(--c-text-2); }
+.cpline--held.is-empty::before {
+  background: color-mix(in srgb, var(--c-violet-deep) 24%, transparent);
+  border-color: color-mix(in srgb, var(--c-violet-light) 46%, transparent);
+}
+
+/* =========================================================================
+   6. RECIPE LIST
+   A flush panel whose rows are separated by cut grooves — never by nested
+   cards. The selected row gets the warm raised surface and a gold rail on
+   its leading edge, the same language the bottom nav uses for "active".
+   ========================================================================= */
+
+.recipes__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-4) var(--s-4) var(--s-3);
+}
+.rrow-wrap + .rrow-wrap { border-top: 1px solid var(--c-groove); }
+.recipes ul { border-top: 1px solid var(--c-groove); }
+
+.rrow {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  padding: var(--s-3) var(--s-4);
+  text-align: left;
+  transition: background var(--dur-fast) var(--ease-out);
+}
+.rrow.is-selected {
+  background: var(--c-surface-warm);
+  box-shadow: inset 3px 0 0 0 var(--c-gold-core);
+}
+.rrow[disabled] { cursor: default; }
+
+.rrow__icon { flex: 0 0 auto; display: block; }
+.rrow__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.rrow__top {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+.rrow__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rrow__meta {
+  flex: 0 0 auto;
+  font-size: var(--fs-micro);
+  color: var(--c-text-2);
+}
+/* Locked rows keep a fully legible name and a full-colour sprite — the item
+   is a goal, not a disabled control. The requirement is stated in gold
+   instead of the whole row being faded out. */
+.rrow__req {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px 2px 5px;
+  border: 1px solid var(--c-hairline-gold);
+  border-radius: var(--r-pill);
+  font-size: 9px;
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-gold-core);
+}
+.rrow__in {
+  font-size: var(--fs-micro);
+  color: var(--c-text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rrow__mastery {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: 1px;
+}
+.rrow__mastery .bar { flex: 1 1 auto; }
+.rrow__ml {
+  flex: 0 0 auto;
+  min-width: 26px;
+  text-align: right;
+  font-size: 9px;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.05em;
+  color: var(--c-violet-light);
+}
+.rrow.is-locked .rrow__ml { color: var(--c-text-2); }
+
+/* The locked row's third line: pace and price, on the same baseline the
+   mastery meter would have occupied so the row rhythm never breaks. */
+.rrow__goal {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--bar-h-sm);
+  margin-top: 1px;
+  font-size: var(--fs-micro);
+  color: var(--c-text-2);
+}
+.rrow__coin {
+  flex: 0 0 auto;
+  margin-left: 2px;
+}
+
+/* =========================================================================
+   7. LIST STATE — the five disciplines
+   ========================================================================= */
+
+.srow-wrap + .srow-wrap { border-top: 1px solid var(--c-groove); }
+
+.srow {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  padding: var(--s-3) var(--s-4);
+  text-align: left;
+}
+.srow.is-active {
+  background: var(--c-surface-warm);
+  box-shadow: inset 3px 0 0 0 var(--c-gold-core);
+}
+
+/* A setting, not a swatch. The well is cut into the row — dark face, lit top
+   rim, shaded bottom rim, the same three bands the progress track uses — and
+   the mark inside it is filled from a gradient rather than one flat colour,
+   so it catches light like every other metal object on the screen. */
+.srow__mark {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-sm);
+  background: linear-gradient(180deg,
+    var(--c-panel-deep) 0%, color-mix(in srgb, var(--c-ground) 78%, var(--c-panel-deep)) 100%);
+  box-shadow:
+    inset 0  1px 0 0 var(--c-track-rim),
+    inset 0 -1px 0 0 var(--c-track-rim-lo),
+    inset 0  0   0 1px color-mix(in srgb, var(--c-track-rim-lo) 72%, transparent);
+}
+/* The marks are drawn through <use>, whose shadow tree ordinary selectors
+   cannot reach — only inherited properties cross that boundary. So the axis
+   arrives as currentColor and the bevel is baked into each symbol as neutral
+   white/black facets, which read correctly under either accent. */
+.srow[data-axis="gold"]   .srow__mark { color: var(--c-gold-core); }
+.srow[data-axis="violet"] .srow__mark { color: var(--c-violet-core); }
+.srow.is-active .srow__mark {
+  box-shadow:
+    inset 0  1px 0 0 var(--c-track-rim),
+    inset 0 -1px 0 0 var(--c-track-rim-lo),
+    inset 0  0   0 1px color-mix(in srgb, var(--c-gold-core) 46%, transparent);
+}
+
+.srow__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+.srow__top {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+.srow__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-value);
+  letter-spacing: 0.02em;
+  color: var(--c-text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.srow__lv {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.srow__lv i {
+  font-style: normal;
+  font-size: 9px;
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-label);
+  color: var(--c-text-2);
+}
+.srow__lv b {
+  font-size: var(--fs-value-lg);
+  letter-spacing: var(--ls-tight);
+  color: var(--c-text-1);
+}
+
+/* Two meters per row, one per axis, on a shared three-column rhythm so the
+   axis labels, the bars and the percentages all line up down the list. The
+   axis word is a LABEL, not a dimmed hint: --c-text-2 at full strength. */
+.srow__meter {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  /* A meter row is exactly as tall as its tallest glyph — inheriting the
+     body's 1.45 leading here adds 5px of dead air to every row and pushes
+     the fifth discipline under the fold. */
+  line-height: 1;
+}
+.srow__axis {
+  flex: 0 0 30px;
+  font-style: normal;
+  font-size: var(--fs-nav);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+.srow__meter > .bar { flex: 1 1 auto; }
+.srow__pct {
+  flex: 0 0 38px;
+  text-align: right;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-normal);
+  color: var(--c-text-1);
+}
+.srow__pct--pool { color: var(--c-violet-light); }
+
+.srow__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: 1px;
+}
+.srow__what {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--fs-micro);
+  color: var(--c-text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.srow.is-active .srow__what { color: var(--c-text-1); }
+
+/* The pips restate the pool as a count — "three of four held" — which the
+   bar alone makes you measure. They sit in the percentage column so the
+   right edge of every row is one clean rail. */
+.srow__pool {
+  flex: 0 0 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.pip {
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg);
+  border: 1px solid color-mix(in srgb, var(--c-violet-light) 44%, transparent);
+  background: color-mix(in srgb, var(--c-violet-deep) 24%, transparent);
+}
+.pip.is-held {
+  background: linear-gradient(135deg,
+    var(--c-violet-cap) 0%, var(--c-violet-core) 50%, var(--c-violet-deep) 100%);
+  border-color: color-mix(in srgb, var(--c-violet-cap) 68%, transparent);
+}
+
+.footnote {
+  padding-inline: var(--s-1);
+  font-size: var(--fs-micro);
+  line-height: var(--lh-body);
+  color: var(--c-text-2);
+}
+
+/* =========================================================================
+   8. PLAQUES — the level-up / checkpoint moment
+
+   The emotional peak of the loop, so it gets the reference's signature
+   object: a filled, chamfered, pressed-gold plate with dark engraved serif
+   on it. Round 1 put a dark box with a gold outline here, which is why the
+   critique found no filled gold metal anywhere on the screen.
+
+   It rises 8px, holds, and fades. Nothing scales, nothing bounces.
+
+   The hold is timed in JavaScript rather than by the animation, so a reader
+   on prefers-reduced-motion still gets the full readable dwell even though
+   the transitions themselves collapse to nothing.
+   ========================================================================= */
+
+.plaques {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--nav-h) + var(--s-3));
+  z-index: var(--z-overlay);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-inline: var(--gutter);
+  pointer-events: none;
+}
+
+/* A plate dropped on live numbers cuts them mid-row, which reads as a card
+   landing on the screen rather than as the screen making room. The scrim
+   sinks whatever is under the plate so it passes behind something instead
+   of being sliced by it, and fades out with the plate. */
+.plaques::before {
+  content: "";
+  position: absolute;
+  /* Tight to the plate. It has to sink the row the plate lands on, and stop
+     there — reaching further turns "the panel made room" into "the screen
+     went dark", and it must never touch the nav, which sits BELOW this
+     layer in z-order and so would be painted over. */
+  inset: -40px -6px -6px;
+  z-index: -1;
+  opacity: 0;
+  background: radial-gradient(
+    118% 124% at 50% 54%,
+    var(--c-ground) 0%,
+    var(--c-ground) 40%,
+    color-mix(in srgb, var(--c-ground) 62%, transparent) 72%,
+    transparent 100%);
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.plaques.is-busy::before { opacity: 1; }
+
+.plaque {
+  --chamfer-local: 10px;
+  --chamfer-inner: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-1);
+  min-width: 244px;
+  max-width: 100%;
+  padding: var(--s-3) var(--s-5);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(8px);
+  /* The plate is the only lit object in the frame while it is up, so it
+     casts. This is the one drop shadow on the screen and it exists to seat
+     a physical object, not to fake depth on a flat one. */
+  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--c-ground) 88%, transparent));
+  transition: opacity var(--dur-base) var(--ease-out),
+              transform var(--dur-base) var(--ease-out);
+}
+.plaque > * { position: relative; }
+
+/* Engraved, not printed: the kicker is a deep gold cut into the face, the
+   title is near-black serif, the note is the darkest warm value that still
+   reads at 10px on this much gold. */
+.plaque__kicker {
+  font-size: 9px;
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--c-ground) 62%, var(--c-gold-deep));
+}
+.plaque__title {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-title);
+  letter-spacing: 0.03em;
+  line-height: 1.08;
+  color: var(--c-ground);
+  text-shadow: 0 1px 0 color-mix(in srgb, var(--c-gold-light) 55%, transparent);
+}
+.plaque__note {
+  font-size: var(--fs-micro);
+  line-height: var(--lh-snug);
+  color: color-mix(in srgb, var(--c-ground) 74%, var(--c-gold-deep));
+}
+
+/* Violet is a dark metal, so its plate keeps light text. */
+.plaque--violet .plaque__kicker { color: var(--c-violet-light); }
+.plaque--violet .plaque__title {
+  color: var(--c-text-1);
+  text-shadow: 0 1px 0 color-mix(in srgb, var(--c-violet-deep) 70%, transparent);
+}
+.plaque--violet .plaque__note { color: color-mix(in srgb, var(--c-violet-light) 88%, transparent); }
+
+.plaque.is-in  { opacity: 1; transform: none; }
+.plaque.is-out { opacity: 0; transform: translateY(-4px); }
+
+/* =========================================================================
+   9. PIXEL ART
+   Sprites are authored at 16x16 and shipped at 1x. The primitives cover
+   x2/x3/x4; x1 is the inline size used inside a text row.
+   ========================================================================= */
+
+.pixel[data-scale="1"] {
+  width:  calc(var(--px-w) * 1px);
+  height: calc(var(--px-h) * 1px);
+}

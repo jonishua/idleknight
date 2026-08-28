@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#050A10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Emberveil — skills, mastery and the mastery pool.">
+<title>Emberveil — Skills</title>
+
+<link rel="preload" href="src/assets/fonts/cinzel-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="src/styles/tokens.css">
+<link rel="stylesheet" href="src/styles/base.css">
+<link rel="stylesheet" href="src/styles/primitives.css">
+<link rel="stylesheet" href="src/styles/skill.css">
+</head>
+<body>
+
+<!-- ===================================================================
+     ICON SPRITE — original marks on a 24x24 grid, drawn for this screen.
+     Icons inherit currentColor so a primitive can recolour them.
+
+     The five nav marks intentionally mirror the set in index.html. This
+     page is the Skills tab running standalone, so it carries its own copy;
+     when the shell absorbs the screen the two sprites become one file.
+     =================================================================== -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+    <linearGradient id="grad-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="var(--c-gold-light)"/>
+      <stop offset="52%"  stop-color="var(--c-gold-core)"/>
+      <stop offset="100%" stop-color="var(--c-gold-deep)"/>
+    </linearGradient>
+    <linearGradient id="grad-violet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="var(--c-violet-light)"/>
+      <stop offset="55%"  stop-color="var(--c-violet-core)"/>
+      <stop offset="100%" stop-color="var(--c-violet-deep)"/>
+    </linearGradient>
+
+    <!-- ==== currency ==== -->
+    <symbol id="i-coin" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9.5" fill="url(#grad-gold)"/>
+      <circle cx="12" cy="12" r="9.5" fill="none" stroke="#050A10" stroke-opacity=".55"/>
+      <circle cx="12" cy="12" r="6" fill="none" stroke="#050A10" stroke-opacity=".45" stroke-width="1.4"/>
+      <circle cx="12" cy="12" r="2.4" fill="#050A10" fill-opacity=".5"/>
+    </symbol>
+    <symbol id="i-shard" viewBox="0 0 24 24">
+      <path d="M12 1.5 19 9.5 12 22.5 5 9.5Z" fill="url(#grad-violet)"/>
+      <path d="M12 1.5 19 9.5 12 22.5 5 9.5Z" fill="none" stroke="#050A10" stroke-opacity=".5"/>
+      <path d="M12 1.5 12 22.5M5 9.5 19 9.5" stroke="#050A10" stroke-opacity=".35"/>
+      <path d="M12 1.5 8.6 9.5 12 16Z" fill="#FFFFFF" fill-opacity=".28"/>
+    </symbol>
+
+    <!-- ==== the five disciplines ====
+         Each mark is a lit object, not a wireframe: the body is currentColor
+         (so the axis colour reaches it through <use>, which ordinary CSS
+         selectors cannot), and the bevel is baked in as NEUTRAL facets —
+         white on the light side, black on the shadow side. Neutral because
+         the same symbol has to read correctly in gold and in violet, and a
+         tinted highlight would only be right for one of them.
+         Reference: every icon on the bar (coin, gem, sword, crown) is a
+         beveled specular render, never a flat glyph. -->
+    <symbol id="s-emberdelving" viewBox="0 0 24 24">
+      <path d="M2.6 7.4c4.8-3.4 14-3.4 18.8 0-3.4.2-6.4 1.4-9.4 4.2-3-2.8-6-4-9.4-4.2Z" fill="currentColor"/>
+      <path d="M2.6 7.4c4.8-3.4 14-3.4 18.8 0-2 .12-3.9.62-5.8 1.6-3.9-1.6-8-1.7-11.6-.5Z"
+            fill="#FFFFFF" fill-opacity=".34"/>
+      <path d="M10.6 11.2 13.6 14 8.2 22l-3-2.8Z" fill="currentColor" fill-opacity=".82"/>
+      <path d="M10.6 11.2 12.1 12.6 6.7 20.6l-1.5-1.4Z" fill="#FFFFFF" fill-opacity=".26"/>
+      <path d="M15.2 14.4 21.6 16.8 20 22.2l-6.2-1.8Z" fill="currentColor" fill-opacity=".5"/>
+      <path d="M15.2 14.4 21.6 16.8l-.5 1.7-6.3-2.3Z" fill="#000000" fill-opacity=".3"/>
+    </symbol>
+
+    <symbol id="s-aetherdrawing" viewBox="0 0 24 24">
+      <path d="M12 1.6 15.9 8c0 2.4-1.7 4.1-3.9 4.1S8.1 10.4 8.1 8Z" fill="currentColor"/>
+      <path d="M12 1.6 13.9 4.7c-1.7 1.5-2.4 3.7-2 6.1a3.9 3.9 0 0 1-1.9-1.5c-.6-1.9-.2-4.2 2-9.7Z"
+            fill="#FFFFFF" fill-opacity=".38"/>
+      <path d="M12.9 11.9a4 4 0 0 0 3-3.9L12 1.6l3.9 6.4c0 2-1.2 3.5-3 3.9Z"
+            fill="#000000" fill-opacity=".26"/>
+      <ellipse cx="12" cy="15.6" rx="9.2" ry="3.4" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M4.6 13.6a14 14 0 0 1 6-1.4" fill="none" stroke="#FFFFFF" stroke-opacity=".4"
+            stroke-width="1.1" stroke-linecap="round"/>
+      <path d="M2.8 15.6v3.2c0 1.9 4.1 3.4 9.2 3.4s9.2-1.5 9.2-3.4v-3.2"
+            fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M3.7 18.6c.5 1.6 4.2 2.8 8.3 2.8" fill="none" stroke="#000000" stroke-opacity=".26"
+            stroke-width="1.1" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="s-sunforging" viewBox="0 0 24 24">
+      <path d="M5.2 2.4h9l1.7 4.3-1.7 4.3h-9L3.4 6.7Z" fill="currentColor"/>
+      <path d="M5.2 2.4h9l.7 1.7h-9l-1.4 2.6-1.1-2Z" fill="#FFFFFF" fill-opacity=".4"/>
+      <path d="M5.2 11h9l1.7-4.3-.9 3.1-1.2 2.9Z" fill="#000000" fill-opacity=".28"/>
+      <path d="M15.9 5.4h5v2.6h-5Z" fill="currentColor" fill-opacity=".68"/>
+      <path d="M2.8 14.2h14.4l3.8 2.6-3.8 1.5v1.1H8.4v-1.1H2.8Z" fill="currentColor" fill-opacity=".86"/>
+      <path d="M2.8 14.2h14.4l1.6 1.1H4.1Z" fill="#FFFFFF" fill-opacity=".38"/>
+      <path d="M2.8 18.3h14.4v1.1H8.4v-1.1Z" fill="#000000" fill-opacity=".3"/>
+      <path d="M6.8 20.2h10.4v2.2H6.8Z" fill="currentColor" fill-opacity=".6"/>
+    </symbol>
+
+    <symbol id="s-sigilbinding" viewBox="0 0 24 24">
+      <path d="M3.6 2.6h16.8v18.8H3.6Z" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M4.5 3.4h15.1" fill="none" stroke="#FFFFFF" stroke-opacity=".42" stroke-width="1"/>
+      <path d="M4.5 20.6h15.1" fill="none" stroke="#000000" stroke-opacity=".34" stroke-width="1"/>
+      <path d="M6.8 6.4h10.4v2H6.8ZM11 8.4h2v9.2h-2ZM8.2 12h7.6v1.8H8.2ZM6.8 17.6h10.4v2H6.8Z"
+            fill="currentColor"/>
+      <path d="M6.8 6.4h10.4v.7H6.8ZM11 8.4h2v.7h-2ZM8.2 12h7.6v.7H8.2ZM6.8 17.6h10.4v.7H6.8Z"
+            fill="#FFFFFF" fill-opacity=".36"/>
+    </symbol>
+
+    <symbol id="s-glasswrighting" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9.4" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M12 2.6a9.4 9.4 0 0 1 0 18.8 5.2 9.4 0 0 0 0-18.8Z" fill="currentColor" fill-opacity=".55"/>
+      <path d="M12 2.6a9.4 9.4 0 0 1 6.6 2.7 9.4 9.4 0 0 0-6.6-1.8Z" fill="#FFFFFF" fill-opacity=".34"/>
+      <path d="M12 21.4a9.4 9.4 0 0 0 6.6-2.7 9.4 9.4 0 0 1-6.6 1.8Z" fill="#000000" fill-opacity=".3"/>
+      <path d="M7.2 8.4A6.4 6.4 0 0 1 10.6 5.4" fill="none" stroke="#FFFFFF"
+            stroke-opacity=".62" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- ==== ui glyphs ==== -->
+    <symbol id="i-chevron-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+      <path d="M15 4 7 12l8 8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-flow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M3 12h16M13.5 6.5 20 12l-6.5 5.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24">
+      <path d="M6.4 4.4h4.1v15.2H6.4ZM13.5 4.4h4.1v15.2h-4.1Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-play" viewBox="0 0 24 24">
+      <path d="M6.6 3.8 20 12 6.6 20.2Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24">
+      <path d="M7.4 10V7.6a4.6 4.6 0 0 1 9.2 0V10" fill="none" stroke="currentColor" stroke-width="1.9"/>
+      <path d="M4.8 10h14.4v11.4H4.8Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+      <circle cx="12" cy="12" r="8.6"/>
+      <path d="M12 6.8V12l3.5 2.2" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- ==== bottom nav ==== -->
+    <symbol id="i-nav-home" viewBox="0 0 24 24">
+      <path d="M12 2.2 22 11h-3v10.5h-5.4v-6.2h-3.2v6.2H5V11H2Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-nav-adept" viewBox="0 0 24 24">
+      <path d="M12 1.6c4.9 0 8 3.1 8 8v4.8l-3 2.6v4.6h-4.2v-4.2h-1.6v4.2H7v-4.6l-3-2.6V9.6c0-4.9 3.1-8 8-8Z"
+            fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M7.4 8.8h9.2v3.2H7.4Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-nav-skills" viewBox="0 0 24 24">
+      <path d="M2.5 9.2h13.2c2.6 0 4 1.3 5.8 3.4H8.4c-3.4 0-5.2-1.4-5.9-3.4Z" fill="currentColor"/>
+      <path d="M6.5 14.2h9.4l1.8 7.2H4.6Z" fill="currentColor" fill-opacity=".72"/>
+      <path d="M9.6 2.6h4.2v5.2H9.6Z" fill="currentColor" fill-opacity=".55"/>
+    </symbol>
+    <symbol id="i-nav-relics" viewBox="0 0 24 24">
+      <path d="M6.2 3.4h11.6L22 9.4 12 21.6 2 9.4Z" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M2 9.4h20M6.2 3.4 9 9.4l3 12.2M17.8 3.4 15 9.4" fill="none"
+            stroke="currentColor" stroke-width="1.2" stroke-opacity=".6"/>
+    </symbol>
+    <symbol id="i-nav-wardens" viewBox="0 0 24 24">
+      <ellipse cx="12" cy="12" rx="7.4" ry="10.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <ellipse cx="12" cy="12" rx="2.9" ry="5.6" fill="currentColor"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="app" data-view="detail">
+
+  <!-- ================= PINNED TOP BAR ================= -->
+  <div class="topbar safe-top" id="topbar">
+    <button class="backbtn" type="button" id="backBtn" aria-label="Back to all skills">
+      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><use href="#i-chevron-left"/></svg>
+      <span>Skills</span>
+    </button>
+    <p class="screen-title" id="screenTitle">Skills</p>
+
+    <div class="chips">
+      <div class="chip">
+        <span class="chip__icon"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><use href="#i-coin"/></svg></span>
+        <span class="chip__value" id="coinValue">12.45M</span>
+      </div>
+      <div class="chip">
+        <span class="chip__icon"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><use href="#i-shard"/></svg></span>
+        <span class="chip__value" id="shardValue">1,250</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SCROLLING SCREEN ================= -->
+  <div class="screen" id="screen">
+    <div id="viewRoot"></div>
+  </div>
+
+  <!-- Level-up / checkpoint plaques rise here, above the nav. -->
+  <div class="plaques" id="plaques" aria-live="polite"></div>
+
+  <!-- ================= BOTTOM NAV =================
+       Only Skills is this piece. The other four return to the shell, which
+       owns routing; they are links rather than dead buttons on purpose. -->
+  <nav class="nav safe-bottom" aria-label="Primary">
+    <a class="nav__item" href="index.html">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-home"/></svg>
+      <span class="nav__label">Home</span>
+    </a>
+    <a class="nav__item" href="index.html">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-adept"/></svg>
+      <span class="nav__label">Adept</span>
+    </a>
+    <button class="nav__item is-active" type="button" aria-current="page">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-skills"/></svg>
+      <span class="nav__label">Skills</span>
+    </button>
+    <a class="nav__item" href="index.html">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-relics"/></svg>
+      <span class="nav__label">Relics</span>
+    </a>
+    <a class="nav__item" href="index.html">
+      <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-nav-wardens"/></svg>
+      <span class="nav__label">Wardens</span>
+    </a>
+  </nav>
+
+</div>
+
+<script type="module" src="src/js/screens/skill.js"></script>
+</body>
+</html>

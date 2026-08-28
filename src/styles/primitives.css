@@ -1,0 +1,753 @@
+/* =========================================================================
+   EMBERVEIL — PRIMITIVES
+   The reusable vocabulary every screen is built from.
+
+   Consumes tokens.css only. If you find yourself writing a hex or a bare px
+   gap in a feature stylesheet, the primitive is missing — add it here.
+
+   THE THREE TRAPS. They are load-bearing and a critic checks all three
+   first. Traps 2 and 3 are stated one way in reference/ui-bar.md's prose and
+   the OPPOSITE way by the pixels of reference/shots/ui-bar.png; the brief
+   says the PNG always wins, and tokens.css carries the measurements. This
+   file follows the pixels.
+     1. Secondary labels are LIGHT (--c-text-2), never dimmed to ~40% grey.
+        Hierarchy comes from size and letter-spacing, never from fading.
+     2. Dividers are BRIGHTER than their panel — about 2.5x its luma. Every
+        seam in the reference is a LIT hairline with a faint dark companion
+        under it: a raised bevel, not a cut groove. Measured on the reference
+        at y=948: divider #313431 (L50.8) on a panel of L18.0.
+     3. The empty progress track is the panel's own value with a BRIGHT RIM
+        around it — lit harder on the top lip than the bottom, so it reads as
+        a shallow well. Measured: rim #3C4042 (L63.3) top, #33373A (L52.8)
+        bottom, fill #13181C (L23.2).
+     4. And the one that actually makes the reference's bars read as lit
+        metal: every fill ends in a HOT CAP brighter than its own body, which
+        bleeds a warm bloom ~12 CSS px along the track ahead of it.
+
+   THE HOUSE RULE FOR GOLD
+   Gold is never a flat fill. Every gold surface gets a gradient, a lit edge
+   and a shadowed edge — it is pressed metal, not a colour swatch.
+   ========================================================================= */
+
+/* =========================================================================
+   0. DERIVED TOKENS
+   Values the components need that are *computed from* tokens.css rather than
+   invented here — no new colour enters the system through this file. They
+   live here, not in tokens.css, because tokens.css is shared across the whole
+   build and these are component-level mixes owned by the primitive kit.
+   ========================================================================= */
+
+:root {
+  /* Panel surfaces are lit from above: the fill falls off toward the bottom
+     edge. Sampling the reference shows the same ~5-value drop across a panel. */
+  /* --c-panel-deep, NOT --c-groove: the groove token is now the LIT seam
+     value (trap 2), so mixing toward it made every panel get *brighter*
+     toward its bottom edge, which in turn made --c-track read as a dark well
+     everywhere except the very top of a panel. */
+  --c-surface-lo:  color-mix(in srgb, var(--c-surface) 64%, var(--c-panel-deep));
+  --c-surface-hi:  color-mix(in srgb, var(--c-surface) 88%, var(--c-text-2));
+
+  /* The divider, at full measured strength. This used to be mixed 52% toward
+     the ground "so it would not shout", which halved a value that had already
+     been measured off the reference and left every seam at 1.17x its panel
+     where the bar runs 2.7x. If a seam looks loud, the panel is wrong. */
+  --c-groove-cut:  var(--c-groove);
+
+  /* Bevel edges. Light on top, shadow underneath — the whole vocabulary of
+     pressed metal is these two plus a gradient. */
+  --c-bevel-lit:   color-mix(in srgb, var(--c-text-1) 15%, transparent);
+  --c-bevel-dark:  color-mix(in srgb, var(--c-ground) 62%, transparent);
+  --c-gold-seam:   color-mix(in srgb, var(--c-gold-deep) 70%, var(--c-ground));
+  --c-gold-under:  color-mix(in srgb, var(--c-gold-deep) 32%, var(--c-ground));
+  --c-violet-seam: color-mix(in srgb, var(--c-violet-deep) 62%, var(--c-ground));
+
+  /* Four-stop metal. Three stops read as a gradient; four read as a surface
+     with a specular band on it. */
+  --grad-gold-metal: linear-gradient(
+    180deg,
+    var(--c-gold-light) 0%,
+    var(--c-gold-core) 34%,
+    var(--c-gold-mid) 62%,
+    var(--c-gold-deep) 100%);
+  --grad-violet-metal: linear-gradient(
+    180deg,
+    var(--c-violet-light) 0%,
+    var(--c-violet-bright) 30%,
+    var(--c-violet-core) 62%,
+    var(--c-violet-deep) 100%);
+  --grad-panel: linear-gradient(180deg, var(--c-surface) 0%, var(--c-surface-lo) 100%);
+}
+
+/* =========================================================================
+   1. TYPE
+   ========================================================================= */
+
+/* Uppercase section label. Light, not dim — trap 1. */
+.t-label {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+  line-height: var(--lh-snug);
+}
+
+/* Values and numbers: pure white, bold, tabular so digits align in columns. */
+.t-value,
+.t-value-lg {
+  font-family: var(--ff-sans);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-1);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: var(--ls-tight);
+  line-height: var(--lh-snug);
+}
+.t-value    { font-size: var(--fs-value); }
+.t-value-lg { font-size: var(--fs-value-lg); }
+
+.t-body {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-body);
+  color: var(--c-text-2);
+  line-height: var(--lh-body);
+}
+
+.t-micro {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-micro);
+  color: var(--c-text-2);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--ls-normal);
+}
+
+/* Letter-spaced gold serif — the display voice. */
+.t-display {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-display);
+  letter-spacing: var(--ls-display);
+  text-transform: uppercase;
+  line-height: var(--lh-tight);
+  color: var(--c-gold-core);
+}
+
+/* Gradient-clipped metal type. The gradient does the bevelling, so these
+   never need a shadow to look like metal. */
+.t-metal-gold,
+.t-metal-silver {
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.t-metal-gold   { background-image: var(--grad-gold-text); }
+.t-metal-silver { background-image: var(--grad-silver-text); }
+
+/* The one enormous number that anchors a screen. */
+.t-numeral {
+  font-family: var(--ff-display);
+  font-weight: 900;
+  font-size: var(--fs-numeral);
+  line-height: 0.94;
+  letter-spacing: var(--ls-tight);
+  font-variant-numeric: tabular-nums;
+
+  background-image: var(--grad-gold-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* The violet rarity word under the numeral. */
+.t-rarity {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-value-lg);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-violet-light);
+  line-height: var(--lh-tight);
+  /* The trailing letter's tracking would otherwise pull the word half a
+     track off the centreline. */
+  padding-left: var(--ls-wide);
+}
+
+.u-gold   { color: var(--c-gold-core); }
+.u-violet { color: var(--c-violet-light); }
+.u-tnum   { font-variant-numeric: tabular-nums; }
+
+/* =========================================================================
+   2. PANEL
+   16px corners, a top-lit surface, generous padding. Internal structure is
+   expressed with darker grooves, never with nested boxes or bright rules.
+   ========================================================================= */
+
+.panel {
+  position: relative;
+  background: var(--grad-panel);
+  /* Near-invisible: the panel reads as a surface from the value shift against
+     the ground, not from an outline. */
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-panel);
+  padding: var(--s-4);
+}
+
+.panel--flush { padding: 0; }
+.panel--tight { padding: var(--s-3); }
+.panel--roomy { padding: var(--s-5); }
+
+/* Label row: label left, optional value right. */
+.panel__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+/* Divider — a LIT hairline with a faint dark companion under it (trap 2).
+   Two pixels, not one: the lit line alone reads as a scratch, and the shadow
+   beneath is what turns it into a raised seam in the panel's surface. */
+.divider {
+  height: var(--divider-h);
+  background: var(--c-groove-cut);
+  border: 0;
+  margin-block: var(--s-3);
+  box-shadow: 0 1px 0 0 var(--c-groove-shadow);
+}
+.divider--v {
+  width: var(--divider-h);
+  height: auto;
+  align-self: stretch;
+  margin-block: 0;
+  margin-inline: var(--s-4);
+  box-shadow: 1px 0 0 0 var(--c-groove-shadow);
+}
+
+/* Two-up stat row split by a vertical groove.
+   The groove is NOT a column: it must never take an equal flex share. */
+.stat-split {
+  display: flex;
+  align-items: stretch;
+}
+.stat-split > * { flex: 1 1 0; min-width: 0; }
+.stat-split > .divider--v { flex: 0 0 auto; }
+
+.stat__value-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-1);
+}
+
+/* =========================================================================
+   3. PROGRESS BAR
+   ~10px, fully rounded caps, gold gradient painted onto the panel.
+   The empty track is the SAME value as the panel (trap 3) — a whisper-thin
+   ring is all that describes its shape.
+   ========================================================================= */
+
+/* display:block is load-bearing — these are often authored as <span> inside
+   a button, and an inline box silently drops width/height.
+
+   The rim is the whole component. Two inset shadows, both from tokens that
+   were measured off the reference: a lit top lip and a shaded bottom one, so
+   the empty track reads as a shallow well rather than as a flat slot. A
+   single rgba-white hairline round all four sides — which is what this was —
+   is half the strength and has no direction in it. */
+.bar {
+  display: block;
+  position: relative;
+  height: var(--bar-h);
+  background: var(--c-track);
+  border-radius: var(--r-pill);
+  box-shadow:
+    inset 0  1px 0 0 var(--c-track-rim),
+    inset 0 -1px 0 0 var(--c-track-rim-lo);
+  overflow: hidden;
+}
+
+/* The fill and its HOT CAP.
+   A gold bar that simply stops is a painted rectangle. In the reference the
+   last two device pixels of every fill are hotter than the fill's own body
+   (measured #FDF3B5 against a body of 214-228), and that cap throws a warm
+   bloom about twelve CSS pixels along the empty track ahead of it. Those two
+   details are the difference between lit metal and a coloured div, and every
+   token they need was already sitting unused in tokens.css. */
+.bar__fill {
+  display: block;
+  position: relative;
+  height: 100%;
+  width: var(--fill, 0%);
+  border-radius: var(--r-pill);
+  background: var(--grad-gold-metal);
+  /* Beveled metal, not a flat bar: a lit top edge and a shadowed bottom one
+     inside the fill itself, plus the cap's spill escaping to the right. */
+  box-shadow:
+    inset 0  1px 0 0 var(--c-bevel-lit),
+    inset 0 -1px 0 0 var(--c-gold-under),
+    var(--bar-cap-w) 0 var(--s-1) calc(var(--bar-bloom) * -0.5) var(--c-gold-bloom),
+    var(--bar-cap-w) 0 var(--bar-bloom) 0 var(--c-gold-bloom-far);
+  transition: width var(--dur-slow) var(--ease-out);
+}
+
+/* The cap itself, drawn inside the fill so it is clipped with it. */
+.bar__fill::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  right: 0;
+  width: var(--bar-cap-w);
+  border-radius: var(--r-pill);
+  background: linear-gradient(180deg,
+    var(--c-gold-cap-warm) 0%, var(--c-gold-cap) 50%, var(--c-gold-cap-warm) 100%);
+}
+
+/* A fill at zero must not leave its cap glowing in an empty track. */
+.bar__fill[style*=": 0%"] { box-shadow: none; }
+.bar__fill[style*=": 0%"]::after { display: none; }
+
+/* Violet marks the upgrade / arcane axis. Its cap is measured as
+   "desaturated far past the body", not "+20 luma" — see tokens.css. */
+.bar--violet .bar__fill {
+  background: var(--grad-violet-metal);
+  box-shadow:
+    inset 0  1px 0 0 var(--c-bevel-lit),
+    inset 0 -1px 0 0 var(--c-violet-seam),
+    var(--bar-cap-w) 0 var(--s-1) calc(var(--bar-bloom) * -0.5) var(--c-violet-bloom),
+    var(--bar-cap-w) 0 var(--bar-bloom) 0 var(--c-violet-bloom-far);
+}
+.bar--violet .bar__fill::after {
+  background: linear-gradient(180deg,
+    var(--c-violet-cap-warm) 0%, var(--c-violet-cap) 50%, var(--c-violet-cap-warm) 100%);
+}
+
+.bar--sm { height: var(--bar-h-sm); }
+.bar--sm .bar__fill::after { top: 0; bottom: 0; }
+
+/* Label row above a bar: label left, percentage right.
+   The percentage sits OUTSIDE the bar, never inside it. */
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+.bar-row > .bar { flex: 1 1 auto; }
+.bar-row__pct {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================================
+   4. GOLD BUTTON
+   A pressed-metal plate: gradient face, a lit bevel all round, a dark seam
+   inside that bevel, CHAMFERED corners (cut, not rounded) and dark serif
+   uppercase text. The only high-saturation element in its panel.
+
+   The bevel is built entirely from inset shadows so the primitive works on a
+   bare <button> with a text node inside — no wrapper element required, and
+   clip-path trims every layer to the chamfer for free.
+   ========================================================================= */
+
+.btn-gold {
+  --chamfer-local: var(--chamfer);
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-height: var(--tap-min);
+  padding: var(--s-3) var(--s-5);
+
+  background: var(--grad-gold-face);
+  color: var(--c-ground);
+
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: var(--fs-value-lg);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+
+  /* Earlier shadows paint on top: the 2px lit edge sits over the 3px seam,
+     leaving exactly one pixel of seam showing inboard of it. */
+  box-shadow:
+    inset  0   2px 0 0 var(--c-gold-light),
+    inset  0  -2px 0 0 var(--c-gold-light),
+    inset  2px  0  0 0 var(--c-gold-mid),
+    inset -2px  0  0 0 var(--c-gold-mid),
+    inset  0   3px 0 0 var(--c-gold-seam),
+    inset  0  -3px 0 0 var(--c-gold-seam),
+    inset  3px  0  0 0 var(--c-gold-seam),
+    inset -3px  0  0 0 var(--c-gold-seam);
+
+  clip-path: polygon(
+    var(--chamfer-local) 0,
+    calc(100% - var(--chamfer-local)) 0,
+    100% var(--chamfer-local),
+    100% calc(100% - var(--chamfer-local)),
+    calc(100% - var(--chamfer-local)) 100%,
+    var(--chamfer-local) 100%,
+    0 calc(100% - var(--chamfer-local)),
+    0 var(--chamfer-local)
+  );
+
+  transition: filter var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
+}
+
+.btn-gold:active {
+  filter: brightness(0.92);
+  transform: translateY(1px);
+}
+
+.btn-gold--sm {
+  --chamfer-local: 7px;
+  min-height: 36px;
+  padding: var(--s-2) var(--s-4);
+  font-size: var(--fs-value);
+}
+
+.btn-gold[disabled] {
+  filter: grayscale(0.72) brightness(0.55);
+  pointer-events: none;
+}
+
+/* Quiet button — for secondary actions that must not compete with gold. */
+.btn-ghost {
+  display: inline-grid;
+  place-items: center;
+  min-height: var(--tap-min);
+  padding: var(--s-3) var(--s-4);
+  background: var(--c-chip-fill);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-sm);
+  color: var(--c-text-2);
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+}
+
+/* =========================================================================
+   5. CURRENCY CHIP
+   Pill, translucent dark fill: icon + value + a circular thin-outlined +.
+   ========================================================================= */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 4px 4px 4px var(--s-2);
+  background: var(--c-chip-fill);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-pill);
+  min-height: 30px;
+  /* One lit pixel across the top: the chip reads as a raised lozenge rather
+     than a hole cut in the art behind it. */
+  box-shadow: inset 0 1px 0 0 var(--c-bevel-lit);
+}
+
+.chip__icon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+}
+
+.chip__value {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-value);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-1);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--ls-tight);
+}
+
+.chip__name {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+.chip__plus {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--c-hairline-gold);
+  display: grid;
+  place-items: center;
+  color: var(--c-gold-light);
+  font-size: var(--fs-value);
+  font-weight: var(--fw-bold);
+  line-height: 1;
+}
+
+/* Wide chip used in the secondary currency row: value then name. */
+.chip--wide {
+  flex: 1 1 0;
+  min-width: 0;
+  justify-content: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  min-height: 44px;
+  border-radius: var(--r-card);
+}
+
+/* =========================================================================
+   6. ACTION CARD  (row of three)
+   Equal-width grid. Icon, coloured uppercase title, subtitle, mini bar,
+   right-aligned percentage. Icon colour matches the card's axis.
+   ========================================================================= */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+
+.card {
+  --card-accent: var(--c-gold-core);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--s-3);
+  background: var(--grad-panel);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-card);
+  text-align: left;
+  transition: filter var(--dur-fast) var(--ease-out);
+}
+.card:active { filter: brightness(1.18); }
+
+.card--violet { --card-accent: var(--c-violet-light); }
+
+.card__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.card__icon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  color: var(--card-accent);
+}
+
+/* Sized so a six-letter title clears a third of a 390px screen without
+   ellipsing. Cinzel caps are wide — check new titles at 390 before shipping. */
+.card__title {
+  font-family: var(--ff-display);
+  font-weight: var(--fw-display);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--card-accent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card__sub {
+  font-size: var(--fs-micro);
+  color: var(--c-text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: auto;
+}
+.card__foot .bar { flex: 1 1 auto; }
+.card__pct {
+  flex: 0 0 auto;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-1);
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================================
+   7. ORNAMENT
+   A thin rule interrupted by a small diamond. This class of micro-detail is
+   what separates premium from generic — keep it, and keep it beveled.
+   ========================================================================= */
+
+.ornament-rule {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+}
+.ornament-rule::before,
+.ornament-rule::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--c-gold-under) 34%, var(--c-gold-deep) 100%);
+}
+/* Reverse the second rule so the gradient is symmetrical about the diamond. */
+.ornament-rule::after {
+  background: linear-gradient(270deg, transparent 0%, var(--c-gold-under) 34%, var(--c-gold-deep) 100%);
+}
+
+.ornament-rule__diamond {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  transform: rotate(45deg);
+  background: var(--grad-gold-metal);
+  box-shadow:
+    inset 0 1px 0 0 var(--c-gold-light),
+    0 0 0 1px var(--c-gold-under);
+}
+
+/* Small gold status dot — beveled like every other piece of gold. */
+.dot-gold {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--grad-gold-metal);
+  box-shadow: inset 0 1px 0 0 var(--c-gold-light);
+  flex: 0 0 auto;
+}
+
+/* Diamond emblem frame — the milestone crest. Sized off the reference, where
+   the crest is about a sixth of the screen width; smaller and the milestone
+   panel loses the anchor that stops it reading as a list row. */
+.emblem {
+  flex: 0 0 auto;
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+}
+
+/* =========================================================================
+   8. TOP BAR
+   ========================================================================= */
+
+.topbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  min-height: var(--topbar-h);
+  padding: var(--s-2) var(--gutter);
+  position: relative;
+  z-index: var(--z-panel);
+}
+
+/* =========================================================================
+   9. BOTTOM NAV
+   Five items. Active gets the WARM raised background, a gold icon and a
+   cream label; inactive are silver-grey.
+   ========================================================================= */
+
+.nav {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--s-1);
+  padding: 6px var(--s-2);
+  min-height: var(--nav-h);
+  background: var(--c-ground);
+  border-top: 1px solid var(--c-groove-cut);
+  position: relative;
+  z-index: var(--z-nav);
+}
+
+.nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: var(--s-1) 2px;
+  border-radius: var(--r-card);
+  color: var(--c-text-2);
+  min-width: 0;
+}
+
+.nav__icon {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+}
+
+/* --fs-micro, not --fs-nav. reference/ui-bar.md puts small labels at 11-13px
+   and these were buying their hierarchy by shrinking instead of by the type
+   scale. Measured at 390: "WARDENS" at 10px with 0.1em tracking is 52px in a
+   71px cell, so nothing ellipses. */
+.nav__label {
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.nav__item.is-active {
+  background: var(--c-surface-warm);
+  color: var(--c-text-cream);
+  /* A lit top edge and a gold hairline: the active tab is a raised plate. */
+  box-shadow:
+    inset 0 0 0 1px var(--c-hairline-gold),
+    inset 0 1px 0 0 var(--c-bevel-lit);
+}
+.nav__item.is-active .nav__icon { color: var(--c-gold-core); }
+
+/* =========================================================================
+   10. PIXEL ART
+   SNES-era content inside a 2026 cabinet. Integer scale factors ONLY —
+   a fractional scale is the single most obvious tell that we got it wrong.
+
+   Usage:  <img class="pixel" data-scale="3" style="--px-w:16; --px-h:16" …>
+   ========================================================================= */
+
+/* Declaration order matters: the fallback goes FIRST so that `pixelated` —
+   the correct value for upscaling sprites — is what modern browsers land on.
+   Reversing these two silently downgrades every sprite in the game. */
+.pixel {
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
+}
+
+.pixel[data-scale="2"] {
+  width:  calc(var(--px-w) * var(--px-scale-2) * 1px);
+  height: calc(var(--px-h) * var(--px-scale-2) * 1px);
+}
+.pixel[data-scale="3"] {
+  width:  calc(var(--px-w) * var(--px-scale-3) * 1px);
+  height: calc(var(--px-h) * var(--px-scale-3) * 1px);
+}
+.pixel[data-scale="4"] {
+  width:  calc(var(--px-w) * var(--px-scale-4) * 1px);
+  height: calc(var(--px-h) * var(--px-scale-4) * 1px);
+}
+
+/* =========================================================================
+   11. LAYOUT HELPERS
+   ========================================================================= */
+
+.row       { display: flex; align-items: center; gap: var(--s-2); }
+.row--between { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
+.col       { display: flex; flex-direction: column; }
+.gap-1 { gap: var(--s-1); } .gap-2 { gap: var(--s-2); }
+.gap-3 { gap: var(--s-3); } .gap-4 { gap: var(--s-4); }
+.grow  { flex: 1 1 auto; min-width: 0; }
